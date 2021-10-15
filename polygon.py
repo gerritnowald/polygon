@@ -38,8 +38,7 @@ def _close_loop(Vert):
    
     
 def poly_A(Vert, flagFM=False):
-    # Area
-    # Polynomformeln basierend auf Gauß'scher Dreiecksformel
+    # Area (Gauss's area formula)
     Vert = _close_loop(Vert)
     FM   = Vert[0:-1,0] * Vert[1:,1] - Vert[1:,0] * Vert[0:-1,1]
     A    = sum(FM)/2   # 0th moment of area
