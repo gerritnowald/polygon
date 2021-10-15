@@ -29,7 +29,7 @@ import matplotlib.pyplot as plt
 # -------------------------------------------------------
 # functions
 
-def _close_loop(Vert):
+def close_loop(Vert):
     if Vert.shape[0] < Vert.shape[1]:
         Vert = np.transpose(Vert)   # coordinates as 2 columns (min 3 rows) 
     if not np.isclose(Vert[-1,:], Vert[0,:]).all():
@@ -105,6 +105,4 @@ def poly_plot(Vert):
     Vert   = _close_loop(Vert)
     plt.plot(Vert[:,0],Vert[:,1])           # borders
     plt.plot(CM[0],CM[1],"+")               # Center of Mass
-    plt.plot(CMVert[:,0],CMVert[:,1],"o")   # Centers of edges
-    
-    
+    plt.plot(CMVert[:,0],CMVert[:,1],"o")   # Centers of edges 
