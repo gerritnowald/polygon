@@ -10,18 +10,31 @@ from polygon import *
 # -------------------------------------------------------
 # Input
 
-Vert = np.array([
-    [0, 0],
-    [2, 0],
-    [2, 4],
-    [0, 4],
-    ])
-
+# b = 2
+# h = 7
 # Vert = np.array([
 #     [0, 0],
-#     [4, 0],
-#     [2, 2],
+#     [b, 0],
+#     [b, h],
+#     [0, h],
 #     ])
+# A_analytic = b*h
+# A2_analytic = np.array([b**3*h, b*h**3])/12
+
+
+a = 4
+h = 2
+Vert = np.array([
+    [0, 0],
+    [a, 0],
+    [a/2, h],
+    ])
+A_analytic = 0.5*a*h
+A2_analytic = np.array([a*h**3/36, a**3*h/48])
+
+
+# -------------------------------------------------------
+# Calculation (Test)
 
 Vert = close_loop(Vert)
 
@@ -40,20 +53,25 @@ S = A1/A
 
 
 
+# stimmt nicht
+Iy = 0
+Iz = 0
+for num in range(np.shape(Vert)[0]-1):
+    Iy += (Vert[num,0] * Vert[num+1,1] - Vert[num+1,0] * Vert[num,1])*((Vert[num,1] + Vert[num+1,1])**2 - Vert[num,1]*Vert[num+1,1])
+    Iz += (Vert[num,0] * Vert[num+1,1] - Vert[num+1,0] * Vert[num,1])*((Vert[num,0] + Vert[num+1,0])**2 - Vert[num,0]*Vert[num+1,0])
+Iy /= 12
+Iz /= 12
+A2 = np.array([Iy, Iz])
 
 
 
-B = (Vert[0:-1] + Vert[1:])**2 - Vert[0:-1]*Vert[1:]
-A2 = (FM @ B)/12    # 2nd moment of area
+# stimmt für Rechtecke, nicht für Dreiecke
+# B = (Vert[0:-1] + Vert[1:])**2 - Vert[0:-1]*Vert[1:]
+# A2 = (FM @ B)/12/4    # 2nd moment of area
 
 
 
-
-
-
-
-
-
+print(A2/A2_analytic)
 
 # -------------------------------------------------------
 # Output

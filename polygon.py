@@ -40,7 +40,7 @@ def close_loop(Vert):
 def poly_A(Vert, flagFM=False):
     # Area
     # Polynomformeln basierend auf Gauß'scher Dreiecksformel
-    Vert = _close_loop(Vert)
+    Vert = close_loop(Vert)
     FM   = Vert[0:-1,0] * Vert[1:,1] - Vert[1:,0] * Vert[0:-1,1]
     A    = sum(FM)/2   # 0th moment of area
     if flagFM == False:
@@ -51,7 +51,7 @@ def poly_A(Vert, flagFM=False):
 
 def poly_CMVert(Vert):
     # Centers of edges
-    Vert = _close_loop(Vert)
+    Vert = close_loop(Vert)
     return ( Vert[0:-1] + Vert[1:] )/2
     
 
@@ -65,7 +65,7 @@ def poly_CM(Vert):
 
 def poly_L(Vert):
     # Lengths of edges (Pythagorean theorem)
-    Vert = _close_loop(Vert)
+    Vert = close_loop(Vert)
     return np.sqrt( np.sum( np.diff(Vert, axis=0)**2, axis=1))
 
 
@@ -91,7 +91,7 @@ def poly_Arot(Vert, axis=0):
 
 def poly_angles(Vert):
     # inner angles
-    Vert = _close_loop(Vert)
+    Vert = close_loop(Vert)
     Vert = np.append([Vert[-2,:]],Vert,axis=0)  # second last in front of first vertice
     vec = np.diff(Vert, axis=0)                 # direction vectors of edges
     L   = np.linalg.norm(vec, ord=2, axis=1)    # length of edges
@@ -102,7 +102,7 @@ def poly_plot(Vert):
     # plot Polygon
     CM     = poly_CM(Vert)
     CMVert = poly_CMVert(Vert)
-    Vert   = _close_loop(Vert)
+    Vert   = close_loop(Vert)
     plt.plot(Vert[:,0],Vert[:,1])           # borders
     plt.plot(CM[0],CM[1],"+")               # Center of Mass
     plt.plot(CMVert[:,0],CMVert[:,1],"o")   # Centers of edges 
