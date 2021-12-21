@@ -63,6 +63,15 @@ def poly_CM(Vert):
     return A1/A
 
 
+def poly_SMA(Vert):
+    # second moment of area wrt center of mass
+    B = (Vert[0:-1] + Vert[1:])**2 - Vert[0:-1]*Vert[1:]
+    A, FM  = poly_A(Vert, flagFM=True)
+    CM = poly_CM(Vert)
+    A2 = (FM @ B)/12 - CM**2*A    # 2nd moment of area
+    return A2[::-1]
+
+
 def poly_L(Vert):
     # Lengths of edges (Pythagorean theorem)
     Vert = close_loop(Vert)
