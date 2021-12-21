@@ -1,4 +1,5 @@
 
 TM2_P3_FTM.pdf
 *.pyc
-*.m
+test.m
+fun_poly.m
