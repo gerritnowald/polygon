@@ -3,10 +3,10 @@
 Geometry calculation of arbitrary 2D polygons
 
 Input:
-- Vert: 2D array of 2D-Coordinates of vertices, Vert=[x,y]
-    Polygon can be open or closed (first = last vertice)
+- Vert=[x,y]: 2D array of columns of 2D-Coordinates of vertices
+    Polygon can be open or closed (i.e. first = last vertice)
     Area is positive for anti-clockwise order of vertices
-    holes can be defined by opposite order
+    holes can be defined by cutting in and clockwise order
 
 functions:
 - poly_A(Vert)              Area
@@ -14,6 +14,7 @@ functions:
 - poly_angles(Vert)         Inner angles
 - poly_CM(Vert)             Center of mass
 - poly_CMVert(Vert)         Centers of edges
+- poly_SMA(Vert)            Second moment of area wrt center of mass
 - poly_Vrot(Vert, axis=0)   Volume of solid of revolution
 - poly_Arot(Vert, axis=0)   Surface areas of solid of revolution
 - poly_plot(Vert)           plot polygon
@@ -62,6 +63,16 @@ def poly_CM(Vert):
     return A1/A
 
 
+def poly_SMA(Vert):
+    # second moment of area wrt center of mass
+    Vert = _close_loop(Vert)
+    B = (Vert[0:-1] + Vert[1:])**2 - Vert[0:-1]*Vert[1:]
+    A, FM  = poly_A(Vert, flagFM=True)
+    CM = poly_CM(Vert)
+    A2 = (FM @ B)/12 - CM**2*A    # 2nd moment of area
+    return A2[::-1]
+
+
 def poly_L(Vert):
     # Lengths of edges (Pythagorean theorem)
     Vert = _close_loop(Vert)
@@ -104,6 +115,4 @@ def poly_plot(Vert):
     Vert   = _close_loop(Vert)
     plt.plot(Vert[:,0],Vert[:,1])           # borders
     plt.plot(CM[0],CM[1],"+")               # Center of Mass
-    plt.plot(CMVert[:,0],CMVert[:,1],"o")   # Centers of edges
-    
-    
+    plt.plot(CMVert[:,0],CMVert[:,1],"o")   # Centers of edges 
