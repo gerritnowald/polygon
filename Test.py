@@ -2,7 +2,7 @@
 """
 Created on Sun Sep 19 19:50:40 2021
 
-@author: Dr. Gerrit Nowald
+@author: Gerrit Nowald
 """
 
 from polygon import *

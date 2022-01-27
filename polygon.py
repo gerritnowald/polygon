@@ -21,7 +21,7 @@ functions:
 
 Created on Mon Sep 13 15:25:19 2021
 
-@author: Dr. Gerrit Nowald
+@author: Gerrit Nowald
 """
 
 import numpy as np
