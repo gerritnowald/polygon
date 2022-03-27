@@ -114,5 +114,5 @@ def poly_plot(Vert):
     CMVert = poly_CMVert(Vert)
     Vert   = _close_loop(Vert)
     plt.plot(Vert[:,0],Vert[:,1])           # borders
-    plt.plot(CM[0],CM[1],"+")               # Center of Mass
-    plt.plot(CMVert[:,0],CMVert[:,1],"o")   # Centers of edges 
+    # plt.plot(CM[0],CM[1],"+")               # Center of Mass
+    # plt.plot(CMVert[:,0],CMVert[:,1],"o")   # Centers of edges 
