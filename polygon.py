@@ -1,23 +1,27 @@
 # -*- coding: utf-8 -*-
 """
-Geometry calculation of arbitrary 2D polygons
+geometry calculation of arbitrary 2D polygons
 
-Input:
-- vert=[x,y]: 2D array of columns of 2D-Coordinates of vertices
+input:
+- vert=[x,y]: 2D array of columns of 2D-coordinates of vertices
     Polygon can be open or closed (i.e. first = last vertice)
     Area is positive for anti-clockwise order of vertices
     holes can be defined by cutting in and clockwise order
+- point=[x,y]: point to be tested
+- axis: 0: with respect to x-axis
+        1: with respect to y-axis
 
 functions:
-- poly_A(vert)              Area
-- poly_L(vert)              Lengths of edges
-- poly_angles(vert)         Inner angles
-- poly_CM(vert)             Center of mass
-- poly_CMvert(vert)         Centers of edges
-- poly_SMA(vert)            Second moment of area wrt center of mass
-- poly_Vrot(vert, axis=0)   Volume of solid of revolution
-- poly_Arot(vert, axis=0)   Surface areas of solid of revolution
-- poly_plot(vert)           plot polygon
+- poly_plot(vert)               plot polygon
+- poly_A(vert)                  area
+- poly_L(vert)                  lengths of edges
+- poly_angles(vert)             inner angles
+- poly_CM(vert)                 center of mass
+- poly_CMvert(vert)             centers of edges
+- poly_SMA(vert)                second moment of area wrt center of mass
+- poly_Vrot(vert, axis=0)       volume of solid of revolution
+- poly_Arot(vert, axis=0)       surface areas of solid of revolution
+- isPointInPolygon(vert, point) true, if point is inside of polygon (not on the edge)
 
 Created on Mon Sep 13 15:25:19 2021
 
@@ -36,6 +40,26 @@ def _close_loop(vert):
     if not np.isclose(vert[-1,:], vert[0,:]).all():
         vert = np.append(vert,[vert[0,:]],axis=0)   # first = last vertice
     return vert
+
+# -------------------------------------------------------
+# points
+
+def isPointInPolygon(vert, point=[0,0]):
+    # A point is in a polygon, if a line from the point to infinity crosses the polygon an odd number of times.
+    # Here, the line goes parallel to the x-axis in positive x-direction.
+    # adapted from https://www.algorithms-and-technologies.com/point_in_polygon/python
+    vert = _close_loop(vert)
+    odd  = False    
+    for j in range(vert.shape[0]-1):    # for each edge check if the line crosses
+        i = j + 1                       # next vertice
+        if vert[j,1] != vert[i,1]:      # edge not parallel to x-axis (singularity)
+            # point between y-coordinates of edge
+            if (vert[i,1] > point[1]) != (vert[j,1] > point[1]):
+                # x-coordinate of intersection
+                Qx = (vert[j,0]-vert[i,0])*(point[1]-vert[i,1])/(vert[j,1]-vert[i,1]) + vert[i,0]
+                if point[0] < Qx:       # point left of edge
+                    odd = not odd       # line crosses edge
+    return odd  # point is in polygon (not on the edge) if odd=true
 
 # -------------------------------------------------------
 # edges
@@ -113,9 +137,9 @@ def poly_Vrot(vert, axis=0):
 
 def poly_plot(vert):
     # plot Polygon
-    # CM     = poly_CM(vert)
-    # CMvert = poly_CMvert(vert)
+    CM     = poly_CM(vert)
+    CMvert = poly_CMvert(vert)
     vert   = _close_loop(vert)
     plt.plot(vert[:,0],vert[:,1])           # borders
-    # plt.plot(CM[0],CM[1],"+")               # Center of Mass
-    # plt.plot(CMvert[:,0],CMvert[:,1],"o")   # Centers of edges 
+    plt.plot(CM[0],CM[1],"+")               # Center of Mass
+    plt.plot(CMvert[:,0],CMvert[:,1],"o")   # Centers of edges 
