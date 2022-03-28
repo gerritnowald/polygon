@@ -12,58 +12,53 @@ import polygon as pg
 # -------------------------------------------------------
 # Input
 
-Point = [1, 2]
+Point = [4, 1]
 
 
 # rectangle
-# b = 5
-# h = 2
-# vert = np.array([
-#     [0, 0],
-#     [b, 0],
-#     [b, h],
-#     [0, h],
-#     ])
+b = 5
+h = 2
+vert = np.array([
+    [0, 0],
+    [b, 0],
+    [b, h],
+    [0, h],
+    ])
 
 
 # triangle
-a = 3
-h = 7
-vert = np.array([
-    [0, 0],
-    [a, 0],
-    [a/2, h],
-    ])
+# a = 3
+# h = 7
+# vert = np.array([
+#     [0, 0],
+#     [a, 0],
+#     [a/2, h],
+#     ])
 
 # -------------------------------------------------------
 # Function
 
-def point_in_polygon(vert, point):
+def point_in_polygon(vert, point=[0,0]):
     """
-    alorithm by ClaasM https://github.com/ClaasM/Algorithms/
-    Taken from https://www.algorithms-and-technologies.com/point_in_polygon/python
-    
-    Raycasting Algorithm, performs the even-odd-rule to find out whether a point is in a given polygon.
     A point is in a polygon, if a line from the point to infinity crosses the polygon an odd number of times.
-    This runs in O(n) where n is the number of edges of the polygon.
+    Here, the line goes parallel to the x-axis in positive x-direction.
     
-    :param vert:    an array representation of the polygon where vert[i,0] is the x Value of the i-th point and vert[i,1] is the y Value.
-    :param point:   an array representation of the point where point[0] is its x Value and point[1] is its y Value
-    :return:        whether the point is in the polygon (not on the edge, just turn < into <= and > into >= for that)
+    vert  = [x,y]: 2D array of columns of 2D-Coordinates of vertices
+    point = [x,y]: point to be tested
+    odd (Boolean): whether the point is in the polygon (not on the edge)
+    
+    adapted from ClaasM https://www.algorithms-and-technologies.com/point_in_polygon/python
     """
-
     odd = False    
-    for j in range(vert.shape[0]-1):    # for each edge
-        i = j + 1
-        # If a line from the point into infinity crosses this edge
-        # One point needs to be above, one below our y coordinate
-        # ...and the edge doesn't cross our y corrdinate before our x coordinate (but between our x coordinate and infinity)
-        if ( 
-            ( (vert[i,1] > point[1]) != (vert[j,1] > point[1]) ) and
-            ( point[0] < (vert[j,0]-vert[i,0])*(point[1]-vert[i,1])/(vert[j,1]-vert[i,1]) + vert[i,0] ) 
-            ):
-            odd = not odd
-    return odd
+    for j in range(vert.shape[0]-1):    # for each edge check if the line crosses
+        i = j + 1                       # next vertice
+        if vert[j,1] != vert[i,1]:      # edge not parallel to x-axis (singularity)
+            Qx = (vert[j,0]-vert[i,0])*(point[1]-vert[i,1])/(vert[j,1]-vert[i,1]) + vert[i,0]   # x-coordinate of intersection
+            left    = point[0] < Qx     # point left of edge
+            between = (vert[i,1] > point[1]) != (vert[j,1] > point[1])  # one vertice needs to be above, one below the y coordinate
+            if left and between:        # line crosses edge
+                odd = not odd
+    return odd  # point is in polygon (not on the edge) if odd=true
 
 # -------------------------------------------------------
 # Test
