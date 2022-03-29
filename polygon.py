@@ -12,16 +12,22 @@ input:
         1: with respect to y-axis
 
 functions:
+
 - poly_plot(vert)               plot polygon
-- poly_A(vert)                  area
+
+- isPointOnEdge(vert, point)    true, if point is on any edge of polygon
+- isPointInPolygon(vert, point) true, if point is inside of polygon (not on the edge)
+
 - poly_L(vert)                  lengths of edges
-- poly_angles(vert)             inner angles
-- poly_CM(vert)                 center of mass
 - poly_CMvert(vert)             centers of edges
+- poly_angles(vert)             inner angles
+
+- poly_A(vert)                  area
+- poly_CM(vert)                 center of mass
 - poly_SMA(vert)                second moment of area wrt center of mass
+
 - poly_Vrot(vert, axis=0)       volume of solid of revolution
 - poly_Arot(vert, axis=0)       surface areas of solid of revolution
-- isPointInPolygon(vert, point) true, if point is inside of polygon (not on the edge)
 
 Created on Mon Sep 13 15:25:19 2021
 
@@ -42,7 +48,34 @@ def _close_loop(vert):
     return vert
 
 # -------------------------------------------------------
+#  plot
+
+def poly_plot(vert):
+    # plot Polygon
+    vert = _close_loop(vert)
+    plt.plot(vert[:,0],vert[:,1])
+
+# -------------------------------------------------------
 # points
+
+def isPointOnEdge(vert, point):
+    # computes the distance of a point from each edge. The point is on an edge,
+    # if the point is between the vertices and the distance is smaller than the rounding error.
+    # https://de.mathworks.com/matlabcentral/answers/351581-points-lying-within-line
+    for i in range(vert.shape[0]-1):# for each edge
+        j     = i + 1
+        PQ    =    point - vert[i,]       # Line from P1 to Q
+        P12   = vert[j,] - vert[i,]       # Line from P1 to P2
+        L12   = np.sqrt(np.dot(P12,P12))  # length of P12
+        N     = P12/L12                   # Normal along P12
+        Dist  = abs(np.cross(N,PQ))     # Norm of distance vector
+        Limit = np.spacing(np.max(np.abs([vert[i,], vert[j,], point])))*10   # Consider rounding errors
+        on    = Dist < Limit
+        if on:
+            L = np.dot(PQ,N)            # Projection of the vector from P1 to Q on the line:
+            on = (L>=0.0 and L<=L12)    # Consider end points  
+            return on
+    return on
 
 def isPointInPolygon(vert, point=[0,0]):
     # A point is in a polygon, if a line from the point to infinity crosses the polygon an odd number of times.
@@ -131,15 +164,3 @@ def poly_Vrot(vert, axis=0):
         return A*2*np.pi*CM[1]  # revolution around x-axis
     elif axis == 1:
         return A*2*np.pi*CM[0]  # revolution around y-axis
-
-# -------------------------------------------------------
-#  plot
-
-def poly_plot(vert):
-    # plot Polygon
-    CM     = poly_CM(vert)
-    CMvert = poly_CMvert(vert)
-    vert   = _close_loop(vert)
-    plt.plot(vert[:,0],vert[:,1])           # borders
-    plt.plot(CM[0],CM[1],"+")               # Center of Mass
-    plt.plot(CMvert[:,0],CMvert[:,1],"o")   # Centers of edges 

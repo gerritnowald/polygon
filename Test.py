@@ -10,10 +10,8 @@ from polygon import *
 # -------------------------------------------------------
 # Input
 
-N = 1000
-
-
 # rectangle
+# point = np.array([4,1])
 # b = 5
 # h = 2
 # vert = np.array([
@@ -27,6 +25,7 @@ N = 1000
 
 
 # triangle
+# N = 1000
 # points = np.hstack(( np.random.rand(N,1)*5-1, np.random.rand(N,1)*10-1.5 ))
 # a = 3
 # h = 7
@@ -40,6 +39,7 @@ N = 1000
 
 
 # heart
+N = 1000
 points = np.hstack(( np.random.rand(N,1)*6-3, np.random.rand(N,1)*10-2 ))
 vert = np.array([
     [0, 0],
@@ -54,29 +54,45 @@ vert = np.array([
     [-1.75,4],
     ])
 
-
 # -------------------------------------------------------
 # Output
 
-print(f"Area: {poly_A(vert)}")
-print(f"Lengths of edges: {poly_L(vert)}")
-print(f"Inner angles: {poly_angles(vert)}°")
-
-A2 = poly_SMA(vert)
-print(f"second moment of area wrt x-axis: {A2[0]}")
-print(f"second moment of area wrt y-axis: {A2[1]}")
-
-print(f"Volume of solid of revolution wrt x-axis: {poly_Vrot(vert)}")
-print(f"Volume of solid of revolution wrt y-axis: {poly_Vrot(vert,axis=1)}")
-
-print(f"Surface of areas solid of revolution wrt x-axis: {poly_Arot(vert)}")
-print(f"Surface of areas solid of revolution wrt y-axis: {poly_Arot(vert,axis=1)}")
-
+# plot polygon
 poly_plot(vert)
 
+# plot center of mass
+# CM     = poly_CM(vert)
+# plt.plot(CM[0],CM[1],"+")
+
+# plot centers of edges 
+# CMvert = poly_CMvert(vert)
+# plt.plot(CMvert[:,0],CMvert[:,1],"o")
+
+# geometry of polygon
+# print(f"Area: {poly_A(vert)}")
+# print(f"Lengths of edges: {poly_L(vert)}")
+# print(f"Inner angles: {poly_angles(vert)}°")
+
+# second moment of area
+# A2 = poly_SMA(vert)
+# print(f"second moment of area wrt x-axis: {A2[0]}")
+# print(f"second moment of area wrt y-axis: {A2[1]}")
+
+# geometry of solid of revolution
+# print(f"Volume of solid of revolution wrt x-axis: {poly_Vrot(vert)}")
+# print(f"Volume of solid of revolution wrt y-axis: {poly_Vrot(vert,axis=1)}")
+# print(f"Surface of areas solid of revolution wrt x-axis: {poly_Arot(vert)}")
+# print(f"Surface of areas solid of revolution wrt y-axis: {poly_Arot(vert,axis=1)}")
+
+# test of specific point
+# plt.plot(point[0],point[1],"r+")
+# print(f'Point on edge: {isPointOnEdge(vert, point)}')
+# print(f'Point in polygon: {isPointInPolygon(vert, point)}')
+
+# tests for random points
 for point in points:
     if isPointInPolygon(vert, point):
-        style = "r+"   
+        style = "y+"   
     else:
         style = "b+"
     plt.plot(point[0],point[1],style)
