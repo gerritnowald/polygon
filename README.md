@@ -12,18 +12,18 @@ inputs:
 
 functions:
 
-- poly_plot(vert)               plot polygon
+- poly_plot(vert):               plot polygon
 
-- isPointOnEdge(vert, point)    true, if point is on any edge of polygon
-- isPointInPolygon(vert, point) true, if point is inside of polygon (not on the edge)
+- isPointOnEdge(vert, point):    true, if point is on any edge of polygon
+- isPointInPolygon(vert, point): true, if point is inside of polygon (not on the edge)
 
-- poly_L(vert)                  lengths of edges
-- poly_CMvert(vert)             centers of edges
-- poly_angles(vert)             inner angles
+- poly_L(vert):                  lengths of edges
+- poly_CMvert(vert):             centers of edges
+- poly_angles(vert):             inner angles
 
-- poly_A(vert)                  area
-- poly_CM(vert)                 center of mass
-- poly_SMA(vert)                second moment of area wrt center of mass
+- poly_A(vert):                  area
+- poly_CM(vert):                 center of mass
+- poly_SMA(vert):                second moment of area wrt center of mass
 
-- poly_Vrot(vert, axis=0)       volume of solid of revolution
-- poly_Arot(vert, axis=0)       surface areas of solid of revolution
+- poly_Vrot(vert, axis=0):       volume of solid of revolution
+- poly_Arot(vert, axis=0):       surface areas of solid of revolution
