@@ -1,6 +1,9 @@
 # polygon
 Python module to calculate geometric properties of arbitrary 2D polygons such as area, center of mass, solid of revolution and more!
 
+The functions are explained in detail in this blog post:
+https://gerritnowald.wordpress.com/2022/04/02/polygon-module/
+
 inputs:
 - vert=[x,y]: column-array of 2D-coordinates of vertices
     Polygon can be open or closed (i.e. first = last vertice)
