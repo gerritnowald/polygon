@@ -62,6 +62,7 @@ def isPointOnEdge(vert, point):
     # computes the distance of a point from each edge. The point is on an edge,
     # if the point is between the vertices and the distance is smaller than the rounding error.
     # https://de.mathworks.com/matlabcentral/answers/351581-points-lying-within-line
+    vert = _close_loop(vert)
     for i in range(vert.shape[0]-1):# for each edge
         j     = i + 1
         PQ    =    point - vert[i,]       # Line from P1 to Q
