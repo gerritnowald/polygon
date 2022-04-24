@@ -47,8 +47,9 @@ class polygon:
         # first = last vertice
         if not np.isclose(vert[-1,:], vert[0,:]).all():
             vert = np.append(vert,[vert[0,:]],axis=0)
-        # set attribute
+        # set attributes
         self.vert = vert
+        self.__FM = vert[0:-1,0] * vert[1:,1] - vert[1:,0] * vert[0:-1,1]
         # print attributes of polygon
         # print(self)
         
@@ -109,7 +110,7 @@ class polygon:
     
     def poly_CMvert(self):
         # centers of edges
-        return (  self.vert[0:-1] + self.vert[1:] )/2
+        return ( self.vert[0:-1] + self.vert[1:] )/2
     
     def poly_angles(self):
         # inner angles
@@ -124,16 +125,14 @@ class polygon:
     
     def poly_A(self):
         # area (Gauss's area formula)
-        FM = self.__FM()
-        A  = sum(FM)/2   # 0th moment of area
+        A  = sum(self.__FM)/2   # 0th moment of area
         return A
     
     def poly_CM(self):
         # center of mass
         CMvert = self.poly_CMvert()
-        A  = self.poly_A()
-        FM = self.__FM()
-        A1 = (FM @ CMvert)/3    # 1st moment of area
+        A  = self.poly_A() 
+        A1 = (self.__FM @ CMvert)/3    # 1st moment of area
         return A1/A
     
     def poly_SMA(self):
@@ -141,14 +140,9 @@ class polygon:
         vert = self.vert
         B = (vert[0:-1] + vert[1:])**2 - vert[0:-1]*vert[1:]
         A  = self.poly_A()
-        FM = self.__FM()
         CM = self.poly_CM()
-        A2 = (FM @ B)/12 - CM**2*A    # 2nd moment of area
+        A2 = (self.__FM @ B)/12 - CM**2*A    # 2nd moment of area
         return A2[::-1]
-    
-    def __FM(self):
-        # auxiliary variable
-        return self.vert[0:-1,0] * self.vert[1:,1] - self.vert[1:,0] * self.vert[0:-1,1]
     
     # -------------------------------------------------------
     # solid of revolution
