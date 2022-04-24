@@ -40,29 +40,11 @@ from polygon import polygon
 # A_analytic  = 0.5*a*h
 # A2_analytic = np.array([a*h**3/36, a**3*h/48])
 
-
-# heart
-N = 1000
-points = np.hstack(( np.random.rand(N,1)*6-3, np.random.rand(N,1)*10-2 ))
-vert = np.array([
-    [0, 0],
-    [1.75,4],
-    [1.5,6],
-    [1,7],
-    [0.25,6],
-    [0,5],
-    [-0.25,6],
-    [-1,7],
-    [-1.5,6],
-    [-1.75,4],
-    ])
-heart = polygon(vert)
-
 # -------------------------------------------------------
 # Output
 
 # plot polygon
-heart.poly_plot(vert)
+# heart.poly_plot()
 
 # plot center of mass
 # CM     = poly_CM(vert)
@@ -93,9 +75,28 @@ heart.poly_plot(vert)
 # print(f'Point on edge: {isPointOnEdge(vert, point)}')
 # print(f'Point in polygon: {isPointInPolygon(vert, point)}')
 
+# -------------------------------------------------------
+# heart
+
+N = 1000
+points = np.hstack(( np.random.rand(N,1)*6-3, np.random.rand(N,1)*10-2 ))
+vert = np.array([
+    [0, 0],
+    [1.75,4],
+    [1.5,6],
+    [1,7],
+    [0.25,6],
+    [0,5],
+    [-0.25,6],
+    [-1,7],
+    [-1.5,6],
+    [-1.75,4],
+    ])
+heart = polygon(vert)
+
 # tests for random points
 for point in points:
-    if heart.isPointInPolygon(vert, point):
+    if heart.isPointInPolygon(point):
         style = "y+"   
     else:
         style = "b+"
