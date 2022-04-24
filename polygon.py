@@ -46,7 +46,12 @@ class polygon:
         # first = last vertice
         if not np.isclose(vert[-1,:], vert[0,:]).all():
             vert = np.append(vert,[vert[0,:]],axis=0)
+        # set attribute
         self.vert = vert
+        # print attributes of polygon
+        # print(self)
+        
+    # def __str__(self):
 
     # -------------------------------------------------------
     #  plot
