@@ -5,7 +5,10 @@ Created on Sun Sep 19 19:50:40 2021
 @author: Gerrit Nowald
 """
 
-from polygon import *
+import numpy as np
+import matplotlib.pyplot as plt
+
+from polygon import polygon
 
 # -------------------------------------------------------
 # Input
@@ -53,12 +56,13 @@ vert = np.array([
     [-1.5,6],
     [-1.75,4],
     ])
+heart = polygon(vert)
 
 # -------------------------------------------------------
 # Output
 
 # plot polygon
-poly_plot(vert)
+heart.poly_plot(vert)
 
 # plot center of mass
 # CM     = poly_CM(vert)
@@ -91,7 +95,7 @@ poly_plot(vert)
 
 # tests for random points
 for point in points:
-    if isPointInPolygon(vert, point):
+    if heart.isPointInPolygon(vert, point):
         style = "y+"   
     else:
         style = "b+"
