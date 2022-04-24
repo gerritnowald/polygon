@@ -122,31 +122,33 @@ class polygon:
     # -------------------------------------------------------
     # area
     
-    def poly_A(self, flagFM=False):
+    def poly_A(self):
         # area (Gauss's area formula)
-        vert = self.vert
-        FM   = vert[0:-1,0] * vert[1:,1] - vert[1:,0] * vert[0:-1,1]
-        A    = sum(FM)/2   # 0th moment of area
-        if flagFM == False:
-            return A
-        else:
-            return A, FM
+        FM = self.__FM()
+        A  = sum(FM)/2   # 0th moment of area
+        return A
     
     def poly_CM(self):
         # center of mass
         CMvert = self.poly_CMvert()
-        A, FM  = self.poly_A(flagFM=True)
-        A1     = (FM @ CMvert)/3    # 1st moment of area
+        A  = self.poly_A()
+        FM = self.__FM()
+        A1 = (FM @ CMvert)/3    # 1st moment of area
         return A1/A
     
     def poly_SMA(self):
         # second moment of area wrt center of mass
         vert = self.vert
         B = (vert[0:-1] + vert[1:])**2 - vert[0:-1]*vert[1:]
-        A, FM  = self.poly_A(flagFM=True)
+        A  = self.poly_A()
+        FM = self.__FM()
         CM = self.poly_CM()
         A2 = (FM @ B)/12 - CM**2*A    # 2nd moment of area
         return A2[::-1]
+    
+    def __FM(self):
+        # auxiliary variable
+        return self.vert[0:-1,0] * self.vert[1:,1] - self.vert[1:,0] * self.vert[0:-1,1]
     
     # -------------------------------------------------------
     # solid of revolution
