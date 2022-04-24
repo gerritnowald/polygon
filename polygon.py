@@ -13,21 +13,21 @@ input:
 
 functions:
 
-- poly_plot(vert)               plot polygon
+- poly_plot()               plot polygon
 
-- isPointOnEdge(vert, point)    true, if point is on any edge of polygon
-- isPointInPolygon(vert, point) true, if point is inside of polygon (not on the edge)
+- isPointOnEdge(point)      true, if point is on any edge of polygon
+- isPointInside(point)      true, if point is inside of polygon (not on the edge)
 
-- poly_L(vert)                  lengths of edges
-- poly_CMvert(vert)             centers of edges
-- poly_angles(vert)             inner angles
+- poly_L()                  lengths of edges
+- poly_CMvert()             centers of edges
+- poly_angles()             inner angles
 
-- poly_A(vert)                  area
-- poly_CM(vert)                 center of mass
-- poly_SMA(vert)                second moment of area wrt center of mass
+- poly_A()                  area
+- poly_CM()                 center of mass
+- poly_SMA()                second moment of area wrt center of mass
 
-- poly_Vrot(vert, axis=0)       volume of solid of revolution
-- poly_Arot(vert, axis=0)       surface areas of solid of revolution
+- poly_Vrot(axis=0)         volume of solid of revolution
+- poly_Arot(axis=0)         surface areas of solid of revolution
 
 Created on Mon Sep 13 15:25:19 2021
 
@@ -40,6 +40,7 @@ import matplotlib.pyplot as plt
 class polygon:
     
     def __init__(self,vert):
+        vert = np.array(vert)
         # coordinates as 2 columns (min 3 rows)
         if vert.shape[0] < vert.shape[1]:
             vert = np.transpose(vert)
@@ -82,7 +83,7 @@ class polygon:
                 return on
         return on
     
-    def isPointInPolygon(self, point=[0,0]):
+    def isPointInside(self, point=[0,0]):
         # A point is in a polygon, if a line from the point to infinity crosses the polygon an odd number of times.
         # Here, the line goes parallel to the x-axis in positive x-direction.
         # adapted from https://www.algorithms-and-technologies.com/point_in_polygon/python

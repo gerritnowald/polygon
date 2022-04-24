@@ -23,12 +23,11 @@ h = 7
 A_analytic  = 0.5*a*h
 A2_analytic = np.array([a*h**3/36, a**3*h/48])
 
-vert = np.array([
+vert = [
     [0, 0],
     [a, 0],
     [a/2, h],
-    ])
-
+    ]
 triangle = polygon(vert)
 
 # plot polygon
@@ -67,19 +66,19 @@ print(f"Surface of areas solid of revolution wrt y-axis: {triangle.poly_Arot(axi
 # A_analytic  = b*h
 # A2_analytic = np.array([b*h**3, b**3*h])/12
 
-# vert = np.array([
+# vert = [
 #     [0, 0],
 #     [b, 0],
 #     [b, h],
 #     [0, h],
-#     ])
+#     ]
 
 # -------------------------------------------------------
 # heart
 
 # N = 1000
 # points = np.hstack(( np.random.rand(N,1)*6-3, np.random.rand(N,1)*10-2 ))
-# vert = np.array([
+# vert = [
 #     [0, 0],
 #     [1.75,4],
 #     [1.5,6],
@@ -90,13 +89,13 @@ print(f"Surface of areas solid of revolution wrt y-axis: {triangle.poly_Arot(axi
 #     [-1,7],
 #     [-1.5,6],
 #     [-1.75,4],
-#     ])
+#     ]
 
 # heart = polygon(vert)
 
 # plt.figure()
 # for point in points:
-#     if heart.isPointInPolygon(point):
+#     if heart.isPointInside(point):
 #         style = "y+"   
 #     else:
 #         style = "b+"
