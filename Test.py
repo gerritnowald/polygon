@@ -42,7 +42,7 @@ CMvert = triangle.poly_CMvert()
 plt.plot(CMvert[:,0],CMvert[:,1],"o")
 
 # geometry of polygon
-print(f"Area: {triangle.poly_A()}")
+print(f"Area: {triangle.area}")
 print(f"Lengths of edges: {triangle.poly_L()}")
 print(f"Inner angles: {triangle.poly_angles()}°")
 

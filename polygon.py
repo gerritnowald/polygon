@@ -40,6 +40,8 @@ import matplotlib.pyplot as plt
 class polygon:
     
     def __init__(self,vert):
+        
+        # input checking
         vert = np.array(vert)
         # coordinates as 2 columns (min 3 rows)
         if vert.shape[0] < vert.shape[1]:
@@ -47,9 +49,13 @@ class polygon:
         # first = last vertice
         if not np.isclose(vert[-1,:], vert[0,:]).all():
             vert = np.append(vert,[vert[0,:]],axis=0)
+        
         # set attributes
         self.vert = vert
         self.__FM = vert[0:-1,0] * vert[1:,1] - vert[1:,0] * vert[0:-1,1]
+        # area (Gauss's area formula, 0th moment of area)
+        self.area = sum(self.__FM)/2
+        
         # print attributes of polygon
         # print(self)
         
@@ -123,25 +129,18 @@ class polygon:
     # -------------------------------------------------------
     # area
     
-    def poly_A(self):
-        # area (Gauss's area formula)
-        A  = sum(self.__FM)/2   # 0th moment of area
-        return A
-    
     def poly_CM(self):
         # center of mass
         CMvert = self.poly_CMvert()
-        A  = self.poly_A() 
         A1 = (self.__FM @ CMvert)/3    # 1st moment of area
-        return A1/A
+        return A1/self.area
     
     def poly_SMA(self):
         # second moment of area wrt center of mass
         vert = self.vert
         B = (vert[0:-1] + vert[1:])**2 - vert[0:-1]*vert[1:]
-        A  = self.poly_A()
         CM = self.poly_CM()
-        A2 = (self.__FM @ B)/12 - CM**2*A    # 2nd moment of area
+        A2 = (self.__FM @ B)/12 - CM**2*self.area    # 2nd moment of area
         return A2[::-1]
     
     # -------------------------------------------------------
@@ -158,9 +157,8 @@ class polygon:
     
     def poly_Vrot(self, axis=0):
         # volume of solid of revolution (Pappus's centroid theorem)
-        A  = self.poly_A()
         CM = self.poly_CM()
         if axis == 0:
-            return A*2*np.pi*CM[1]  # revolution around x-axis
+            return self.area*2*np.pi*CM[1]  # revolution around x-axis
         elif axis == 1:
-            return A*2*np.pi*CM[0]  # revolution around y-axis
+            return self.area*2*np.pi*CM[0]  # revolution around y-axis
