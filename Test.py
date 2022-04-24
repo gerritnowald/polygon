@@ -34,16 +34,14 @@ triangle = polygon(vert)
 triangle.poly_plot()
 
 # plot center of mass
-CM     = triangle.poly_CM()
-plt.plot(CM[0],CM[1],"+")
+plt.plot(triangle.CM[0],triangle.CM[1],"+")
 
 # plot centers of edges 
-CMvert = triangle.poly_CMvert()
-plt.plot(CMvert[:,0],CMvert[:,1],"o")
+plt.plot(triangle.edgesCM[:,0],triangle.edgesCM[:,1],"o")
 
 # geometry of polygon
 print(f"Area: {triangle.area}")
-print(f"Lengths of edges: {triangle.poly_L()}")
+print(f"Lengths of edges: {triangle.edgesL}")
 print(f"Inner angles: {triangle.poly_angles()}°")
 
 # second moment of area

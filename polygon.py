@@ -55,6 +55,12 @@ class polygon:
         self.__FM = vert[0:-1,0] * vert[1:,1] - vert[1:,0] * vert[0:-1,1]
         # area (Gauss's area formula, 0th moment of area)
         self.area = sum(self.__FM)/2
+        # lengths of edges (Pythagorean theorem)
+        self.edgesL = np.sqrt( np.sum( np.diff(self.vert, axis=0)**2, axis=1))
+        # centers of edges
+        self.edgesCM = ( self.vert[0:-1] + self.vert[1:] )/2
+        # center of mass (1st moment of area / area)
+        self.CM = (self.__FM @ self.edgesCM)/3/self.area
         
         # print attributes of polygon
         # print(self)
@@ -109,15 +115,7 @@ class polygon:
     
     # -------------------------------------------------------
     # edges
-    
-    def poly_L(self):
-        # lengths of edges (Pythagorean theorem)
-        return np.sqrt( np.sum( np.diff(self.vert, axis=0)**2, axis=1))
-    
-    def poly_CMvert(self):
-        # centers of edges
-        return ( self.vert[0:-1] + self.vert[1:] )/2
-    
+        
     def poly_angles(self):
         # inner angles
         vert = self.vert
@@ -129,18 +127,11 @@ class polygon:
     # -------------------------------------------------------
     # area
     
-    def poly_CM(self):
-        # center of mass
-        CMvert = self.poly_CMvert()
-        A1 = (self.__FM @ CMvert)/3    # 1st moment of area
-        return A1/self.area
-    
     def poly_SMA(self):
         # second moment of area wrt center of mass
         vert = self.vert
         B = (vert[0:-1] + vert[1:])**2 - vert[0:-1]*vert[1:]
-        CM = self.poly_CM()
-        A2 = (self.__FM @ B)/12 - CM**2*self.area    # 2nd moment of area
+        A2 = (self.__FM @ B)/12 - self.CM**2*self.area    # 2nd moment of area
         return A2[::-1]
     
     # -------------------------------------------------------
@@ -148,17 +139,14 @@ class polygon:
     
     def poly_Arot(self, axis=0):
         # surface areas of solid of revolution (Pappus's centroid theorem)
-        L      = self.poly_L()
-        CMvert = self.poly_CMvert()
         if axis == 0:
-            return L*2*np.pi*CMvert[:,1]  # revolution around x-axis
+            return self.edgesL*2*np.pi*self.edgesCM[:,1]  # revolution around x-axis
         elif axis == 1:
-            return L*2*np.pi*CMvert[:,0]  # revolution around y-axis
+            return self.edgesL*2*np.pi*self.edgesCM[:,0]  # revolution around y-axis
     
     def poly_Vrot(self, axis=0):
         # volume of solid of revolution (Pappus's centroid theorem)
-        CM = self.poly_CM()
         if axis == 0:
-            return self.area*2*np.pi*CM[1]  # revolution around x-axis
+            return self.area*2*np.pi*self.CM[1]  # revolution around x-axis
         elif axis == 1:
-            return self.area*2*np.pi*CM[0]  # revolution around y-axis
+            return self.area*2*np.pi*self.CM[0]  # revolution around y-axis
