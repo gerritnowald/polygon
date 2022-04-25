@@ -17,36 +17,22 @@ instance = polygon(Vertices)
 attributes:
 
     v: Vertex
-    
     e: Edge (next of v)
-    
     axis: 0: wrt x, 
-    
-          1: wrt y
-          
+          1: wrt y   
     - instance.Area
-    
     - instance.Angles[v]                    inner angles
-    
     - instance.EdgesLength[e]
-    
     - instance.EdgesMiddle[xe,ye]
-    
     - instance.CenterMass[x,y]
-    
     - instance.SecondMomentArea[axis]       wrt center of mass
-    
     - instance.RotationVolume[axis]         solid of revolution
-    
     - instance.RotationSurfaces[e,axis]     solid of revolution
     
 
 methods:
 
     point = [x,y]: point to be tested
-    
     - instance.isPointOnEdge(point)     true, if point is on any edge of polygon
-    
     - instance.isPointInside(point)     true, if point is inside of polygon (not on the edge)
-    
     - instance.plot()                   plots edges of polygon
