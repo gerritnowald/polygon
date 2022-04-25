@@ -4,29 +4,28 @@ Python module to calculate geometric properties of arbitrary 2D polygons such as
 The functions are explained in detail in this blog post:
 https://gerritnowald.wordpress.com/2022/04/02/polygon-module/
 
-inputs:
-- vert=[x,y]: column-array of 2D-coordinates of vertices
-    Polygon can be open or closed (i.e. first = last vertice)
+instance = polygon(Vertices)
+    Vertices = [[x0,y0],[x1,y1],[x2,y2],...]: 2D-coordinates of vertices
+    Polygon can be open or closed (i.e. first = last vertex)
     Area is positive for anti-clockwise order of vertices
     holes can be defined by cutting in and clockwise order
-- point=[x,y]: point to be tested
-- axis: 0: with respect to x-axis
-        1: with respect to y-axis
 
-functions:
+attributes:
+    v: Vertex
+    e: Edge (next of v)
+    axis: 0: wrt x, 
+          1: wrt y
+    - instance.Area
+    - instance.Angles[v]                    inner angles
+    - instance.EdgesLength[e]
+    - instance.EdgesMiddle[xe,ye]
+    - instance.CenterMass[x,y]
+    - instance.SecondMomentArea[axis]       wrt center of mass
+    - instance.RotationVolume[axis]         solid of revolution
+    - instance.RotationSurfaces[e,axis]     solid of revolution
 
-- poly_plot(vert):               plot polygon
-
-- isPointOnEdge(vert, point):    true, if point is on any edge of polygon
-- isPointInPolygon(vert, point): true, if point is inside of polygon (not on the edge)
-
-- poly_L(vert):                  lengths of edges
-- poly_CMvert(vert):             centers of edges
-- poly_angles(vert):             inner angles
-
-- poly_A(vert):                  area
-- poly_CM(vert):                 center of mass
-- poly_SMA(vert):                second moment of area wrt center of mass
-
-- poly_Vrot(vert, axis=0):       volume of solid of revolution
-- poly_Arot(vert, axis=0):       surface areas of solid of revolution
+methods:
+    point = [x,y]: point to be tested
+    - instance.isPointOnEdge(point)     true, if point is on any edge of polygon
+    - instance.isPointInside(point)     true, if point is inside of polygon (not on the edge)
+    - instance.plot()                   plots edges of polygon
