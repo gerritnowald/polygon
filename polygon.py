@@ -53,19 +53,31 @@ class polygon:
         # set attributes
         self.vert = vert
         self.__FM = vert[0:-1,0] * vert[1:,1] - vert[1:,0] * vert[0:-1,1]
-        # area (Gauss's area formula, 0th moment of area)
-        self.area = sum(self.__FM)/2
         # lengths of edges (Pythagorean theorem)
         self.edgesL = np.sqrt( np.sum( np.diff(self.vert, axis=0)**2, axis=1))
         # centers of edges
         self.edgesCM = ( self.vert[0:-1] + self.vert[1:] )/2
+        # area (Gauss's area formula, 0th moment of area)
+        self.area = sum(self.__FM)/2
         # center of mass (1st moment of area / area)
         self.CM = (self.__FM @ self.edgesCM)/3/self.area
+        # second moment of area wrt center of mass
+        self.SMA = self.__poly_SMA()
         
         # print attributes of polygon
         # print(self)
         
     # def __str__(self):
+    
+    # -------------------------------------------------------
+    # geometrical properties of the polygon
+    
+    def __poly_SMA(self):
+        # second moment of area wrt center of mass
+        vert = self.vert
+        B = (vert[0:-1] + vert[1:])**2 - vert[0:-1]*vert[1:]
+        A2 = (self.__FM @ B)/12 - self.CM**2*self.area    # 2nd moment of area
+        return A2[::-1]
 
     # -------------------------------------------------------
     #  plot
@@ -124,15 +136,7 @@ class polygon:
         L   = np.linalg.norm(vec, ord=2, axis=1)    # length of edges
         return 180 - 180/np.pi*np.arccos( np.sum( vec[0:-1,:]*vec[1:,:], axis=1 ) / (L[0:-1]*L[1:]) )
     
-    # -------------------------------------------------------
-    # area
     
-    def poly_SMA(self):
-        # second moment of area wrt center of mass
-        vert = self.vert
-        B = (vert[0:-1] + vert[1:])**2 - vert[0:-1]*vert[1:]
-        A2 = (self.__FM @ B)/12 - self.CM**2*self.area    # 2nd moment of area
-        return A2[::-1]
     
     # -------------------------------------------------------
     # solid of revolution

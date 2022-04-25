@@ -45,7 +45,7 @@ print(f"Lengths of edges: {triangle.edgesL}")
 print(f"Inner angles: {triangle.poly_angles()}°")
 
 # second moment of area
-A2 = triangle.poly_SMA()
+A2 = triangle.SMA
 print(f"second moment of area wrt x-axis: {A2[0]}")
 print(f"second moment of area wrt y-axis: {A2[1]}")
 
