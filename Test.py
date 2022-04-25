@@ -23,12 +23,12 @@ h = 7
 A_analytic  = 0.5*a*h
 A2_analytic = np.array([a*h**3/36, a**3*h/48])
 
-vert = [
+Vertices = [
     [0, 0],
     [a, 0],
     [a/2, h],
     ]
-triangle = polygon(vert)
+triangle = polygon(Vertices)
 
 
 # print attributes of polygon
@@ -38,25 +38,25 @@ triangle = polygon(vert)
 triangle.plot()
 
 # plot center of mass
-plt.plot(triangle.CM[0],triangle.CM[1],"+")
+plt.plot(triangle.CenterMass[0],triangle.CenterMass[1],"+")
 
-# plot centers of edges 
-plt.plot(triangle.edgesCM[:,0],triangle.edgesCM[:,1],"o")
+# plot middles of edges 
+plt.plot(triangle.EdgesMiddle[:,0],triangle.EdgesMiddle[:,1],"o")
 
 # geometry of polygon
-print(f"Area: {triangle.area}")
-print(f"Lengths of edges: {triangle.edgesL}")
-print(f"Inner angles: {triangle.angles}°")
+print(f"Area: {triangle.Area}")
+print(f"Lengths of edges: {triangle.EdgesLength}")
+print(f"Inner angles: {triangle.Angles}°")
 
 # second moment of area
 print(f"second moment of area wrt x-axis: {triangle.SecondMomentArea[0]}")
 print(f"second moment of area wrt y-axis: {triangle.SecondMomentArea[1]}")
 
 # geometry of solid of revolution
-print(f"Volume of solid of revolution wrt x-axis: {triangle.Vrot[0]}")
-print(f"Volume of solid of revolution wrt y-axis: {triangle.Vrot[1]}")
-print(f"Surface of areas solid of revolution wrt x-axis: {triangle.Arot[:,0]}")
-print(f"Surface of areas solid of revolution wrt y-axis: {triangle.Arot[:,1]}")
+print(f"Volume of solid of revolution wrt x-axis: {triangle.RotationVolume[0]}")
+print(f"Volume of solid of revolution wrt y-axis: {triangle.RotationVolume[1]}")
+print(f"Surface of areas solid of revolution wrt x-axis: {triangle.RotationSurfaces[:,0]}")
+print(f"Surface of areas solid of revolution wrt y-axis: {triangle.RotationSurfaces[:,1]}")
 
 # -------------------------------------------------------
 # rectangle
@@ -67,7 +67,7 @@ print(f"Surface of areas solid of revolution wrt y-axis: {triangle.Arot[:,1]}")
 # A_analytic  = b*h
 # A2_analytic = np.array([b*h**3, b**3*h])/12
 
-# vert = [
+# Vertices = [
 #     [0, 0],
 #     [b, 0],
 #     [b, h],
@@ -79,7 +79,7 @@ print(f"Surface of areas solid of revolution wrt y-axis: {triangle.Arot[:,1]}")
 
 # N = 1000
 # points = np.hstack(( np.random.rand(N,1)*6-3, np.random.rand(N,1)*10-2 ))
-# vert = [
+# Vertices = [
 #     [0, 0],
 #     [1.75,4],
 #     [1.5,6],
@@ -92,7 +92,7 @@ print(f"Surface of areas solid of revolution wrt y-axis: {triangle.Arot[:,1]}")
 #     [-1.75,4],
 #     ]
 
-# heart = polygon(vert)
+# heart = polygon(Vertices)
 
 # plt.figure()
 # for point in points:
