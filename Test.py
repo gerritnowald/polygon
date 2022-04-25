@@ -30,8 +30,12 @@ vert = [
     ]
 triangle = polygon(vert)
 
+
+# print attributes of polygon
+# print(triangle)
+
 # plot polygon
-triangle.poly_plot()
+triangle.plot()
 
 # plot center of mass
 plt.plot(triangle.CM[0],triangle.CM[1],"+")
@@ -49,10 +53,10 @@ print(f"second moment of area wrt x-axis: {triangle.SecondMomentArea[0]}")
 print(f"second moment of area wrt y-axis: {triangle.SecondMomentArea[1]}")
 
 # geometry of solid of revolution
-print(f"Volume of solid of revolution wrt x-axis: {triangle.poly_Vrot()}")
-print(f"Volume of solid of revolution wrt y-axis: {triangle.poly_Vrot(axis=1)}")
-print(f"Surface of areas solid of revolution wrt x-axis: {triangle.poly_Arot()}")
-print(f"Surface of areas solid of revolution wrt y-axis: {triangle.poly_Arot(axis=1)}")
+print(f"Volume of solid of revolution wrt x-axis: {triangle.Vrot[0]}")
+print(f"Volume of solid of revolution wrt y-axis: {triangle.Vrot[1]}")
+print(f"Surface of areas solid of revolution wrt x-axis: {triangle.Arot[:,0]}")
+print(f"Surface of areas solid of revolution wrt y-axis: {triangle.Arot[:,1]}")
 
 # -------------------------------------------------------
 # rectangle

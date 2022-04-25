@@ -64,10 +64,14 @@ class polygon:
         # second moment of area wrt center of mass
         self.SecondMomentArea = self.__poly_SMA()
         
-        # print attributes of polygon
-        # print(self)
+        # volume of solid of revolution (Pappus's centroid theorem)
+        self.Vrot = 2*np.pi*self.CM[::-1]*self.area
+        # surface areas of solid of revolution (Pappus's centroid theorem)
+        self.Arot = 2*np.pi*self.edgesCM[:,::-1]*(np.vstack((self.edgesL,self.edgesL))).T
+        
         
     # def __str__(self):
+        # number of edges
     
     # -------------------------------------------------------
     # geometrical properties of the polygon
@@ -81,14 +85,14 @@ class polygon:
     
     def __poly_SMA(self):
         # second moment of area wrt center of mass
-        B = (self.vert[0:-1] + self.vert[1:])**2 - self.vert[0:-1]*self.vert[1:]
+        B  = (self.vert[0:-1] + self.vert[1:])**2 - self.vert[0:-1]*self.vert[1:]
         A2 = (self.__FM @ B)/12 - self.CM**2*self.area
         return A2[::-1]
     
     # -------------------------------------------------------
     #  plot
     
-    def poly_plot(self):
+    def plot(self):
         plt.plot(self.vert[:,0],self.vert[:,1])
     
     # -------------------------------------------------------
@@ -129,20 +133,3 @@ class polygon:
                     if point[0] < Qx:       # point left of edge
                         odd = not odd       # line crosses edge
         return odd  # point is in polygon (not on the edge) if odd=true
-     
-    # -------------------------------------------------------
-    # solid of revolution
-    
-    def poly_Arot(self, axis=0):
-        # surface areas of solid of revolution (Pappus's centroid theorem)
-        if axis == 0:
-            return self.edgesL*2*np.pi*self.edgesCM[:,1]  # revolution around x-axis
-        elif axis == 1:
-            return self.edgesL*2*np.pi*self.edgesCM[:,0]  # revolution around y-axis
-    
-    def poly_Vrot(self, axis=0):
-        # volume of solid of revolution (Pappus's centroid theorem)
-        if axis == 0:
-            return self.area*2*np.pi*self.CM[1]  # revolution around x-axis
-        elif axis == 1:
-            return self.area*2*np.pi*self.CM[0]  # revolution around y-axis
