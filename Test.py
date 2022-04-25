@@ -42,12 +42,11 @@ plt.plot(triangle.edgesCM[:,0],triangle.edgesCM[:,1],"o")
 # geometry of polygon
 print(f"Area: {triangle.area}")
 print(f"Lengths of edges: {triangle.edgesL}")
-print(f"Inner angles: {triangle.poly_angles()}°")
+print(f"Inner angles: {triangle.angles}°")
 
 # second moment of area
-A2 = triangle.SMA
-print(f"second moment of area wrt x-axis: {A2[0]}")
-print(f"second moment of area wrt y-axis: {A2[1]}")
+print(f"second moment of area wrt x-axis: {triangle.SecondMomentArea[0]}")
+print(f"second moment of area wrt y-axis: {triangle.SecondMomentArea[1]}")
 
 # geometry of solid of revolution
 print(f"Volume of solid of revolution wrt x-axis: {triangle.poly_Vrot()}")

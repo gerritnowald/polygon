@@ -42,27 +42,27 @@ class polygon:
     def __init__(self,vert):
         
         # input checking
-        vert = np.array(vert)
+        self.vert = np.array(vert)
         # coordinates as 2 columns (min 3 rows)
-        if vert.shape[0] < vert.shape[1]:
-            vert = np.transpose(vert)
+        if self.vert.shape[0] < self.vert.shape[1]:
+            self.vert = np.transpose(self.vert)
         # first = last vertice
-        if not np.isclose(vert[-1,:], vert[0,:]).all():
-            vert = np.append(vert,[vert[0,:]],axis=0)
+        if not np.isclose(self.vert[-1,:], self.vert[0,:]).all():
+            self.vert = np.append(self.vert,[self.vert[0,:]],axis=0)
         
-        # set attributes
-        self.vert = vert
-        self.__FM = vert[0:-1,0] * vert[1:,1] - vert[1:,0] * vert[0:-1,1]
+        # inner angles
+        self.angles = self.__poly_angles()
         # lengths of edges (Pythagorean theorem)
         self.edgesL = np.sqrt( np.sum( np.diff(self.vert, axis=0)**2, axis=1))
         # centers of edges
         self.edgesCM = ( self.vert[0:-1] + self.vert[1:] )/2
         # area (Gauss's area formula, 0th moment of area)
+        self.__FM = self.vert[0:-1,0] * self.vert[1:,1] - self.vert[1:,0] * self.vert[0:-1,1]
         self.area = sum(self.__FM)/2
         # center of mass (1st moment of area / area)
         self.CM = (self.__FM @ self.edgesCM)/3/self.area
         # second moment of area wrt center of mass
-        self.SMA = self.__poly_SMA()
+        self.SecondMomentArea = self.__poly_SMA()
         
         # print attributes of polygon
         # print(self)
@@ -72,13 +72,19 @@ class polygon:
     # -------------------------------------------------------
     # geometrical properties of the polygon
     
+    def __poly_angles(self):
+        # inner angles
+        vertext = np.append([self.vert[-2,:]],self.vert,axis=0)  # second last in front of first vertice
+        vec = np.diff(vertext, axis=0)              # direction vectors of edges
+        L   = np.linalg.norm(vec, ord=2, axis=1)    # length of edges
+        return 180 - 180/np.pi*np.arccos( np.sum( vec[0:-1,:]*vec[1:,:], axis=1 ) / (L[0:-1]*L[1:]) )
+    
     def __poly_SMA(self):
         # second moment of area wrt center of mass
-        vert = self.vert
-        B = (vert[0:-1] + vert[1:])**2 - vert[0:-1]*vert[1:]
-        A2 = (self.__FM @ B)/12 - self.CM**2*self.area    # 2nd moment of area
+        B = (self.vert[0:-1] + self.vert[1:])**2 - self.vert[0:-1]*self.vert[1:]
+        A2 = (self.__FM @ B)/12 - self.CM**2*self.area
         return A2[::-1]
-
+    
     # -------------------------------------------------------
     #  plot
     
@@ -92,15 +98,15 @@ class polygon:
         # computes the distance of a point from each edge. The point is on an edge,
         # if the point is between the vertices and the distance is smaller than the rounding error.
         # https://de.mathworks.com/matlabcentral/answers/351581-points-lying-within-line
-        vert = self.vert
-        for i in range(vert.shape[0]-1):# for each edge
+        for i in range(self.vert.shape[0]-1):# for each edge
             j     = i + 1
-            PQ    =    point - vert[i,]       # Line from P1 to Q
-            P12   = vert[j,] - vert[i,]       # Line from P1 to P2
-            L12   = np.sqrt(np.dot(P12,P12))  # length of P12
-            N     = P12/L12                   # Normal along P12
+            PQ    =         point - self.vert[i,]  # Line from P1 to Q
+            P12   = self.vert[j,] - self.vert[i,]  # Line from P1 to P2
+            L12   = np.sqrt(np.dot(P12,P12))# length of P12
+            N     = P12/L12                 # Normal along P12
             Dist  = abs(np.cross(N,PQ))     # Norm of distance vector
-            Limit = np.spacing(np.max(np.abs([vert[i,], vert[j,], point])))*10   # Consider rounding errors
+            # Consider rounding errors
+            Limit = np.spacing(np.max(np.abs([self.vert[i,], self.vert[j,], point])))*10
             on    = Dist < Limit
             if on:
                 L = np.dot(PQ,N)            # Projection of the vector from P1 to Q on the line:
@@ -112,32 +118,18 @@ class polygon:
         # A point is in a polygon, if a line from the point to infinity crosses the polygon an odd number of times.
         # Here, the line goes parallel to the x-axis in positive x-direction.
         # adapted from https://www.algorithms-and-technologies.com/point_in_polygon/python
-        vert = self.vert
         odd  = False    
-        for j in range(vert.shape[0]-1):    # for each edge check if the line crosses
+        for j in range(self.vert.shape[0]-1):    # for each edge check if the line crosses
             i = j + 1                       # next vertice
-            if vert[j,1] != vert[i,1]:      # edge not parallel to x-axis (singularity)
+            if self.vert[j,1] != self.vert[i,1]:      # edge not parallel to x-axis (singularity)
                 # point between y-coordinates of edge
-                if (vert[i,1] > point[1]) != (vert[j,1] > point[1]):
+                if (self.vert[i,1] > point[1]) != (self.vert[j,1] > point[1]):
                     # x-coordinate of intersection
-                    Qx = (vert[j,0]-vert[i,0])*(point[1]-vert[i,1])/(vert[j,1]-vert[i,1]) + vert[i,0]
+                    Qx = (self.vert[j,0]-self.vert[i,0])*(point[1]-self.vert[i,1])/(self.vert[j,1]-self.vert[i,1]) + self.vert[i,0]
                     if point[0] < Qx:       # point left of edge
                         odd = not odd       # line crosses edge
         return odd  # point is in polygon (not on the edge) if odd=true
-    
-    # -------------------------------------------------------
-    # edges
-        
-    def poly_angles(self):
-        # inner angles
-        vert = self.vert
-        vert = np.append([vert[-2,:]],vert,axis=0)  # second last in front of first vertice
-        vec = np.diff(vert, axis=0)                 # direction vectors of edges
-        L   = np.linalg.norm(vec, ord=2, axis=1)    # length of edges
-        return 180 - 180/np.pi*np.arccos( np.sum( vec[0:-1,:]*vec[1:,:], axis=1 ) / (L[0:-1]*L[1:]) )
-    
-    
-    
+     
     # -------------------------------------------------------
     # solid of revolution
     
