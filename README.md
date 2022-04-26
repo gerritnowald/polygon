@@ -3,7 +3,7 @@ Python module to calculate geometric properties of arbitrary 2D polygons such as
 
 The functions are explained in detail in this blog post:
 
-    https://gerritnowald.wordpress.com/2022/04/02/polygon-module/
+https://gerritnowald.wordpress.com/2022/04/02/polygon-module/
 
 
 instance = polygon(Vertices)
