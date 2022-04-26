@@ -67,8 +67,8 @@ class polygon:
         self.Vertices = vert
         
         
-    # def __str__(self):
-        # number of edges
+    def __str__(self):
+        return f'Polygon with {len(self.Vertices)-1} vertices'
     
     # -------------------------------------------------------
     # geometrical properties of the polygon

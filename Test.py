@@ -33,7 +33,7 @@ def main():
     
     
     # print attributes of polygon
-    # print(triangle)
+    print(triangle)
     
     # plot polygon
     triangle.plot()
@@ -80,6 +80,7 @@ def main():
     
     N = 1000
     points = np.hstack(( np.random.rand(N,1)*6-3, np.random.rand(N,1)*10-2 ))
+    
     Vertices = [
         [0, 0],
         [1.75,4],
