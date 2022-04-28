@@ -84,13 +84,16 @@ class polygon:
         # second moment of area wrt center of mass
         B  = (vert[:-1] + vert[1:])**2 - vert[:-1]*vert[1:]
         A2 = (self.__FM @ B)/12 - self.CenterMass**2*self.Area
-        return A2[::-1]
+        return A2
     
     # -------------------------------------------------------
     #  methods
     
-    def plot(self):
+    def plot(self,numbers=False):
         plt.plot(self.Vertices[:,0],self.Vertices[:,1])
+        if numbers:
+            for i in range(len(self.Vertices)-1):
+                plt.text(self.Vertices[i,0], self.Vertices[i,1], str(i) )
     
     def isPointOnEdge(self, point):
         # computes the distance of a point from each edge. The point is on an edge,
