@@ -35,4 +35,4 @@ methods:
     point = [x,y]: point to be tested
     - instance.isPointOnEdge(point)     true, if point is on any edge of polygon
     - instance.isPointInside(point)     true, if point is inside of polygon (not on the edge)
-    - instance.plot()                   plots edges of polygon
+    - instance.plot(numbers=False)      plots edges of polygon, optionally numbers of vertices
