@@ -17,7 +17,7 @@ attributes:
     - instance.Angles[v]                    inner angles
     - instance.EdgesLength[e]
     - instance.EdgesMiddle[xe,ye]
-    - instance.CenterMass[x,y]
+    - instance.CenterMass[x,y]              centroid
     - instance.SecondMomentArea[axis]       wrt center of mass
     - instance.RotationVolume[axis]         solid of revolution
     - instance.RotationSurfaces[e,axis]     solid of revolution
