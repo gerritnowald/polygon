@@ -16,7 +16,7 @@ vert = np.random.rand(3,2)*10
 triangle = polygon(vert)
 
 plt.figure()
-triangle.plot(numbers=True)
+triangle.plot()
 plt.axis('equal')
 
 
@@ -35,9 +35,11 @@ vertP = vert - vert[0,:]
 
 Ds = np.cross(vertP[:,0],vertP[:,1])[0]
 
+LSQ = np.linalg.norm(vertP, axis=1)**2
+
 Us = np.array([
-    vertP[2,1]*(vertP[1,0]**2 + vertP[1,1]**2) - vertP[1,1]*(vertP[2,0]**2 + vertP[2,1]**2),
-    vertP[1,0]*(vertP[2,0]**2 + vertP[2,1]**2) - vertP[2,0]*(vertP[1,0]**2 + vertP[1,1]**2)
+    vertP[2,1]*LSQ[1] - vertP[1,1]*LSQ[2],
+    vertP[1,0]*LSQ[2] - vertP[2,0]*LSQ[1]
     ])/Ds/2
 
 U = Us + vert[0,:]
