@@ -23,11 +23,14 @@ attributes:
     - instance.Area
     - instance.Angles[v]                    inner angles
     - instance.EdgesLength[e]
-    - instance.EdgesMiddle[xe,ye]
-    - instance.CenterMass[x,y]              centroid
+    - instance.EdgesMiddle[xe,ye]			midpoints of edges
+    - instance.CenterMass[x,y]              centroid / center of mass
     - instance.SecondMomentArea[axis]       wrt center of mass
     - instance.RotationVolume[axis]         solid of revolution
     - instance.RotationSurfaces[e,axis]     solid of revolution
+	- triangles:
+		- instance.CenterOuterCircle[x,y]   circumcenter / center of circumsribed (outer) circle
+		- instance.RadiusOuterCircle		radius of circumsribed (outer) circle
     
 
 methods:
@@ -36,3 +39,5 @@ methods:
     - instance.isPointOnEdge(point)     true, if point is on any edge of polygon
     - instance.isPointInside(point)     true, if point is inside of polygon (not on the edge)
     - instance.plot(numbers=False)      plots edges of polygon, optionally numbers of vertices
+	- triangles:
+		- instance.plotplot_CircumscribedCircle()	plots circumsribed (outer) circle

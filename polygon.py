@@ -12,21 +12,26 @@ attributes:
     v: Vertex
     e: Edge (next of v)
     axis: 0: wrt x, 
-          1: wrt y
+          1: wrt y   
     - instance.Area
     - instance.Angles[v]                    inner angles
     - instance.EdgesLength[e]
-    - instance.EdgesMiddle[xe,ye]
-    - instance.CenterMass[x,y]              centroid
+    - instance.EdgesMiddle[xe,ye]			midpoints of edges
+    - instance.CenterMass[x,y]              centroid / center of mass
     - instance.SecondMomentArea[axis]       wrt center of mass
     - instance.RotationVolume[axis]         solid of revolution
     - instance.RotationSurfaces[e,axis]     solid of revolution
+	- triangles:
+		- instance.CenterOuterCircle[x,y]   circumcenter / center of circumsribed (outer) circle
+		- instance.RadiusOuterCircle		radius of circumsribed (outer) circle
 
 methods:
     point = [x,y]: point to be tested
     - instance.isPointOnEdge(point)     true, if point is on any edge of polygon
     - instance.isPointInside(point)     true, if point is inside of polygon (not on the edge)
-    - instance.plot()                   plots edges of polygon
+    - instance.plot(numbers=False)      plots edges of polygon, optionally numbers of vertices
+	- triangles:
+		- instance.plotplot_CircumscribedCircle()	plots circumsribed (outer) circle
 
 @author: Gerrit Nowald
 """
@@ -52,21 +57,25 @@ class polygon:
         # centers of edges
         self.EdgesMiddle = ( vert[:-1] + vert[1:] )/2
         # area (Gauss's area formula, 0th moment of area)
-        self.__FM = vert[:-1,0] * vert[1:,1] - vert[1:,0] * vert[:-1,1]
-        self.Area = sum(self.__FM)/2
+        FM = vert[:-1,0] * vert[1:,1] - vert[1:,0] * vert[:-1,1]
+        self.Area = sum(FM)/2
         # center of mass (1st moment of area / area)
-        self.CenterMass = (self.__FM @ self.EdgesMiddle)/3/self.Area
+        self.CenterMass = (FM @ self.EdgesMiddle)/3/self.Area
         # second moment of area wrt center of mass
-        self.SecondMomentArea = self.__poly_SMA(vert)
+        self.SecondMomentArea = self.__poly_SMA(vert,FM)
         
         # volume of solid of revolution (Pappus's centroid theorem)
         self.RotationVolume   = 2*np.pi*self.Area*self.CenterMass[::-1]
         # surface areas of solid of revolution (Pappus's centroid theorem)
         self.RotationSurfaces = 2*np.pi*self.EdgesLength[:,None]*self.EdgesMiddle[:,::-1]
         
+        # triangles
+        if len(vert)-1 == 3:
+            # circumscribed (outer) circle
+            self.CenterOuterCircle, self.RadiusOuterCircle = self.__circumcenter(vert)
+        
         self.Vertices = vert
-        
-        
+           
     def __str__(self):
         return f'Polygon with {len(self.Vertices)-1} vertices'
     
@@ -80,14 +89,35 @@ class polygon:
         L   = np.linalg.norm(vec, ord=2, axis=1)       # length of edges (Pythagorean theorem)
         return 180*(1 - 1/np.pi*np.arccos( np.sum( vec[:-1,]*vec[1:,], axis=1 ) / (L[:-1]*L[1:]) )), L
     
-    def __poly_SMA(self,vert):
+    def __poly_SMA(self,vert,FM):
         # second moment of area wrt center of mass
         B  = (vert[:-1] + vert[1:])**2 - vert[:-1]*vert[1:]
-        A2 = (self.__FM @ B)/12 - self.CenterMass**2*self.Area
+        A2 = (FM @ B)/12 - self.CenterMass**2*self.Area
         return A2
     
+    def __circumcenter(self,vert):
+        # center of circumscribed circle
+        # https://en.wikipedia.org/wiki/Circumscribed_circle
+        vertP = vert[:-1,:] - vert[0,:]      # coordinate transformation
+        DP  = np.cross(vertP[:,0],vertP[:,1])[0]
+        LSQ = np.linalg.norm(vertP, axis=1)**2
+        UP  = np.cross(vertP,LSQ,axis=0)[0,:]/DP/2
+        UP  = UP[::-1]*np.array([-1, 1])     # orthogonal vector
+        Center = UP + vert[0,:]              # coordinate transformation
+        Radius = np.linalg.norm(UP, ord=2)
+        return Center, Radius
+
     # -------------------------------------------------------
     #  methods
+    
+    def __plot_circ(self, R, C):
+        angle = np.linspace(0, 2*np.pi, 50)
+        x = C[0] + R*np.cos(angle)
+        y = C[1] + R*np.sin(angle)
+        plt.plot(x,y)
+    
+    def plot_CircumscribedCircle(self):
+        self.__plot_circ( R=self.RadiusOuterCircle, C=self.CenterOuterCircle)
     
     def plot(self,numbers=False):
         plt.plot(self.Vertices[:,0],self.Vertices[:,1])
