@@ -38,8 +38,8 @@ Ds = np.cross(vertP[:,0],vertP[:,1])[0]
 LSQ = np.linalg.norm(vertP, axis=1)**2
 
 Us = np.array([
-    vertP[2,1]*LSQ[1] - vertP[1,1]*LSQ[2],
-    vertP[1,0]*LSQ[2] - vertP[2,0]*LSQ[1]
+    - np.cross(vertP[:,1],LSQ)[0],
+      np.cross(vertP[:,0],LSQ)[0]
     ])/Ds/2
 
 U = Us + vert[0,:]
