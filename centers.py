@@ -11,14 +11,61 @@ import matplotlib.pyplot as plt
 from polygon import polygon
 
 
-Vertices = np.random.rand(3,2)*10
+vert = np.random.rand(3,2)*10
 
-triangle = polygon(Vertices)
+triangle = polygon(vert)
 
 plt.figure()
 triangle.plot(numbers=True)
 plt.axis('equal')
+
+
+
+# first = last vertex
+# if not np.isclose(vert[-1,], vert[0,]).all():
+#     vert = np.append(vert,[vert[0,]],axis=0)
+
+
+
+
+
+# https://en.wikipedia.org/wiki/Circumscribed_circle
+
+A = vert[0,:]
+B = vert[1,:]
+C = vert[2,:]
+
+As = A - A
+Bs = B - A
+Cs = C - A
+
+vertP = vert - vert[0,:]
+
+
+Ds = Bs[0]*Cs[1] - Bs[1]*Cs[0]
+
+Us = np.array([
+    Cs[1]*(Bs[0]**2 + Bs[1]**2) - Bs[1]*(Cs[0]**2 + Cs[1]**2),
+    Bs[0]*(Cs[0]**2 + Cs[1]**2) - Cs[0]*(Bs[0]**2 + Bs[1]**2)
+    ])/Ds/2
+
+U = Us + A
+
+
+def plot_circ( R=1, C=(0,0), color='k', points=50 ):
+    angle = np.linspace(0, 2*np.pi, points)
+    x = C[0] + R*np.cos(angle)
+    y = C[1] + R*np.sin(angle)
+    plt.plot(x,y, color=color )
+    plt.axis('equal')
+
+
+plot_circ(np.linalg.norm(Us, ord=2) , U)
 plt.show()
+
+
+
+
 
 
 # function [pos] = center(Pa,Pb,Pc,Type)
@@ -31,9 +78,20 @@ plt.show()
 # 09/14/09
 #
 """
+Pa = vert[0,:]
+Pb = vert[1,:]
+Pc = vert[2,:]
+
 AB = Pb - Pa 
 AC = Pc - Pa 
 BC = Pc - Pb # Side vectors
+
+# 'circumcenter'
+N = np.cross(AC,AB)
+L1 = np.cross(AB,N)
+L2 = np.cross(BC,N) # directors
+P21 = (Pc - Pa)/2  
+P1 = (Pa + Pb)/2
 
 # case 'incenter'# 
 uab = AB./norm(AB)
@@ -50,13 +108,6 @@ L1 = (Pb + Pc)/2 -Pa
 L2 = (Pa + Pc)/2 - Pb # directors
 P21 = Pb - Pa      
 P1 = Pa
-
-# case 'circumcenter'
-N = cross(AC,AB)
-L1 = cross(AB,N)
-L2 = cross(BC,N) # directors
-P21 = (Pc - Pa)/2  
-P1 = (Pa + Pb)/2
 
 # case 'orthocenter'
 N = cross(AC,AB)
