@@ -31,25 +31,16 @@ plt.axis('equal')
 
 # https://en.wikipedia.org/wiki/Circumscribed_circle
 
-A = vert[0,:]
-B = vert[1,:]
-C = vert[2,:]
-
-As = A - A
-Bs = B - A
-Cs = C - A
-
 vertP = vert - vert[0,:]
 
-
-Ds = Bs[0]*Cs[1] - Bs[1]*Cs[0]
+Ds = np.cross(vertP[:,0],vertP[:,1])[0]
 
 Us = np.array([
-    Cs[1]*(Bs[0]**2 + Bs[1]**2) - Bs[1]*(Cs[0]**2 + Cs[1]**2),
-    Bs[0]*(Cs[0]**2 + Cs[1]**2) - Cs[0]*(Bs[0]**2 + Bs[1]**2)
+    vertP[2,1]*(vertP[1,0]**2 + vertP[1,1]**2) - vertP[1,1]*(vertP[2,0]**2 + vertP[2,1]**2),
+    vertP[1,0]*(vertP[2,0]**2 + vertP[2,1]**2) - vertP[2,0]*(vertP[1,0]**2 + vertP[1,1]**2)
     ])/Ds/2
 
-U = Us + A
+U = Us + vert[0,:]
 
 
 def plot_circ( R=1, C=(0,0), color='k', points=50 ):
