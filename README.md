@@ -57,4 +57,6 @@ instance = polygon(Vertices)
 
 
 ## license
-MIT license. You are free to use the code any way you want, without liability or warranty. Please reference my work if you use it.
+MIT license. You are free to use the code any way you want, without liability or warranty.
+
+Please reference my work if you use it.

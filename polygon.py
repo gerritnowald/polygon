@@ -1,13 +1,23 @@
 # -*- coding: utf-8 -*-
 """
-geometry calculation of arbitrary 2D polygons
+geometry calculation of arbitrary 2D polygons:
+- area, lengths of edges, inner angles
+- order of vertices (clockwise or anti-clockwise)
+- centroid (center of mass)
+- check if point is inside or on edge of polygon
+- volume and surfaces of solid of revolution
+- second moment of area (bending stiffness of beams)
+- for triangles: centers and radii of incircle and circumscribed (outer) circle
 
+
+creating a polygon object:
+
+Vertices = [[x0,y0],[x1,y1],[x2,y2],...]   # 2D-coordinates of vertices
 instance = polygon(Vertices)
-    Vertices = [[x0,y0],[x1,y1],[x2,y2],...]: 2D-coordinates of vertices
     
-    Polygon can be open or closed (i.e. first = last vertex)
-    Area is positive for anti-clockwise order of vertices
-    holes can be defined by cutting in and clockwise order
+    - polygon can be open or closed (i.e. first = last vertex)
+    - holes can be defined by self-intersecting and opposite order of vertices inside than outside
+
 
 attributes:
     
