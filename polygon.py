@@ -4,15 +4,18 @@ geometry calculation of arbitrary 2D polygons
 
 instance = polygon(Vertices)
     Vertices = [[x0,y0],[x1,y1],[x2,y2],...]: 2D-coordinates of vertices
+    
     Polygon can be open or closed (i.e. first = last vertex)
     Area is positive for anti-clockwise order of vertices
     holes can be defined by cutting in and clockwise order
 
 attributes:
+    
     v: Vertex
     e: Edge (next of v)
     axis: 0: wrt x, 
-          1: wrt y   
+          1: wrt y
+    - instance.IsClockwise                  Boolean, order of vertices
     - instance.Area
     - instance.Angles[v]                    inner angles
     - instance.EdgesLength[e]
@@ -24,14 +27,19 @@ attributes:
 	- triangles:
 		- instance.CenterOuterCircle[x,y]   circumcenter / center of circumsribed (outer) circle
 		- instance.RadiusOuterCircle		radius of circumsribed (outer) circle
+        - instance.CenterInnerCircle[x,y]   center of incircle (inner circle)
+        - instance.RadiusInnerCircle        radius of incircle (inner circle)
+
 
 methods:
+    
     point = [x,y]: point to be tested
     - instance.isPointOnEdge(point)     true, if point is on any edge of polygon
     - instance.isPointInside(point)     true, if point is inside of polygon (not on the edge)
     - instance.plot(numbers=False)      plots edges of polygon, optionally numbers of vertices
 	- triangles:
-		- instance.plotplot_CircumscribedCircle()	plots circumsribed (outer) circle
+		- instance.plot_CircumscribedCircle()	plots circumsribed (outer) circle
+        - instance.plot_Incircle()              plots incircle (inner circle)
 
 @author: Gerrit Nowald
 """
@@ -41,8 +49,12 @@ import matplotlib.pyplot as plt
 
 class polygon:
     
+    # -------------------------------------------------------
+    # constructor (geometrical properties)
+    
     def __init__(self,Vertices):
         
+        # input checks
         vert = np.array(Vertices)
         # coordinates as 2 columns (min 3 rows)
         if vert.shape[0] < vert.shape[1]:
@@ -59,6 +71,7 @@ class polygon:
         self.EdgesMiddle = ( vert[:-1] + vert[1:] )/2
         
         # area (Gauss's area formula, 0th moment of area)
+        # https://en.wikipedia.org/wiki/Shoelace_formula
         FM = vert[:-1,0] * vert[1:,1] - vert[1:,0] * vert[:-1,1]
         AreaSigned = sum(FM)/2
         self.IsClockwise = AreaSigned < 0   # area negative for clockwise order of vertices
@@ -68,22 +81,26 @@ class polygon:
         self.CenterMass = (FM @ self.EdgesMiddle)/3/AreaSigned
         
         # second moment of area wrt center of mass
-        self.SecondMomentArea = self.__poly_SMA(vert,FM)
+        B = (vert[:-1] + vert[1:])**2 - vert[:-1]*vert[1:]
+        self.SecondMomentArea = abs(FM @ B)/12 - self.CenterMass**2*self.Area
         
-        # volume of solid of revolution (Pappus's centroid theorem)
+        # solid of revolution (Pappus's centroid theorem)
+        # https://en.wikipedia.org/wiki/Pappus%27s_centroid_theorem
         self.RotationVolume   = 2*np.pi*self.Area*self.CenterMass[::-1]
-        # surface areas of solid of revolution (Pappus's centroid theorem)
         self.RotationSurfaces = 2*np.pi*self.EdgesLength[:,None]*self.EdgesMiddle[:,::-1]
         
         # triangles
         if len(vert)-1 == 3:
+            
             # circumscribed (outer) circle
             self.CenterOuterCircle, self.RadiusOuterCircle = self.__circumcenter(vert)
+            
+            # incircle (inner circle)
+            # https://en.wikipedia.org/wiki/Incenter
+            self.CenterInnerCircle = np.roll(self.EdgesLength, -1) @ vert[:-1,] / sum(self.EdgesLength)
+            self.RadiusInnerCircle = 2*self.Area/sum(self.EdgesLength)
         
         self.Vertices = vert
-           
-    def __str__(self):
-        return f'Polygon with {len(self.Vertices)-1} vertices'
     
     # -------------------------------------------------------
     # geometrical properties of the polygon
@@ -93,13 +110,9 @@ class polygon:
         vertext = np.append([vert[-2,]],vert,axis=0)   # second last in front of first vertex
         vec = np.diff(vertext, axis=0)                 # direction vectors of edges
         L   = np.linalg.norm(vec, ord=2, axis=1)       # length of edges (Pythagorean theorem)
-        return 180*(1 - 1/np.pi*np.arccos( np.sum( vec[:-1,]*vec[1:,], axis=1 ) / (L[:-1]*L[1:]) )), L
-    
-    def __poly_SMA(self,vert,FM):
-        # second moment of area wrt center of mass
-        B  = (vert[:-1] + vert[1:])**2 - vert[:-1]*vert[1:]
-        A2 = (FM @ B)/12 - self.CenterMass**2*self.Area
-        return A2
+        # law of cosines
+        angles = 180*(1 - 1/np.pi*np.arccos( np.sum( vec[:-1,]*vec[1:,], axis=1 ) / (L[:-1]*L[1:]) ))
+        return angles, L
     
     def __circumcenter(self,vert):
         # center of circumscribed circle
@@ -112,9 +125,15 @@ class polygon:
         Center = UP + vert[0,:]              # coordinate transformation
         Radius = np.linalg.norm(UP, ord=2)
         return Center, Radius
+    
+    # -------------------------------------------------------
+    # print method (number of vertices)
+    
+    def __str__(self):
+        return f'Polygon with {len(self.Vertices)-1} vertices'
 
     # -------------------------------------------------------
-    #  methods
+    # methods plotting
     
     def __plot_circ(self, R, C):
         angle = np.linspace(0, 2*np.pi, 50)
@@ -125,11 +144,17 @@ class polygon:
     def plot_CircumscribedCircle(self):
         self.__plot_circ( R=self.RadiusOuterCircle, C=self.CenterOuterCircle)
     
+    def plot_Incircle(self):
+        self.__plot_circ( R=self.RadiusInnerCircle, C=self.CenterInnerCircle)
+    
     def plot(self,numbers=False):
         plt.plot(self.Vertices[:,0],self.Vertices[:,1])
         if numbers:
             for i in range(len(self.Vertices)-1):
                 plt.text(self.Vertices[i,0], self.Vertices[i,1], str(i) )
+    
+    # -------------------------------------------------------
+    # methods point testing
     
     def isPointOnEdge(self, point):
         # computes the distance of a point from each edge. The point is on an edge,

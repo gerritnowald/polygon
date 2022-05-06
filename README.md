@@ -15,11 +15,12 @@ instance = polygon(Vertices)
 
 
 attributes:
-
+    
     v: Vertex
     e: Edge (next of v)
     axis: 0: wrt x, 
-          1: wrt y   
+          1: wrt y
+    - instance.IsClockwise                  Boolean, order of vertices
     - instance.Area
     - instance.Angles[v]                    inner angles
     - instance.EdgesLength[e]
@@ -31,13 +32,16 @@ attributes:
 	- triangles:
 		- instance.CenterOuterCircle[x,y]   circumcenter / center of circumsribed (outer) circle
 		- instance.RadiusOuterCircle		radius of circumsribed (outer) circle
-    
+		- instance.CenterInnerCircle[x,y]   center of incircle (inner circle)
+		- instance.RadiusInnerCircle        radius of incircle (inner circle)
+
 
 methods:
-
+    
     point = [x,y]: point to be tested
     - instance.isPointOnEdge(point)     true, if point is on any edge of polygon
     - instance.isPointInside(point)     true, if point is inside of polygon (not on the edge)
     - instance.plot(numbers=False)      plots edges of polygon, optionally numbers of vertices
 	- triangles:
-		- instance.plotplot_CircumscribedCircle()	plots circumsribed (outer) circle
+		- instance.plot_CircumscribedCircle()	plots circumsribed (outer) circle
+		- instance.plot_Incircle()              plots incircle (inner circle)

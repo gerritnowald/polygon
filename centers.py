@@ -19,18 +19,5 @@ plt.figure()
 triangle.plot(True)
 plt.axis('equal')
 triangle.plot_CircumscribedCircle()
-
-
-def plot_circ(R, C):
-        angle = np.linspace(0, 2*np.pi, 50)
-        x = C[0] + R*np.cos(angle)
-        y = C[1] + R*np.sin(angle)
-        plt.plot(x,y)
-
-
-CenterInnerCircle = np.roll(triangle.EdgesLength, -1) @ vert / sum(triangle.EdgesLength)
-RadiusInnerCircle = 2*triangle.Area/sum(triangle.EdgesLength)
-
-plot_circ(RadiusInnerCircle, CenterInnerCircle)
-
+triangle.plot_Incircle()
 plt.show()
