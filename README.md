@@ -12,7 +12,7 @@ Functions are explained in detail in this blog post:
 https://gerritnowald.wordpress.com/2022/04/02/polygon-module/
 
 ## examples:
-https://github.com/gerritnowald/polygon/blob/centers-triangle/examples.ipynb
+https://github.com/gerritnowald/polygon/blob/main/examples.ipynb
 
 ## creating a polygon object:
 ```
