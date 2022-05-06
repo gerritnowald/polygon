@@ -11,9 +11,9 @@ instance = polygon(Vertices)
 
 Vertices = [[x0,y0],[x1,y1],[x2,y2],...]: 2D-coordinates of vertices
 
-Polygon can be open or closed (i.e. first = last vertex)
-Area is positive for anti-clockwise order of vertices
-holes can be defined by cutting in and clockwise order
+- Polygon can be open or closed (i.e. first = last vertex)
+- Area is positive for anti-clockwise order of vertices
+- holes can be defined by cutting in and clockwise order
 
 
 ## attributes (geometrical properties):
