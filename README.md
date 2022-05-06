@@ -1,38 +1,62 @@
 # polygon
-Python module to calculate geometric properties of arbitrary 2D polygons such as area, center of mass, solid of revolution and more!
+Python module to calculate geometric properties of arbitrary 2D polygons:
+- area, lengths of edges, inner angles
+- order of vertices (clockwise or anti-clockwise)
+- centroid (center of mass)
+- check if point is inside or on edge of polygon
+- volume and surfaces of solid of revolution
+- second moment of area (bending stiffness of beams)
+- for triangles: centers and radii of incircle and circumscribed (outer) circle
 
-The functions are explained in detail in this blog post:
+Functions are explained in detail in this blog post:
 https://gerritnowald.wordpress.com/2022/04/02/polygon-module/
 
+## examples:
+https://github.com/gerritnowald/polygon/blob/centers-triangle/examples.ipynb
 
+## creating a polygon object:
+```
+Vertices = [[x0,y0],[x1,y1],[x2,y2],...]   # 2D-coordinates of vertices
 instance = polygon(Vertices)
+```
+- polygon can be open or closed (i.e. first = last vertex)
+- holes can be defined by self-intersecting and opposite order of vertices inside than outside
 
-    Vertices = [[x0,y0],[x1,y1],[x2,y2],...]: 2D-coordinates of vertices
+
+## attributes (geometrical properties):
     
-    Polygon can be open or closed (i.e. first = last vertex)
-    Area is positive for anti-clockwise order of vertices
-    holes can be defined by cutting in and clockwise order
-
-
-attributes:
-
     v: Vertex
     e: Edge (next of v)
     axis: 0: wrt x, 
-          1: wrt y   
+          1: wrt y
+    - instance.IsClockwise                  Boolean, order of vertices
     - instance.Area
     - instance.Angles[v]                    inner angles
     - instance.EdgesLength[e]
-    - instance.EdgesMiddle[xe,ye]
-    - instance.CenterMass[x,y]
+    - instance.EdgesMiddle[xe,ye]           midpoints of edges
+    - instance.CenterMass[x,y]              centroid / center of mass
     - instance.SecondMomentArea[axis]       wrt center of mass
     - instance.RotationVolume[axis]         solid of revolution
     - instance.RotationSurfaces[e,axis]     solid of revolution
+	- triangles:
+		- instance.CenterOuterCircle[x,y]   circumcenter / center of circumsribed (outer) circle
+		- instance.RadiusOuterCircle        radius of circumsribed (outer) circle
+		- instance.CenterInnerCircle[x,y]   center of incircle (inner circle)
+		- instance.RadiusInnerCircle        radius of incircle (inner circle)
+
+
+## methods:
     
-
-methods:
-
     point = [x,y]: point to be tested
     - instance.isPointOnEdge(point)     true, if point is on any edge of polygon
     - instance.isPointInside(point)     true, if point is inside of polygon (not on the edge)
     - instance.plot(numbers=False)      plots edges of polygon, optionally numbers of vertices
+	- triangles:
+		- instance.plot_CircumscribedCircle()	plots circumsribed (outer) circle
+		- instance.plot_Incircle()              plots incircle (inner circle)
+
+
+## license
+MIT license. You are free to use the code any way you want, without liability or warranty.
+
+Please reference my work if you use it.
