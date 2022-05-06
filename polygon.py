@@ -17,14 +17,22 @@ instance = polygon(Vertices)
     
     - polygon can be open or closed (i.e. first = last vertex)
     - holes can be defined by self-intersecting and opposite order of vertices inside than outside
+    
+
+creating a solid of revolution
+    
+instance = polygon(Vertices, axis)
+
+    - axis: 0: revolution with respect to x-axis
+            1: revolution with respect to y-axis
 
 
 attributes:
     
     v: Vertex
     e: Edge (next of v)
-    axis: 0: wrt x, 
-          1: wrt y
+    axis: 0: with respect to x-axis
+          1: with respect to y-axis
     - instance.IsClockwise                  Boolean, order of vertices
     - instance.Area
     - instance.Angles[v]                    inner angles
@@ -32,8 +40,9 @@ attributes:
     - instance.EdgesMiddle[xe,ye]			midpoints of edges
     - instance.CenterMass[x,y]              centroid / center of mass
     - instance.SecondMomentArea[axis]       wrt center of mass
-    - instance.RotationVolume[axis]         solid of revolution
-    - instance.RotationSurfaces[e,axis]     solid of revolution
+    - solid of revolution, if axis is specified:
+        - instance.RotationVolume
+        - instance.RotationSurfaces[e]
 	- triangles:
 		- instance.CenterOuterCircle[x,y]   circumcenter / center of circumsribed (outer) circle
 		- instance.RadiusOuterCircle		radius of circumsribed (outer) circle
@@ -88,11 +97,6 @@ class _polygonBase():
         # second moment of area wrt center of mass
         B = (vert[:-1] + vert[1:])**2 - vert[:-1]*vert[1:]
         self.SecondMomentArea = abs(FM @ B)/12 - self.CenterMass**2*self.Area
-        
-        # solid of revolution (Pappus's centroid theorem)
-        # https://en.wikipedia.org/wiki/Pappus%27s_centroid_theorem
-        self.RotationVolume   = 2*np.pi*self.Area*self.CenterMass[::-1]
-        self.RotationSurfaces = 2*np.pi*self.EdgesLength[:,None]*self.EdgesMiddle[:,::-1]
                 
         self.Vertices = vert
     
@@ -170,6 +174,20 @@ class _polygonBase():
         return odd  # point is in polygon (not on the edge) if odd=true
 
 # -----------------------------------------------------------------------------
+# Solid of Revolution
+# -----------------------------------------------------------------------------
+
+class _revolutionSolid(_polygonBase):
+    
+    def __init__(self,vert,axis):
+        super().__init__(vert)
+        
+        # Pappus's centroid theorem
+        # https://en.wikipedia.org/wiki/Pappus%27s_centroid_theorem
+        self.RotationVolume   = 2*np.pi*self.Area*self.CenterMass[1-axis]
+        self.RotationSurfaces = 2*np.pi*self.EdgesLength*self.EdgesMiddle[:,1-axis]
+
+# -----------------------------------------------------------------------------
 # triangle class
 # -----------------------------------------------------------------------------
 
@@ -179,7 +197,6 @@ class _triangle(_polygonBase):
     # constructor (geometrical properties)
     
     def __init__(self,vert):
-        
         super().__init__(vert)
     
         # circumscribed (outer) circle
@@ -220,7 +237,7 @@ class _triangle(_polygonBase):
 
 class polygon():
     
-    def __new__(self, Vertices):
+    def __new__(self, Vertices, axis=None):
         
         # input checks
         vert = np.array(Vertices)
@@ -232,7 +249,9 @@ class polygon():
             vert = np.append(vert,[vert[0,]],axis=0)
         
         # choose subclass
-        if len(vert)-1 == 3:
+        if axis is not None:
+            return _revolutionSolid(vert,axis)
+        elif len(vert)-1 == 3:
             return _triangle(vert)
         else:
             return _polygonBase(vert)

@@ -16,19 +16,26 @@ https://github.com/gerritnowald/polygon/blob/main/examples.ipynb
 
 ## creating a polygon object:
 ```
+from polygon import polygon
 Vertices = [[x0,y0],[x1,y1],[x2,y2],...]   # 2D-coordinates of vertices
 instance = polygon(Vertices)
 ```
 - polygon can be open or closed (i.e. first = last vertex)
 - holes can be defined by self-intersecting and opposite order of vertices inside than outside
 
+## creating a solid of revolution
+```
+instance = polygon(Vertices, axis)
+```
+- axis: 0: revolution with respect to x-axis
+        1: revolution with respect to y-axis
 
 ## attributes (geometrical properties):
     
     v: Vertex
     e: Edge (next of v)
-    axis: 0: wrt x, 
-          1: wrt y
+    axis: 0: with respect to x-axis
+          1: with respect to y-axis
     - instance.IsClockwise                  Boolean, order of vertices
     - instance.Area
     - instance.Angles[v]                    inner angles
@@ -36,8 +43,9 @@ instance = polygon(Vertices)
     - instance.EdgesMiddle[xe,ye]           midpoints of edges
     - instance.CenterMass[x,y]              centroid / center of mass
     - instance.SecondMomentArea[axis]       wrt center of mass
-    - instance.RotationVolume[axis]         solid of revolution
-    - instance.RotationSurfaces[e,axis]     solid of revolution
+    - solid of revolution, if axis is specified:
+        - instance.RotationVolume
+        - instance.RotationSurfaces[e]
 	- triangles:
 		- instance.CenterOuterCircle[x,y]   circumcenter / center of circumsribed (outer) circle
 		- instance.RadiusOuterCircle        radius of circumsribed (outer) circle
