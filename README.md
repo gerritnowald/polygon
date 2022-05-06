@@ -1,10 +1,20 @@
 # polygon
-Python module to calculate geometric properties of arbitrary 2D polygons such as area, center of mass (centroid), solid of revolution and more!
+Python module to calculate geometric properties of arbitrary 2D polygons:
+- area, lengths of edges, inner angles
+- order of vertices (clockwise or anti-clockwise)
+- centroid (center of mass)
+- check if point is inside or on edge of polygon
+- volume and surfaces of solid of revolution
+- second moment of area (bending stiffness of beams)
+- for triangles: centers and radii of incircle and circumscribed (outer) circle
 
-The functions are explained in detail in this blog post:
+Functions are explained in detail in this blog post:
 https://gerritnowald.wordpress.com/2022/04/02/polygon-module/
 
-## creating a polygon object
+## examples:
+https://github.com/gerritnowald/polygon/blob/centers-triangle/examples.ipynb
+
+## creating a polygon object:
 ```
 instance = polygon(Vertices)
 ```
@@ -12,7 +22,6 @@ instance = polygon(Vertices)
 Vertices = [[x0,y0],[x1,y1],[x2,y2],...]: 2D-coordinates of vertices
 
 - Polygon can be open or closed (i.e. first = last vertex)
-- Area is positive for anti-clockwise order of vertices
 - holes can be defined by cutting in and clockwise order
 
 
@@ -47,3 +56,7 @@ Vertices = [[x0,y0],[x1,y1],[x2,y2],...]: 2D-coordinates of vertices
 	- triangles:
 		- instance.plot_CircumscribedCircle()	plots circumsribed (outer) circle
 		- instance.plot_Incircle()              plots incircle (inner circle)
+
+
+## license
+MIT license. You are free to use the code any way you want, without liability or warranty. Please reference my work if you use it.
