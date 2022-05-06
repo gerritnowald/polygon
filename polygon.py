@@ -54,13 +54,19 @@ class polygon:
         # inner angles & lengths of edges
         self.Angles, L   = self.__poly_angles(vert)
         self.EdgesLength = L[1:]
+        
         # centers of edges
         self.EdgesMiddle = ( vert[:-1] + vert[1:] )/2
+        
         # area (Gauss's area formula, 0th moment of area)
         FM = vert[:-1,0] * vert[1:,1] - vert[1:,0] * vert[:-1,1]
-        self.Area = sum(FM)/2
+        AreaSigned = sum(FM)/2
+        self.IsClockwise = AreaSigned < 0   # area negative for clockwise order of vertices
+        self.Area = abs(AreaSigned)
+        
         # center of mass (1st moment of area / area)
-        self.CenterMass = (FM @ self.EdgesMiddle)/3/self.Area
+        self.CenterMass = (FM @ self.EdgesMiddle)/3/AreaSigned
+        
         # second moment of area wrt center of mass
         self.SecondMomentArea = self.__poly_SMA(vert,FM)
         
