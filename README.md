@@ -16,13 +16,11 @@ https://github.com/gerritnowald/polygon/blob/centers-triangle/examples.ipynb
 
 ## creating a polygon object:
 ```
+Vertices = [[x0,y0],[x1,y1],[x2,y2],...]   # 2D-coordinates of vertices
 instance = polygon(Vertices)
 ```
-
-Vertices = [[x0,y0],[x1,y1],[x2,y2],...]: 2D-coordinates of vertices
-
-- Polygon can be open or closed (i.e. first = last vertex)
-- holes can be defined by cutting in and clockwise order
+- polygon can be open or closed (i.e. first = last vertex)
+- holes can be defined by self-intersecting and opposite order of vertices inside than outside
 
 
 ## attributes (geometrical properties):
