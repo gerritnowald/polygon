@@ -75,7 +75,7 @@ class _polygonBase():
     # -------------------------------------------------------
     # constructor (geometrical properties)
     
-    def __init__(self,vert):
+    def __init__(self,vert, axis):
         
         # inner angles & lengths of edges
         self.Angles, L   = self._poly_angles(vert)
@@ -97,6 +97,13 @@ class _polygonBase():
         # second moment of area wrt center of mass
         B = (vert[:-1] + vert[1:])**2 - vert[:-1]*vert[1:]
         self.SecondMomentArea = abs(FM @ B)/12 - self.CenterMass**2*self.Area
+        
+        # solid of Revolution
+        if axis is not None:
+            # Pappus's centroid theorem
+            # https://en.wikipedia.org/wiki/Pappus%27s_centroid_theorem
+            self.RotationVolume   = 2*np.pi*self.Area*self.CenterMass[1-axis]
+            self.RotationSurfaces = 2*np.pi*self.EdgesLength*self.EdgesMiddle[:,1-axis]
                 
         self.Vertices = vert
     
@@ -174,20 +181,6 @@ class _polygonBase():
         return odd  # point is in polygon (not on the edge) if odd=true
 
 # -----------------------------------------------------------------------------
-# Solid of Revolution
-# -----------------------------------------------------------------------------
-
-class _revolutionSolid(_polygonBase):
-    
-    def __init__(self,vert,axis):
-        super().__init__(vert)
-        
-        # Pappus's centroid theorem
-        # https://en.wikipedia.org/wiki/Pappus%27s_centroid_theorem
-        self.RotationVolume   = 2*np.pi*self.Area*self.CenterMass[1-axis]
-        self.RotationSurfaces = 2*np.pi*self.EdgesLength*self.EdgesMiddle[:,1-axis]
-
-# -----------------------------------------------------------------------------
 # triangle class
 # -----------------------------------------------------------------------------
 
@@ -196,8 +189,8 @@ class _triangle(_polygonBase):
     # -------------------------------------------------------
     # constructor (geometrical properties)
     
-    def __init__(self,vert):
-        super().__init__(vert)
+    def __init__(self,vert, axis):
+        super().__init__(vert, axis)
     
         # circumscribed (outer) circle
         self.CenterOuterCircle, self.RadiusOuterCircle = self._circumcenter(vert)
@@ -249,9 +242,7 @@ class polygon():
             vert = np.append(vert,[vert[0,]],axis=0)
         
         # choose subclass
-        if axis is not None:
-            return _revolutionSolid(vert,axis)
-        elif len(vert)-1 == 3:
-            return _triangle(vert)
+        if len(vert)-1 == 3:
+            return _triangle(vert, axis)
         else:
-            return _polygonBase(vert)
+            return _polygonBase(vert, axis)
