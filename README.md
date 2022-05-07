@@ -27,8 +27,9 @@ instance = polygon(Vertices)
 ```
 instance = polygon(Vertices, axis)
 ```
-- axis: 0: revolution with respect to x-axis
-        1: revolution with respect to y-axis
+- axis:
+	- 0: revolution with respect to x-axis
+	- 1: revolution with respect to y-axis
 
 ## attributes (geometrical properties):
     
