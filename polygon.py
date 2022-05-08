@@ -8,6 +8,7 @@ geometry calculation of arbitrary 2D polygons:
 - volume and surfaces of solid of revolution
 - second moment of area (bending stiffness of beams)
 - for triangles: centers and radii of incircle and circumscribed (outer) circle
+- translation, rotation and scaling
 
 
 creating a polygon object:
@@ -56,6 +57,14 @@ methods:
     - instance.isPointOnEdge(point)     true, if point is on any edge of polygon
     - instance.isPointInside(point)     true, if point is inside of polygon (not on the edge)
     - instance.plot(numbers=False)      plots edges of polygon, optionally numbers of vertices
+    - instance.move([dx,dy])            translation by distances dx,dy in x,y-direction
+                                        also with instance + [dx,dy] or instance - [dx,dy]
+    - instance.rotate(angle,[cx,cy])    counter-clockwise rotation by angle / °
+                                        with respect to point [cx,cy] (optional, default center of mass)
+    - instance.rotateClockwise(angle,[cx,cy])
+    - instance.scale([fx,fy],[cx,cy])   scaling by factors fx, fy in x,y-direction
+                                        with respect to point [cx,cy] (optional, default center of mass)
+                                        also with instance*[fx,fy] or instance/[fx,fy]
 	- triangles:
 		- instance.plot_CircumscribedCircle()	plots circumsribed (outer) circle
         - instance.plot_Incircle()              plots incircle (inner circle)
