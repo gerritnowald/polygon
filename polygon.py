@@ -160,17 +160,21 @@ class _polygonBase():
         return self.move(- np.array(distances) )
     
     # rotation (wrt to center of mass)
-    def rotate(self, angle):
+    def rotate(self, angle, point=None):
+        if point is None:
+            point = self.CenterMass
         alpha = angle*np.pi/180
         R = [[np.cos(alpha),np.sin(alpha)],[-np.sin(alpha),np.cos(alpha)]]
-        Vertices_new = (self.Vertices - self.CenterMass) @ R + self.CenterMass
+        Vertices_new = (self.Vertices - point) @ R + point
         return polygon(Vertices_new, self._axis)
-    def rotateClockwise(self, angle):
-        return self.rotate(-angle)
+    def rotateClockwise(self, angle, point=None):
+        return self.rotate(-angle, point)
     
     # scaling (wrt to center of mass)
-    def scale(self, factors):
-        Vertices_new = (self.Vertices - self.CenterMass)*factors + self.CenterMass
+    def scale(self, factors, point=None):
+        if point is None:
+            point = self.CenterMass
+        Vertices_new = (self.Vertices - point)*factors + point
         return polygon(Vertices_new, self._axis)
     def __mul__(self, factors):
         return self.scale(factors)

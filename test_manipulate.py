@@ -17,15 +17,17 @@ P = polygon(Vertices,0)
 # P2 = P * [0.5,1]
 # P2 = P / 2
 # P2 = P.scale([-2,3])
+# P2 = P.scale(0.5,[5,2])
 
 # P += [2,4]
 # P2 = P + [3,4]
 # P2 = P - 2
 # P2 = P.move([-2,3])
 
-# P2 = P.rotateClockwise(45)
+# P2 = P.rotate(45)
+# P2 = P.rotateClockwise(45,[5,0])
 
-P2 = (P.rotate(45) - P.CenterMass)/2
+P2 = (P.rotate(45,[0,0]) - [0,2]).scale(0.5,[0,-2])
 
 P.plot(True)
 P2.plot()
