@@ -8,6 +8,7 @@ geometry calculation of arbitrary 2D polygons:
 - volume and surfaces of solid of revolution
 - second moment of area (bending stiffness of beams)
 - for triangles: centers and radii of incircle and circumscribed (outer) circle
+- translation, rotation and scaling
 
 
 creating a polygon object:
@@ -56,6 +57,14 @@ methods:
     - instance.isPointOnEdge(point)     true, if point is on any edge of polygon
     - instance.isPointInside(point)     true, if point is inside of polygon (not on the edge)
     - instance.plot(numbers=False)      plots edges of polygon, optionally numbers of vertices
+    - instance.move([dx,dy])            translation by distances dx,dy in x,y-direction
+                                        also with instance + [dx,dy] or instance - [dx,dy]
+    - instance.rotate(angle,[cx,cy])    counter-clockwise rotation by angle / °
+                                        with respect to point [cx,cy] (optional, default center of mass)
+    - instance.rotateClockwise(angle,[cx,cy])
+    - instance.scale([fx,fy],[cx,cy])   scaling by factors fx, fy in x,y-direction
+                                        with respect to point [cx,cy] (optional, default center of mass)
+                                        also with instance*[fx,fy] or instance/[fx,fy]
 	- triangles:
 		- instance.plot_CircumscribedCircle()	plots circumsribed (outer) circle
         - instance.plot_Incircle()              plots incircle (inner circle)
@@ -106,6 +115,7 @@ class _polygonBase():
             self.RotationSurfaces = 2*np.pi*self.EdgesLength*self.EdgesMiddle[:,1-axis]
                 
         self.Vertices = vert
+        self._axis    = axis
     
     # -------------------------------------------------------
     # geometrical properties of the polygon
@@ -118,6 +128,13 @@ class _polygonBase():
         # law of cosines
         angles = 180*(1 - 1/np.pi*np.arccos( np.sum( vec[:-1,]*vec[1:,], axis=1 ) / (L[:-1]*L[1:]) ))
         return angles, L
+    
+    def __abs__(self):
+        # abs(polygon_object) gives area or volume of solid of revolution if axis is defined
+        if self._axis is not None:
+            return self.RotationVolume
+        else:
+            return self.Area
     
     # -------------------------------------------------------
     # print method (number of vertices)
@@ -139,6 +156,39 @@ class _polygonBase():
         if numbers:
             for i in range(len(self.Vertices)-1):
                 plt.text(self.Vertices[i,0], self.Vertices[i,1], str(i) )
+    
+    # -------------------------------------------------------
+    # methods manipulation
+    
+    # translation
+    def move(self, distances):
+        return polygon(self.Vertices + distances, self._axis)
+    def __add__(self, distances):
+        return self.move(distances)
+    def __sub__(self, distances):
+        return self.move(- np.array(distances) )
+    
+    # rotation (wrt to center of mass)
+    def rotate(self, angle, point=None):
+        if point is None:
+            point = self.CenterMass
+        alpha = angle*np.pi/180
+        R = [[np.cos(alpha),np.sin(alpha)],[-np.sin(alpha),np.cos(alpha)]]
+        Vertices_new = (self.Vertices - point) @ R + point
+        return polygon(Vertices_new, self._axis)
+    def rotateClockwise(self, angle, point=None):
+        return self.rotate(-angle, point)
+    
+    # scaling (wrt to center of mass)
+    def scale(self, factors, point=None):
+        if point is None:
+            point = self.CenterMass
+        Vertices_new = (self.Vertices - point)*factors + point
+        return polygon(Vertices_new, self._axis)
+    def __mul__(self, factors):
+        return self.scale(factors)
+    def __truediv__(self, factors):
+        return self.scale(1/np.array(factors))
     
     # -------------------------------------------------------
     # methods point testing
