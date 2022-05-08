@@ -13,10 +13,15 @@ from polygon import polygon
 Vertices = [[0,0],[5,0],[5,2],[4,1]]
 P = polygon(Vertices,0)
 
-# P2 = P + [3,4]
-P2 = P - 2
-# P += [2,4]
+# P *= [2,0.5]
+# P2 = P * [0.5,1]
+# P2 = P / 2
 
+# P += [2,4]
+# P2 = P + [3,4]
+# P2 = P - 2
+
+P2 = (P + [0.5,0])/2
 
 P.plot(True)
 P2.plot()

@@ -157,6 +157,14 @@ class _polygonBase():
     def __sub__(self, distances):
         return self.__add__(- np.array(distances) )
     
+    
+    # scaling (wrt to center of mass)
+    def __mul__(self, factors):
+        Vertices_new = (self.Vertices - self.CenterMass)*factors + self.CenterMass
+        return polygon(Vertices_new, self._axis)
+    def __truediv__(self, factors):
+        return self.__mul__(1/np.array(factors))
+    
     # -------------------------------------------------------
     # methods point testing
     
