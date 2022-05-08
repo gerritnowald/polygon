@@ -155,7 +155,7 @@ class _polygonBase():
     def move(self, distances):
         return polygon(self.Vertices + distances, self._axis)
     def __add__(self, distances):
-        return self.move(  np.array(distances) )
+        return self.move(distances)
     def __sub__(self, distances):
         return self.move(- np.array(distances) )
     

@@ -25,9 +25,9 @@ P = polygon(Vertices,0)
 # P2 = P.move([-2,3])
 
 # P2 = P.rotate(45)
-# P2 = P.rotateClockwise(45,[5,0])
+P2 = P.rotateClockwise(45,[5,0])
 
-P2 = (P.rotate(45,[0,0]) - [0,2]).scale(0.5,[0,-2])
+# P2 = (P.rotate(45,[0,0]) - [0,2]).scale(0.5,[0,-2])
 
 P.plot(True)
 P2.plot()
