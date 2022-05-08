@@ -15,6 +15,7 @@ P = polygon(Vertices,0)
 
 # P2 = P + [3,4]
 P2 = P - 2
+# P += [2,4]
 
 
 P.plot(True)

@@ -1,3 +1,4 @@
 
 *.pyc
 *.pdf
+.ipynb_checkpoints/examples-checkpoint.ipynb

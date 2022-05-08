@@ -120,6 +120,13 @@ class _polygonBase():
         angles = 180*(1 - 1/np.pi*np.arccos( np.sum( vec[:-1,]*vec[1:,], axis=1 ) / (L[:-1]*L[1:]) ))
         return angles, L
     
+    def __abs__(self):
+        # abs(polygon_object) gives area or volume of solid of revolution if axis is defined
+        if self._axis is not None:
+            return self.RotationVolume
+        else:
+            return self.Area
+    
     # -------------------------------------------------------
     # print method (number of vertices)
     
