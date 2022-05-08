@@ -11,11 +11,10 @@ import matplotlib.pyplot as plt
 from polygon import polygon
 
 Vertices = [[0,0],[5,0],[5,2],[4,1]]
-
 P = polygon(Vertices,0)
 
-P2 = P.move(-3)
-
+# P2 = P + [3,4]
+P2 = P - 2
 
 
 P.plot(True)

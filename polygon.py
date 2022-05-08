@@ -144,8 +144,11 @@ class _polygonBase():
     # -------------------------------------------------------
     # methods manipulation
     
-    def move(self, distances):
+    # translation
+    def __add__(self, distances):
         return polygon(self.Vertices + distances, self._axis)
+    def __sub__(self, distances):
+        return self.__add__(- np.array(distances) )
     
     # -------------------------------------------------------
     # methods point testing
