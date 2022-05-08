@@ -152,10 +152,12 @@ class _polygonBase():
     # methods manipulation
     
     # translation
-    def __add__(self, distances):
+    def move(self, distances):
         return polygon(self.Vertices + distances, self._axis)
+    def __add__(self, distances):
+        return self.move(  np.array(distances) )
     def __sub__(self, distances):
-        return self.__add__(- np.array(distances) )
+        return self.move(- np.array(distances) )
     
     # rotation (wrt to center of mass)
     def rotate(self, angle):
@@ -167,11 +169,13 @@ class _polygonBase():
         return self.rotate(-angle)
     
     # scaling (wrt to center of mass)
-    def __mul__(self, factors):
+    def scale(self, factors):
         Vertices_new = (self.Vertices - self.CenterMass)*factors + self.CenterMass
         return polygon(Vertices_new, self._axis)
+    def __mul__(self, factors):
+        return self.scale(factors)
     def __truediv__(self, factors):
-        return self.__mul__(1/np.array(factors))
+        return self.scale(1/np.array(factors))
     
     # -------------------------------------------------------
     # methods point testing
