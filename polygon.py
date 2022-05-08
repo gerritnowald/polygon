@@ -106,6 +106,7 @@ class _polygonBase():
             self.RotationSurfaces = 2*np.pi*self.EdgesLength*self.EdgesMiddle[:,1-axis]
                 
         self.Vertices = vert
+        self._axis    = axis
     
     # -------------------------------------------------------
     # geometrical properties of the polygon
@@ -139,6 +140,12 @@ class _polygonBase():
         if numbers:
             for i in range(len(self.Vertices)-1):
                 plt.text(self.Vertices[i,0], self.Vertices[i,1], str(i) )
+    
+    # -------------------------------------------------------
+    # methods manipulation
+    
+    def move(self, distances):
+        return polygon(self.Vertices + distances, self._axis)
     
     # -------------------------------------------------------
     # methods point testing
