@@ -105,7 +105,8 @@ class _polygonBase():
         
         # second moment of area wrt center of mass
         B = (vert[:-1] + vert[1:])**2 - vert[:-1]*vert[1:]
-        self.SecondMomentArea = abs(FM @ B)/12 - self.CenterMass**2*self.Area
+        SecondMomentArea = abs(FM @ B)/12 - self.CenterMass**2*self.Area
+        self.SecondMomentArea = SecondMomentArea[::-1]
         
         # solid of Revolution
         if axis is not None:
