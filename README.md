@@ -3,10 +3,10 @@ Python module to calculate geometric properties of arbitrary 2D polygons:
 - area, lengths of edges, inner angles
 - order of vertices (clockwise or anti-clockwise)
 - centroid (center of mass)
-- check if point is inside or on edge of polygon
-- volume and surfaces of solid of revolution
-- second moment of area (bending stiffness of beams)
 - for triangles: centers and radii of incircle and circumscribed (outer) circle
+- check if point is inside or on edge of polygon
+- volume and surface areas of solid of revolution
+- second moment of area (bending stiffness of beams)
 - translation, rotation and scaling
 
 Functions are explained in detail in this blog post:
