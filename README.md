@@ -40,7 +40,7 @@ instance = polygon(Vertices, axis)
     - instance.Area
     - instance.Angles[v]                    inner angles
     - instance.EdgesLength[e]
-    - instance.EdgesMiddle[xe,ye]			midpoints of edges
+    - instance.EdgesMiddle[xe,ye]	    midpoints of edges
     - instance.CenterMass[x,y]              centroid / center of mass
     - instance.SecondMomentArea             [Ixx, Iyy, Ixy], wrt center of mass
     - solid of revolution, if axis is specified:
@@ -60,7 +60,7 @@ instance = polygon(Vertices, axis)
     
     - instance.plot(numbers=False)      plots edges of polygon, optionally numbers of vertices
     - triangles:
-		- instance.plot_CircumscribedCircle()	plots circumsribed (outer) circle
+	- instance.plot_CircumscribedCircle()	plots circumsribed (outer) circle
         - instance.plot_Incircle()              plots incircle (inner circle)
     
     - instance.isPointOnEdge(point)     true, if point [x,y] is on any edge of polygon
