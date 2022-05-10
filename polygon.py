@@ -32,15 +32,13 @@ attributes:
     
     v: Vertex
     e: Edge (next of v)
-    axis: 0: with respect to x-axis
-          1: with respect to y-axis
     - instance.IsClockwise                  Boolean, order of vertices
     - instance.Area
     - instance.Angles[v]                    inner angles
     - instance.EdgesLength[e]
     - instance.EdgesMiddle[xe,ye]			midpoints of edges
     - instance.CenterMass[x,y]              centroid / center of mass
-    - instance.SecondMomentArea[axis]       wrt center of mass
+    - instance.SecondMomentArea             [Ixx, Iyy, Ixy], wrt center of mass
     - solid of revolution, if axis is specified:
         - instance.RotationVolume
         - instance.RotationSurfaces[e]
@@ -53,21 +51,27 @@ attributes:
 
 methods:
     
-    point = [x,y]: point to be tested
-    - instance.isPointOnEdge(point)     true, if point is on any edge of polygon
-    - instance.isPointInside(point)     true, if point is inside of polygon (not on the edge)
+    - print(instance)                   gives number of vertices
+    - abs(instance)                     gives area or volume of solid of revolution if axis is defined
+    
     - instance.plot(numbers=False)      plots edges of polygon, optionally numbers of vertices
-    - instance.move([dx,dy])            translation by distances dx,dy in x,y-direction
-                                        also with instance + [dx,dy] or instance - [dx,dy]
-    - instance.rotate(angle,[cx,cy])    counter-clockwise rotation by angle / °
-                                        with respect to point [cx,cy] (optional, default center of mass)
-    - instance.rotateClockwise(angle,[cx,cy])
-    - instance.scale([fx,fy],[cx,cy])   scaling by factors fx, fy in x,y-direction
-                                        with respect to point [cx,cy] (optional, default center of mass)
-                                        also with instance*[fx,fy] or instance/[fx,fy]
-	- triangles:
+    - triangles:
 		- instance.plot_CircumscribedCircle()	plots circumsribed (outer) circle
         - instance.plot_Incircle()              plots incircle (inner circle)
+    
+    - instance.isPointOnEdge(point)     true, if point [x,y] is on any edge of polygon
+    - instance.isPointInside(point)     true, if point [x,y] is inside of polygon (not on the edge)
+    
+    - instance.move([dx,dy]) , instance + [dx,dy] , instance - [dx,dy]
+            translation by distances dx,dy in x,y-direction
+                                        
+    - instance.rotate(angle,[cx,cy]) , instance.rotateClockwise(angle,[cx,cy])
+            (counter)-clockwise rotation by angle / °
+            with respect to point [cx,cy] (optional, default center of mass)
+                                        
+    - instance.scale([fx,fy],[cx,cy]) , instance*[fx,fy] , instance/[fx,fy]
+            scaling by factors fx, fy in x,y-direction (negative: flip)
+            with respect to point [cx,cy] (optional, default center of mass)
 
 @author: Gerrit Nowald
 """
@@ -86,9 +90,14 @@ class _polygonBase():
     
     def __init__(self,vert, axis):
         
-        # inner angles & lengths of edges
-        self.Angles, L   = self._poly_angles(vert)
+        # lengths of edges
+        vertext = np.append([vert[-2,]],vert,axis=0)   # second last in front of first vertex
+        vec = np.diff(vertext, axis=0)                 # direction vectors of edges
+        L   = np.linalg.norm(vec, ord=2, axis=1)       # length of edges (Pythagorean theorem)
         self.EdgesLength = L[1:]
+        
+        # inner angles (law of cosines)
+        self.Angles = 180*(1 - 1/np.pi*np.arccos( np.sum( vec[:-1,]*vec[1:,], axis=1 ) / (L[:-1]*L[1:]) ))
         
         # centers of edges
         ri   = vert[:-1]
@@ -128,16 +137,11 @@ class _polygonBase():
         self._axis    = axis
     
     # -------------------------------------------------------
-    # geometrical properties of the polygon
+    # methods geometrical properties
     
-    def _poly_angles(self,vert):
-        # inner angles & length of edges
-        vertext = np.append([vert[-2,]],vert,axis=0)   # second last in front of first vertex
-        vec = np.diff(vertext, axis=0)                 # direction vectors of edges
-        L   = np.linalg.norm(vec, ord=2, axis=1)       # length of edges (Pythagorean theorem)
-        # law of cosines
-        angles = 180*(1 - 1/np.pi*np.arccos( np.sum( vec[:-1,]*vec[1:,], axis=1 ) / (L[:-1]*L[1:]) ))
-        return angles, L
+    def __str__(self):
+        # print(instance) gives number of vertices
+        return f'Polygon with {len(self.Vertices)-1} vertices'
     
     def __abs__(self):
         # abs(polygon_object) gives area or volume of solid of revolution if axis is defined
@@ -145,12 +149,6 @@ class _polygonBase():
             return self.RotationVolume
         else:
             return self.Area
-    
-    # -------------------------------------------------------
-    # print method (number of vertices)
-    
-    def __str__(self):
-        return f'Polygon with {len(self.Vertices)-1} vertices'
     
     # -------------------------------------------------------
     # methods plotting
