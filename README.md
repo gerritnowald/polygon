@@ -36,15 +36,13 @@ instance = polygon(Vertices, axis)
     
     v: Vertex
     e: Edge (next of v)
-    axis: 0: with respect to x-axis
-          1: with respect to y-axis
     - instance.IsClockwise                  Boolean, order of vertices
     - instance.Area
     - instance.Angles[v]                    inner angles
     - instance.EdgesLength[e]
-    - instance.EdgesMiddle[xe,ye]           midpoints of edges
+    - instance.EdgesMiddle[xe,ye]			midpoints of edges
     - instance.CenterMass[x,y]              centroid / center of mass
-    - instance.SecondMomentArea[axis]       wrt center of mass
+    - instance.SecondMomentArea             [Ixx, Iyy, Ixy], wrt center of mass
     - solid of revolution, if axis is specified:
         - instance.RotationVolume
         - instance.RotationSurfaces[e]
@@ -57,21 +55,27 @@ instance = polygon(Vertices, axis)
 
 ## methods:
     
-    point = [x,y]: point to be tested
-    - instance.isPointOnEdge(point)     true, if point is on any edge of polygon
-    - instance.isPointInside(point)     true, if point is inside of polygon (not on the edge)
+    - print(instance)                   gives number of vertices
+    - abs(instance)                     gives area or volume of solid of revolution if axis is defined
+    
     - instance.plot(numbers=False)      plots edges of polygon, optionally numbers of vertices
-    - instance.move([dx,dy])            translation by distances dx,dy in x,y-direction
-                                        also with instance + [dx,dy] or instance - [dx,dy]
-    - instance.rotate(angle,[cx,cy])    counter-clockwise rotation by angle / °
-                                        with respect to point [cx,cy] (optional, default center of mass)
-    - instance.rotateClockwise(angle,[cx,cy])
-    - instance.scale([fx,fy],[cx,cy])   scaling by factors fx, fy in x,y-direction
-                                        with respect to point [cx,cy] (optional, default center of mass)
-                                        also with instance*[fx,fy] or instance/[fx,fy]
-	- triangles:
+    - triangles:
 		- instance.plot_CircumscribedCircle()	plots circumsribed (outer) circle
-		- instance.plot_Incircle()              plots incircle (inner circle)
+        - instance.plot_Incircle()              plots incircle (inner circle)
+    
+    - instance.isPointOnEdge(point)     true, if point [x,y] is on any edge of polygon
+    - instance.isPointInside(point)     true, if point [x,y] is inside of polygon (not on the edge)
+    
+    - instance.move([dx,dy]) , instance + [dx,dy] , instance - [dx,dy]
+            translation by distances dx,dy in x,y-direction
+                                        
+    - instance.rotate(angle,[cx,cy]) , instance.rotateClockwise(angle,[cx,cy])
+            (counter)-clockwise rotation by angle / °
+            with respect to point [cx,cy] (optional, default center of mass)
+                                        
+    - instance.scale([fx,fy],[cx,cy]) , instance*[fx,fy] , instance/[fx,fy]
+            scaling by factors fx, fy in x,y-direction (negative: flip)
+            with respect to point [cx,cy] (optional, default center of mass)
 
 
 ## license
