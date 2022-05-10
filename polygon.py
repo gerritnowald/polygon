@@ -91,11 +91,17 @@ class _polygonBase():
         self.EdgesLength = L[1:]
         
         # centers of edges
-        self.EdgesMiddle = ( vert[:-1] + vert[1:] )/2
+        ri   = vert[:-1]
+        rip1 = vert[1:]
+        self.EdgesMiddle = (ri + rip1)/2
         
         # area (Gauss's area formula, 0th moment of area)
         # https://en.wikipedia.org/wiki/Shoelace_formula
-        FM = vert[:-1,0] * vert[1:,1] - vert[1:,0] * vert[:-1,1]
+        xi   = ri[:,0]
+        yi   = ri[:,1]
+        xip1 = rip1[:,0]
+        yip1 = rip1[:,1]
+        FM   = xi*yip1 - xip1*yi
         AreaSigned = sum(FM)/2
         self.IsClockwise = AreaSigned < 0   # area negative for clockwise order of vertices
         self.Area = abs(AreaSigned)
@@ -104,9 +110,12 @@ class _polygonBase():
         self.CenterMass = (FM @ self.EdgesMiddle)/3/AreaSigned
         
         # second moment of area wrt center of mass
-        B = (vert[:-1] + vert[1:])**2 - vert[:-1]*vert[1:]
-        SecondMomentArea = abs(FM @ B)/12 - self.CenterMass**2*self.Area
-        self.SecondMomentArea = SecondMomentArea[::-1]
+        # https://en.wikipedia.org/wiki/Second_moment_of_area
+        Brr    = ri**2 + ri*rip1 + rip1**2
+        Bxy    = xi*yip1 + 2*xi*yi + 2*xip1*yip1 + xip1*yi
+        IyyIxx =   abs( (FM @ Brr)/12 - AreaSigned*self.CenterMass**2 )
+        Ixy    = - abs( (FM @ Bxy)/24 - AreaSigned*self.CenterMass[0]*self.CenterMass[1] )
+        self.SecondMomentArea = np.hstack((IyyIxx[::-1], Ixy))
         
         # solid of Revolution
         if axis is not None:
@@ -169,7 +178,7 @@ class _polygonBase():
     def __sub__(self, distances):
         return self.move(- np.array(distances) )
     
-    # rotation (wrt to center of mass)
+    # rotation (wrt to point, default center of mass)
     def rotate(self, angle, point=None):
         if point is None:
             point = self.CenterMass
@@ -180,7 +189,7 @@ class _polygonBase():
     def rotateClockwise(self, angle, point=None):
         return self.rotate(-angle, point)
     
-    # scaling (wrt to center of mass)
+    # scaling (wrt to point, default center of mass)
     def scale(self, factors, point=None):
         if point is None:
             point = self.CenterMass

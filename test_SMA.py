@@ -5,7 +5,6 @@ Created on Mon May  9 09:48:16 2022
 @author: Gerrit Nowald
 """
 
-import numpy as np
 import matplotlib.pyplot as plt
 
 from polygon import polygon
@@ -79,40 +78,11 @@ plt.axis('equal')
 plt.show()
 
 # -----------------------------------------------------------------------------
-# calculation
-
-vert = P2.Vertices
-    
-ri   = vert[:-1]
-rip1 = vert[1:]
-
-xi   = ri[:,0]
-yi   = ri[:,1]
-xip1 = rip1[:,0]
-yip1 = rip1[:,1]
-
-EdgesMiddle = (ri + rip1)/2
-
-FM = xi*yip1 - xip1*yi
-AreaSigned = sum(FM)/2
-Area = abs(AreaSigned)
-
-CenterMass = (FM @ EdgesMiddle)/3/AreaSigned
-
-# https://en.wikipedia.org/wiki/Second_moment_of_area
-Brr    = ri**2 + ri*rip1 + rip1**2
-Bxy    = xi*yip1 + 2*xi*yi + 2*xip1*yip1 + xip1*yi
-IyyIxx =   abs( (FM @ Brr)/12 - AreaSigned*CenterMass**2 )
-Ixy    = - abs( (FM @ Bxy)/24 - AreaSigned*CenterMass[0]*CenterMass[1] )
-
-SecondMomentArea = np.hstack((IyyIxx[::-1], Ixy))
-
-# -----------------------------------------------------------------------------
 # comparison results
 
 print(Ixx_analytic)
-print(SecondMomentArea[0])
-print(SecondMomentArea[1])
+print(P2.SecondMomentArea[0])
+print(P2.SecondMomentArea[1])
 
 print(Ixy_analytic)
-print(SecondMomentArea[2])
+print(P2.SecondMomentArea[2])
