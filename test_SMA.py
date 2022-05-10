@@ -15,29 +15,38 @@ L = 5
 t = 1
 
 
-Vertices = [[0,0],[0,L],[t,L],[t,t],[L,t],[L,0]]
+# Vertices = [[0,0],[0,L],[t,L],[t,0]]    # rectangle
+Vertices = [[0,0],[0,L],[t,L],[t,t],[L,t],[L,0]]  # L shape
+
 P = polygon(Vertices)
-P -= P.CenterMass
+# P -= P.CenterMass
+# P *= [1,-1]
+
+
+P2 = P
 
 # P2 = P - [5,0]
 # P2 = P - [0,5]
 # P2 = P - [5,5]
 
-P2 = P.rotate(90,0)
+# P2 = P.rotate(90,0)
 # P2 = P.rotate(-90,0)
 # P2 = P.rotate(180,0)
 
+# P2 = P*[-1,1]
+# P2 = P*[1,-1]
+# P2 = P*[-1,-1]
+
 
 plt.figure()
-P.plot()
-P2.plot()
+# P.plot()
+P2.plot(True)
 plt.plot(P2.CenterMass[0],P2.CenterMass[1],"+")
 plt.axis('equal')
 plt.show()
 
 
 vert = P2.Vertices
-
     
 ri   = vert[:-1]
 rip1 = vert[1:]
@@ -58,8 +67,9 @@ CenterMass = (FM @ EdgesMiddle)/3/AreaSigned
 # https://en.wikipedia.org/wiki/Second_moment_of_area
 Brr    = ri**2 + ri*rip1 + rip1**2
 Bxy    = xi*yip1 + 2*xi*yi + 2*xip1*yip1 + xip1*yi
-IyyIxx = abs(FM @ Brr)/12 - Area*CenterMass**2  # correct
-Ixy    = - (FM @ Bxy)/24 - Area*abs(CenterMass[0]*CenterMass[1])
+# IyyIxx = abs(FM @ Brr)/12 - Area*CenterMass**2  # correct
+IyyIxx =   abs( (FM @ Brr)/12 - AreaSigned*CenterMass**2 )  # correct
+Ixy    = - abs( (FM @ Bxy)/24 - AreaSigned*CenterMass[0]*CenterMass[1] )
 
 SecondMomentArea = np.hstack((IyyIxx[::-1], Ixy))
 
@@ -72,9 +82,11 @@ Ixy_own = ( (t+(L-t)/2-P.CenterMass[1])*(t/2-P.CenterMass[0])*t*(L-t) +
            (t/2-P.CenterMass[1])*(L/2-P.CenterMass[0])*L*t )
 
 
-print(Ixx_analytic)
-print(SecondMomentArea[0])
-print(SecondMomentArea[1])
+# print(Ixx_analytic)
+# print(L**3*t/12)
+# print(SecondMomentArea[0])
+# print(L*t**3/12)
+# print(SecondMomentArea[1])
 
 
 print(Ixy_analytic)
