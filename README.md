@@ -15,7 +15,7 @@ https://gerritnowald.wordpress.com/2022/04/02/polygon-module/
 ## examples:
 https://github.com/gerritnowald/polygon/blob/main/examples.ipynb
 
-## creating a polygon object:
+### creating a polygon object:
 ```
 from polygon import polygon
 Vertices = [[x0,y0],[x1,y1],[x2,y2],...]   # 2D-coordinates of vertices
@@ -24,7 +24,7 @@ instance = polygon(Vertices)
 - polygon can be open or closed (i.e. first = last vertex)
 - holes can be defined by self-intersecting and opposite order of vertices inside than outside
 
-## creating a solid of revolution
+### creating a solid of revolution:
 ```
 instance = polygon(Vertices, axis)
 ```
@@ -32,7 +32,7 @@ instance = polygon(Vertices, axis)
 	- 0: revolution with respect to x-axis
 	- 1: revolution with respect to y-axis
 
-## attributes (geometrical properties):
+### attributes (geometrical properties):
     
     v: Vertex
     e: Edge (next of v)
@@ -53,7 +53,7 @@ instance = polygon(Vertices, axis)
 		- instance.RadiusInnerCircle        radius of incircle (inner circle)
 
 
-## methods:
+### methods:
     
     - print(instance)                   gives number of vertices
     - abs(instance)                     gives area or volume of solid of revolution if axis is defined
@@ -78,7 +78,7 @@ instance = polygon(Vertices, axis)
             with respect to point [cx,cy] (optional, default center of mass)
 
 
-## license
+## license:
 MIT license. You are free to use the code any way you want, without liability or warranty.
 
 Please reference my work if you use it.
