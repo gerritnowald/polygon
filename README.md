@@ -36,35 +36,35 @@ instance = polygon(Vertices, axis)
     
     v: Vertex
     e: Edge (next of v)
-    - instance.IsClockwise                  Boolean, order of vertices
+    - instance.IsClockwise                          Boolean, order of vertices
     - instance.Area
-    - instance.Angles[v]                    inner angles
+    - instance.Angles[v]                            inner angles
     - instance.EdgesLength[e]
-    - instance.EdgesMiddle[xe,ye]           midpoints of edges
-    - instance.CenterMass[x,y]              centroid / center of mass
-    - instance.SecondMomentArea             [Ixx, Iyy, Ixy], wrt center of mass
+    - instance.EdgesMiddle[xe,ye]                   midpoints of edges
+    - instance.CenterMass[x,y]                      centroid / center of mass
+    - instance.SecondMomentArea             	    [Ixx, Iyy, Ixy], wrt center of mass
     - solid of revolution, if axis is specified:
         - instance.RotationVolume
         - instance.RotationSurfaces[e]
-	- triangles:
-		- instance.CenterOuterCircle[x,y]   circumcenter / center of circumsribed (outer) circle
-		- instance.RadiusOuterCircle        radius of circumsribed (outer) circle
-		- instance.CenterInnerCircle[x,y]   center of incircle (inner circle)
-		- instance.RadiusInnerCircle        radius of incircle (inner circle)
+    - triangles:
+        - instance.CenterOuterCircle[x,y]           circumcenter / center of circumsribed (outer) circle
+        - instance.RadiusOuterCircle                radius of circumsribed (outer) circle
+        - instance.CenterInnerCircle[x,y]           center of incircle (inner circle)
+        - instance.RadiusInnerCircle                radius of incircle (inner circle)
 
 
 ### methods:
     
-    - print(instance)                           gives number of vertices
-    - abs(instance)                             gives area or volume of solid of revolution if axis is defined
+    - print(instance)                               gives number of vertices
+    - abs(instance)                                 gives area or volume of solid of revolution if axis is defined
     
-    - instance.plot(numbers=False)              plots edges of polygon, optionally numbers of vertices
+    - instance.plot(numbers=False)                  plots edges of polygon, optionally numbers of vertices
     - triangles:
-		- instance.plot_CircumscribedCircle()	plots circumsribed (outer) circle
-        - instance.plot_Incircle()              plots incircle (inner circle)
+        - instance.plot_CircumscribedCircle()	    plots circumsribed (outer) circle
+        - instance.plot_Incircle()                  plots incircle (inner circle)
     
-    - instance.(point), instance.isPointInside(point)       true, if point [x,y] is inside of polygon (not on the edge)
-    - instance.isPointOnEdge(point)                         true, if point [x,y] is on any edge of polygon
+    - instance(point), instance.isPointInside(point)    true, if point [x,y] is inside of polygon (not on the edge)
+    - instance.isPointOnEdge(point)                     true, if point [x,y] is on any edge of polygon
     
     - instance + [dx,dy] , instance - [dx,dy] , instance.move([dx,dy])
             translation by distances dx,dy in x,y-direction
