@@ -54,10 +54,10 @@ methods:
     - print(instance)                               gives number of vertices
     - abs(instance)                                 gives area or volume of solid of revolution if axis is defined
     
-    - instance.plot(numbers=False)                  plots edges of polygon, optionally numbers of vertices
+    - instance.plot(numbers=False, **kwargs)        plots edges of polygon, optionally numbers of vertices
     - triangles:
-        - instance.plot_CircumscribedCircle()       plots circumsribed (outer) circle
-        - instance.plot_Incircle()                  plots incircle (inner circle)
+        - instance.plotOutCircle(**kwargs)          plots circumsribed (outer) circle
+        - instance.plotIncircle(**kwargs)           plots incircle (inner circle)
     
     - instance(point), instance.isPointInside(point)    true, if point [x,y] is inside of polygon (not on the edge)
     - instance.isPointOnEdge(point)                     true, if point [x,y] is on any edge of polygon
@@ -153,13 +153,16 @@ class _polygonBase():
     # -------------------------------------------------------
     # methods plotting
     
-    def _plot_circ(self, R, C):
-        angle = np.linspace(0, 2*np.pi, 50)
+    def _plot_circ(self, R=1, C=(0,0), Npoints=50, ax=None, plt_kwargs={} ):
+        if ax is None:
+            ax = plt.gca()
+        angle = np.linspace(0, 2*np.pi, Npoints+1)
         x = C[0] + R*np.cos(angle)
         y = C[1] + R*np.sin(angle)
-        plt.plot(x,y)
+        ax.plot( x, y, **plt_kwargs )
+        ax.axis('equal')
     
-    def plot(self,numbers=False, ax=None, **plt_kwargs):
+    def plot(self, numbers=False, ax=None, **plt_kwargs):
         if ax is None:
             ax = plt.gca()
         ax.plot(self.Vertices[:,0], self.Vertices[:,1], **plt_kwargs)
@@ -280,11 +283,11 @@ class _triangle(_polygonBase):
     # -------------------------------------------------------
     # methods plotting
     
-    def plot_CircumscribedCircle(self):
-        self._plot_circ( R=self.RadiusOuterCircle, C=self.CenterOuterCircle)
+    def plotOutCircle(self, **plt_kwargs):
+        self._plot_circ( R=self.RadiusOuterCircle, C=self.CenterOuterCircle, plt_kwargs=plt_kwargs)
     
-    def plot_Incircle(self):
-        self._plot_circ( R=self.RadiusInnerCircle, C=self.CenterInnerCircle)
+    def plotIncircle(self, **plt_kwargs):
+        self._plot_circ( R=self.RadiusInnerCircle, C=self.CenterInnerCircle, plt_kwargs=plt_kwargs)
 
 # -----------------------------------------------------------------------------
 # main class
