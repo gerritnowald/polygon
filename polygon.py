@@ -159,11 +159,13 @@ class _polygonBase():
         y = C[1] + R*np.sin(angle)
         plt.plot(x,y)
     
-    def plot(self,numbers=False):
-        plt.plot(self.Vertices[:,0],self.Vertices[:,1])
+    def plot(self,numbers=False, ax=None, **plt_kwargs):
+        if ax is None:
+            ax = plt.gca()
+        ax.plot(self.Vertices[:,0], self.Vertices[:,1], **plt_kwargs)
         if numbers:
             for i in range(len(self.Vertices)-1):
-                plt.text(self.Vertices[i,0], self.Vertices[i,1], str(i) )
+                ax.text(self.Vertices[i,0], self.Vertices[i,1], str(i) )
     
     # -------------------------------------------------------
     # methods manipulation
