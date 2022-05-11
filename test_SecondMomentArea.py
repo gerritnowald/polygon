@@ -72,8 +72,9 @@ P2 = P
 
 plt.figure()
 # P.plot()
-P2.plot(True)
-plt.plot(P2.CenterMass[0],P2.CenterMass[1],"+")
+P2.plot(True, label='Polygon')
+plt.plot(P2.CenterMass[0], P2.CenterMass[1], "+", label='center of mass')
+plt.legend()
 plt.axis('equal')
 plt.show()
 

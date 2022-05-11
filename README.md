@@ -58,10 +58,10 @@ instance = polygon(Vertices, axis)
     - print(instance)                               gives number of vertices
     - abs(instance)                                 gives area or volume of solid of revolution if axis is defined
     
-    - instance.plot(numbers=False)                  plots edges of polygon, optionally numbers of vertices
+    - instance.plot(numbers=False, **kwargs)        plots edges of polygon, optionally numbers of vertices
     - triangles:
-        - instance.plot_CircumscribedCircle()       plots circumsribed (outer) circle
-        - instance.plot_Incircle()                  plots incircle (inner circle)
+        - instance.plotOutCircle(**kwargs)          plots circumsribed (outer) circle
+        - instance.plotIncircle(**kwargs)           plots incircle (inner circle)
     
     - instance(point), instance.isPointInside(point)    true, if point [x,y] is inside of polygon (not on the edge)
     - instance.isPointOnEdge(point)                     true, if point [x,y] is on any edge of polygon
