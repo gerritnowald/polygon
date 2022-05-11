@@ -55,25 +55,25 @@ instance = polygon(Vertices, axis)
 
 ### methods:
     
-    - print(instance)                   gives number of vertices
-    - abs(instance)                     gives area or volume of solid of revolution if axis is defined
+    - print(instance)                           gives number of vertices
+    - abs(instance)                             gives area or volume of solid of revolution if axis is defined
     
-    - instance.plot(numbers=False)      plots edges of polygon, optionally numbers of vertices
+    - instance.plot(numbers=False)              plots edges of polygon, optionally numbers of vertices
     - triangles:
-        - instance.plot_CircumscribedCircle()   plots circumsribed (outer) circle
+		- instance.plot_CircumscribedCircle()	plots circumsribed (outer) circle
         - instance.plot_Incircle()              plots incircle (inner circle)
     
-    - instance.isPointOnEdge(point)     true, if point [x,y] is on any edge of polygon
-    - instance.isPointInside(point)     true, if point [x,y] is inside of polygon (not on the edge)
+    - instance.(point), instance.isPointInside(point)       true, if point [x,y] is inside of polygon (not on the edge)
+    - instance.isPointOnEdge(point)                         true, if point [x,y] is on any edge of polygon
     
-    - instance.move([dx,dy]) , instance + [dx,dy] , instance - [dx,dy]
+    - instance + [dx,dy] , instance - [dx,dy] , instance.move([dx,dy])
             translation by distances dx,dy in x,y-direction
                                         
     - instance.rotate(angle,[cx,cy]) , instance.rotateClockwise(angle,[cx,cy])
             (counter)-clockwise rotation by angle / °
             with respect to point [cx,cy] (optional, default center of mass)
                                         
-    - instance.scale([fx,fy],[cx,cy]) , instance*[fx,fy] , instance/[fx,fy]
+    - instance * [fx,fy] , instance / [fx,fy] , instance.scale([fx,fy],[cx,cy])
             scaling by factors fx, fy in x,y-direction (negative: flip)
             with respect to point [cx,cy] (optional, default center of mass)
 
