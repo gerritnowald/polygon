@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 """
 geometry calculation of arbitrary 2D polygons:
-- area, lengths of edges, inner angles
-- order of vertices (clockwise or anti-clockwise)
-- centroid (center of mass)
-- for triangles: centers and radii of incircle and circumscribed (outer) circle
-- check if point is inside or on edge of polygon
-- volume and surface areas of solid of revolution
-- second moment of area (bending stiffness of beams)
-- translation, rotation and scaling
+    - plotting with matplotlib kwargs (color, linestyle, label)
+    - area, lengths of edges, inner angles
+    - order of vertices (clockwise or anti-clockwise)
+    - centroid (center of mass)
+    - for triangles: centers and radii of incircle and circumscribed (outer) circle
+    - check if point is inside or on edge of polygon
+    - volume and surface areas of solid of revolution
+    - second moment of area (bending stiffness of beams)
+    - translation, rotation and scaling
 
 
 creating a polygon object:
@@ -42,7 +43,7 @@ attributes:
     - solid of revolution, if axis is specified:
         - instance.RotationVolume
         - instance.RotationSurfaces[e]
-    - triangles:
+    - for triangles:
         - instance.CenterOuterCircle[x,y]           circumcenter / center of circumsribed (outer) circle
         - instance.RadiusOuterCircle                radius of circumsribed (outer) circle
         - instance.CenterInnerCircle[x,y]           center of incircle (inner circle)
@@ -51,27 +52,30 @@ attributes:
 
 methods:
     
-    - print(instance)                               gives number of vertices
-    - abs(instance)                                 gives area or volume of solid of revolution if axis is defined
+    - print(instance)        gives number of vertices
+    - abs(instance)          gives area or volume of solid of revolution if axis is defined
     
-    - instance.plot(numbers=False, **kwargs)        plots edges of polygon, optionally numbers of vertices
-    - triangles:
-        - instance.plotOutCircle(**kwargs)          plots circumsribed (outer) circle
-        - instance.plotIncircle(**kwargs)           plots incircle (inner circle)
+    - plotting (matplotlib kwargs can be used)
+        - instance.plot(numbers=False, **plt_kwargs)        plots polygon, optionally numbers of vertices
+        - for triangles:
+            - instance.plotOutCircle(**plt_kwargs)          plots circumsribed (outer) circle
+            - instance.plotIncircle(**plt_kwargs)           plots incircle (inner circle)
     
-    - instance(point), instance.isPointInside(point)    true, if point [x,y] is inside of polygon (not on the edge)
-    - instance.isPointOnEdge(point)                     true, if point [x,y] is on any edge of polygon
+    - point testing
+        - instance(point), instance.isPointInside(point)    true, if point [x,y] is inside of polygon (not on the edge)
+        - instance.isPointOnEdge(point)                     true, if point [x,y] is on any edge of polygon
     
-    - instance + [dx,dy] , instance - [dx,dy] , instance.move([dx,dy])
-            translation by distances dx,dy in x,y-direction
+    - manipulation (translation, rotation & scaling)
+        - instance + [dx,dy] , instance - [dx,dy] , instance.move([dx,dy])
+                translation by distances dx,dy in x,y-direction
                                         
-    - instance.rotate(angle,[cx,cy]) , instance.rotateClockwise(angle,[cx,cy])
-            (counter)-clockwise rotation by angle / °
-            with respect to point [cx,cy] (optional, default center of mass)
+        - instance.rotate(angle,[cx,cy]) , instance.rotateClockwise(angle,[cx,cy])
+                (counter)-clockwise rotation by angle / °
+                with respect to point [cx,cy] (optional, default center of mass)
                                         
-    - instance * [fx,fy] , instance / [fx,fy] , instance.scale([fx,fy],[cx,cy])
-            scaling by factors fx, fy in x,y-direction (negative: flip)
-            with respect to point [cx,cy] (optional, default center of mass)
+        - instance * [fx,fy] , instance / [fx,fy] , instance.scale([fx,fy],[cx,cy])
+                scaling by factors fx, fy in x,y-direction (negative: flip)
+                with respect to point [cx,cy] (optional, default center of mass)
 
 @author: Gerrit Nowald
 """
@@ -88,10 +92,10 @@ class _polygonBase():
     # -------------------------------------------------------
     # constructor (geometrical properties)
     
-    def __init__(self,vert, axis):
+    def __init__(self, vert, axis):
         
         # lengths of edges
-        vertext = np.append([vert[-2,]],vert,axis=0)   # second last in front of first vertex
+        vertext = np.append([vert[-2,]], vert, axis=0) # second last in front of first vertex
         vec = np.diff(vertext, axis=0)                 # direction vectors of edges
         L   = np.linalg.norm(vec, ord=2, axis=1)       # length of edges (Pythagorean theorem)
         self.EdgesLength = L[1:]
@@ -106,8 +110,8 @@ class _polygonBase():
         
         # area (Gauss's area formula, 0th moment of area)
         # https://en.wikipedia.org/wiki/Shoelace_formula
-        xi   = ri[:,0]
-        yi   = ri[:,1]
+        xi   =   ri[:,0]
+        yi   =   ri[:,1]
         xip1 = rip1[:,0]
         yip1 = rip1[:,1]
         FM   = xi*yip1 - xip1*yi
@@ -153,16 +157,17 @@ class _polygonBase():
     # -------------------------------------------------------
     # methods plotting
     
-    def _plot_circ(self, R=1, C=(0,0), Npoints=50, ax=None, plt_kwargs={} ):
+    def _plot_circ(self, radius = 1, center = (0,0), Npoints = 50, ax = None, plt_kwargs = {} ):
         if ax is None:
             ax = plt.gca()
         angle = np.linspace(0, 2*np.pi, Npoints+1)
-        x = C[0] + R*np.cos(angle)
-        y = C[1] + R*np.sin(angle)
+        x = center[0] + radius*np.cos(angle)
+        y = center[1] + radius*np.sin(angle)
         ax.plot( x, y, **plt_kwargs )
         ax.axis('equal')
+        return np.vstack((x,y)).T   # vertices
     
-    def plot(self, numbers=False, ax=None, **plt_kwargs):
+    def plot(self, numbers = False, ax = None, **plt_kwargs):
         if ax is None:
             ax = plt.gca()
         ax.plot(self.Vertices[:,0], self.Vertices[:,1], **plt_kwargs)
@@ -182,7 +187,7 @@ class _polygonBase():
         return self.move(- np.array(distances) )
     
     # rotation (wrt to point, default center of mass)
-    def rotate(self, angle, point=None):
+    def rotate(self, angle, point = None):
         if point is None:
             point = self.CenterMass
         alpha = angle*np.pi/180
@@ -193,7 +198,7 @@ class _polygonBase():
         return self.rotate(-angle, point)
     
     # scaling (wrt to point, default center of mass)
-    def scale(self, factors, point=None):
+    def scale(self, factors, point = None):
         if point is None:
             point = self.CenterMass
         Vertices_new = (self.Vertices - point)*factors + point
@@ -226,7 +231,7 @@ class _polygonBase():
                 return on
         return on
     
-    def isPointInside(self, point=[0,0]):
+    def isPointInside(self, point = [0,0]):
         # A point is in a polygon, if a line from the point to infinity crosses the polygon an odd number of times.
         # Here, the line goes parallel to the x-axis in positive x-direction.
         # adapted from https://www.algorithms-and-technologies.com/point_in_polygon/python
@@ -254,7 +259,7 @@ class _triangle(_polygonBase):
     # -------------------------------------------------------
     # constructor (geometrical properties)
     
-    def __init__(self,vert, axis):
+    def __init__(self, vert, axis):
         super().__init__(vert, axis)
     
         # circumscribed (outer) circle
@@ -268,7 +273,7 @@ class _triangle(_polygonBase):
     # -------------------------------------------------------
     # geometrical properties of the triangle
     
-    def _circumcenter(self,vert):
+    def _circumcenter(self, vert):
         # center of circumscribed circle
         # https://en.wikipedia.org/wiki/Circumscribed_circle
         vertP = vert[:-1,:] - vert[0,:]      # coordinate transformation
@@ -284,10 +289,10 @@ class _triangle(_polygonBase):
     # methods plotting
     
     def plotOutCircle(self, **plt_kwargs):
-        self._plot_circ( R=self.RadiusOuterCircle, C=self.CenterOuterCircle, plt_kwargs=plt_kwargs)
+        self._plot_circ(radius = self.RadiusOuterCircle, center = self.CenterOuterCircle, plt_kwargs = plt_kwargs)
     
     def plotIncircle(self, **plt_kwargs):
-        self._plot_circ( R=self.RadiusInnerCircle, C=self.CenterInnerCircle, plt_kwargs=plt_kwargs)
+        self._plot_circ(radius = self.RadiusInnerCircle, center = self.CenterInnerCircle, plt_kwargs = plt_kwargs)
 
 # -----------------------------------------------------------------------------
 # main class
