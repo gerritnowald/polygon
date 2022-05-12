@@ -21,7 +21,7 @@ pip install polygon-math
 ```
 
 ## examples:
-https://github.com/gerritnowald/polygon/blob/main/examples.ipynb
+https://github.com/gerritnowald/polygon/blob/main/examples/examples.ipynb
 
 ### creating a polygon object:
 ```

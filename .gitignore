@@ -2,3 +2,9 @@
 *.pyc
 *.pdf
 .ipynb_checkpoints/examples-checkpoint.ipynb
+polygon_math.egg-info/top_level.txt
+dist/polygon_math-1.1.0-py3-none-any.whl
+dist/polygon_math-1.1.0.tar.gz
+polygon_math.egg-info/dependency_links.txt
+polygon_math.egg-info/PKG-INFO
+polygon_math.egg-info/SOURCES.txt
