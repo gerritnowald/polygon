@@ -15,13 +15,14 @@ Vertices = np.random.rand(3,2)*10
 triangle = polygon(Vertices)
 
 plt.figure()
+plt.style.use('dark_background')
 
 plt.subplot(221)
-triangle.plot(numbers=True, c='k', marker='o', label='Polygon')
-plt.plot(triangle.CenterMass[0],    triangle.CenterMass[1],    "r+", label='center of mass')
-plt.plot(triangle.EdgesMiddle[:,0], triangle.EdgesMiddle[:,1], "ko")
-triangle.plotOutCircle(c='b', linestyle='--', linewidth=0.7, label='circumscribed circle')
-triangle.plotIncircle( c='g', linestyle='--', linewidth=0.7, label='incircle')
+triangle.plot(numbers=True, marker='o')
+plt.plot(triangle.CenterMass[0],    triangle.CenterMass[1], '+')
+plt.plot(triangle.EdgesMiddle[:,0], triangle.EdgesMiddle[:,1], 'o')
+triangle.plotOutCircle(linestyle='--', linewidth=0.7)
+triangle.plotIncircle(linestyle='--', linewidth=0.7)
 
 
 Vertices = [
@@ -69,8 +70,8 @@ Vertices = [
 beam = polygon(Vertices)
 
 plt.subplot(223)
-beam.plot(c='k', label='crosssection')
-plt.plot(beam.CenterMass[0], beam.CenterMass[1], "r+", label='center of mass')
+beam.plot()
+plt.plot(beam.CenterMass[0], beam.CenterMass[1], "+")
 plt.axis('equal')
 
 
@@ -82,12 +83,12 @@ Protated    = P.rotateClockwise(45,[5,0])
 Pscaled     = P / 2
 
 plt.subplot(224)
-P.plot(label='original', linestyle='--')
-Ptranslated.plot(label='translated')
-Protated.plot(label='rotated')
-Pscaled.plot(label='scaled')
+P.plot(linestyle='--')
+Ptranslated.plot()
+Protated.plot()
+Pscaled.plot()
 plt.axis('equal')
 
 plt.tight_layout()
-plt.savefig('examples.png')
+plt.savefig('examples.png', transparent=True)
 # plt.show()
