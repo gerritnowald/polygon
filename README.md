@@ -1,5 +1,6 @@
 # polygon
 Python module to calculate geometric properties of arbitrary 2D polygons:
+
     - plotting with matplotlib kwargs (color, linestyle, label)
     - area, lengths of edges, inner angles
     - order of vertices (clockwise or anti-clockwise)
