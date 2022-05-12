@@ -10,7 +10,7 @@ Python module to calculate geometric properties of arbitrary 2D polygons:
 - second moment of area (bending stiffness of beams)
 - translation, rotation and scaling
 
-![](https://github.com/gerritnowald/polygon/blob/main/examples.png)
+![](https://github.com/gerritnowald/polygon/blob/main/examples/examples.png)
 
 Functions are explained in detail in this blog post:
 https://gerritnowald.wordpress.com/2022/04/02/polygon-module/
