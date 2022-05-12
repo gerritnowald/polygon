@@ -13,12 +13,17 @@ Python module to calculate geometric properties of arbitrary 2D polygons:
 Functions are explained in detail in this blog post:
 https://gerritnowald.wordpress.com/2022/04/02/polygon-module/
 
+## installation
+```
+pip install polygon-math
+```
+
 ## examples:
 https://github.com/gerritnowald/polygon/blob/main/examples.ipynb
 
 ### creating a polygon object:
 ```
-from polygon import polygon
+from polygon_math import polygon
 Vertices = [[x0,y0],[x1,y1],[x2,y2],...]   # 2D-coordinates of vertices
 instance = polygon(Vertices)
 ```
