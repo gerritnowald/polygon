@@ -23,6 +23,7 @@ plt.plot(triangle.CenterMass[0],    triangle.CenterMass[1], '+')
 plt.plot(triangle.EdgesMiddle[:,0], triangle.EdgesMiddle[:,1], 'o')
 triangle.plotOutCircle(linestyle='--', linewidth=0.7)
 triangle.plotIncircle(linestyle='--', linewidth=0.7)
+plt.axis('off')
 
 
 Vertices = [
@@ -43,14 +44,13 @@ N = 500
 points = np.hstack(( np.random.rand(N,1)*6 - 3, np.random.rand(N,1)*10 - 2 ))
 
 plt.subplot(222)
-# fig, ax = plt.subplots(222)
 for point in points:
     if heart(point):
         style = "yo"
     else:
         style = "bo"
     plt.plot(point[0], point[1], style)
-# ax.set_axis_off()
+plt.axis('off')
 
 
 Vertices = [
@@ -73,6 +73,7 @@ plt.subplot(223)
 beam.plot()
 plt.plot(beam.CenterMass[0], beam.CenterMass[1], "+")
 plt.axis('equal')
+plt.axis('off')
 
 
 Vertices = [[0,0],[5,0],[5,2],[4,1]]
@@ -88,6 +89,7 @@ Ptranslated.plot()
 Protated.plot()
 Pscaled.plot()
 plt.axis('equal')
+plt.axis('off')
 
 plt.tight_layout()
 plt.savefig('examples.png', transparent=True)
