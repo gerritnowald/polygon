@@ -124,18 +124,25 @@ class _polygonBase():
         
         # second moment of area wrt center of mass
         # https://en.wikipedia.org/wiki/Second_moment_of_area
-        Brr    = ri**2 + ri*rip1 + rip1**2
-        Bxy    = xi*yip1 + 2*xi*yi + 2*xip1*yip1 + xip1*yi
-        IyyIxx =   abs( (FM @ Brr)/12 - AreaSigned*self.CenterMass**2 )
-        Ixy    = - abs( (FM @ Bxy)/24 - AreaSigned*self.CenterMass[0]*self.CenterMass[1] )
-        self.SecondMomentArea = np.hstack((IyyIxx[::-1], Ixy))
+        Bxy = xi*yip1 + 2*xi*yi + 2*xip1*yip1 + xip1*yi
+        if axis is None:
+            Brr    = ri**2 + ri*rip1 + rip1**2    
+            IyyIxx =   abs( (FM @ Brr)/12 - AreaSigned*self.CenterMass**2 )
+            Ixy    = - abs( (FM @ Bxy)/24 - AreaSigned*self.CenterMass[0]*self.CenterMass[1] )
+            self.SecondMomentArea = np.hstack((IyyIxx[::-1], Ixy))
         
-        # solid of Revolution
-        if axis is not None:
+        # solid of revolution
+        elif axis is not None:
             # Pappus's centroid theorem
             # https://en.wikipedia.org/wiki/Pappus%27s_centroid_theorem
             self.RotationVolume   = 2*np.pi*self.Area*self.CenterMass[1-axis]
             self.RotationSurfaces = 2*np.pi*self.EdgesLength*self.EdgesMiddle[:,1-axis]
+            
+            # center of mass (in polar coordinates related to product of intertia)
+            zS = FM @ Bxy/24 / ( AreaSigned*self.CenterMass[1-axis] )
+            self.CenterMass, self.CenterMassCrossSection = [0, zS] , self.CenterMass
+            if axis == 0:
+                self.CenterMass = self.CenterMass[::-1]
                 
         self.Vertices = vert
         self._axis    = axis
