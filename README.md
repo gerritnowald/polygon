@@ -79,6 +79,9 @@ instance = polygon(Vertices, axis)
     - manipulation (translation, rotation & scaling)
         - instance + [dx,dy] , instance - [dx,dy] , instance.move([dx,dy])
                 translation by distances dx,dy in x,y-direction
+        
+        - instance.centerOrigin()
+                moves origin of coordinate system to center of mass
                                         
         - instance.rotate(angle,[cx,cy]) , instance.rotateClockwise(angle,[cx,cy])
                 (counter)-clockwise rotation by angle / °

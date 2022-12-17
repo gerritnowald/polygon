@@ -55,9 +55,8 @@ Vertices = [
     [4, 2],
     [0, 1]
 ]
-beam = polygon(Vertices)
 
-beam -= beam.CenterMass
+beam = polygon(Vertices).centerOrigin()
 
 
 plt.figure()
@@ -68,6 +67,7 @@ plt.xlabel('x / cm')
 plt.ylabel('y / cm')
 plt.axis('equal')
 plt.show()
+
 
 print(f"second moment of area x-axis: { int(beam.SecondMomentArea[0])} cm^4")
 print(f"second moment of area y-axis: { int(beam.SecondMomentArea[1])} cm^4")

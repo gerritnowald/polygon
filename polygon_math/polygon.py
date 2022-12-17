@@ -68,6 +68,9 @@ methods:
     - manipulation (translation, rotation & scaling)
         - instance + [dx,dy] , instance - [dx,dy] , instance.move([dx,dy])
                 translation by distances dx,dy in x,y-direction
+        
+        - instance.centerOrigin()
+                moves origin of coordinate system to center of mass
                                         
         - instance.rotate(angle,[cx,cy]) , instance.rotateClockwise(angle,[cx,cy])
                 (counter)-clockwise rotation by angle / °
@@ -124,11 +127,11 @@ class _polygonBase():
         
         # second moment of area wrt center of mass
         # https://en.wikipedia.org/wiki/Second_moment_of_area
-        Brr    = ri**2 + ri*rip1 + rip1**2
-        Bxy    = xi*yip1 + 2*xi*yi + 2*xip1*yip1 + xip1*yi
-        IyyIxx = FM @ Brr / 12
-        Ixy    = FM @ Bxy / 24
+        Bxy = xi*yip1 + 2*xi*yi + 2*xip1*yip1 + xip1*yi
+        Ixy = FM @ Bxy / 24
         if axis is None:
+            Brr    = ri**2 + ri*rip1 + rip1**2
+            IyyIxx = FM @ Brr / 12
             self.SecondMomentArea = np.hstack(( abs(IyyIxx[::-1]), - abs(Ixy) ))
         
         # solid of revolution
@@ -188,6 +191,8 @@ class _polygonBase():
     # translation
     def move(self, distances):
         return polygon(self.Vertices + distances, self._axis)
+    def centerOrigin(self):
+        return self.move(- self.CenterMass )
     def __add__(self, distances):
         return self.move(distances)
     def __sub__(self, distances):

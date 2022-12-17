@@ -7,7 +7,9 @@ Created on Mon May  9 09:48:16 2022
 
 import matplotlib.pyplot as plt
 
-from polygon import polygon
+# import sys
+# sys.path.insert(0,'..')
+from polygon_math import polygon
 
 # -----------------------------------------------------------------------------
 # examples
@@ -44,7 +46,7 @@ Ixx_analytic = [
 Ixy_analytic = - (b1/2-Sx)*(a/2-Sy)*a*b1 - (b1+b2/2-Sx)*(a-c/2-Sy)*b2*c
 
 
-P = polygon(Vertices)
+P = polygon(Vertices).centerOrigin()
 
 # -----------------------------------------------------------------------------
 # manipulation
@@ -69,6 +71,8 @@ P2 = P
 
 # -----------------------------------------------------------------------------
 # plot
+
+plt.close('all')
 
 plt.figure()
 # P.plot()
