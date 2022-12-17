@@ -29,54 +29,55 @@ instance = polygon(Vertices, axis)
             1: revolution with respect to y-axis
 
 
-attributes:
+attributes of polygon object:
     
     v: Vertex
     e: Edge (next of v)
-    - instance.IsClockwise                          Boolean, order of vertices
-    - instance.Area
-    - instance.Angles[v]                            inner angles
-    - instance.EdgesLength[e]
-    - instance.EdgesMiddle[xe,ye]                   midpoints of edges
-    - instance.CenterMass[x,y]                      centroid / center of mass
-    - instance.SecondMomentArea                     [Ixx, Iyy, Ixy], wrt origin
+    - IsClockwise                          Boolean, order of vertices
+    - Area
+    - Angles[v]                            inner angles
+    - EdgesLength[e]
+    - EdgesMiddle[xe,ye]                   midpoints of edges
+    - CenterMass[x,y]                      centroid / center of mass
+    - SecondMomentArea                     [Ixx, Iyy, Ixy], wrt origin
     - solid of revolution, if axis is specified:
-        - instance.RotationVolume
-        - instance.RotationSurfaces[e]
+        - RotationVolume
+        - RotationSurfaces[e]
+        - CenterMassCrossSection[r,z]      CenterMass[r,z] now relates to solid
     - for triangles:
-        - instance.CenterOuterCircle[x,y]           circumcenter / center of circumsribed (outer) circle
-        - instance.RadiusOuterCircle                radius of circumsribed (outer) circle
-        - instance.CenterInnerCircle[x,y]           center of incircle (inner circle)
-        - instance.RadiusInnerCircle                radius of incircle (inner circle)
+        - CenterOuterCircle[x,y]           circumcenter / center of circumsribed (outer) circle
+        - RadiusOuterCircle                radius of circumsribed (outer) circle
+        - CenterInnerCircle[x,y]           center of incircle (inner circle)
+        - RadiusInnerCircle                radius of incircle (inner circle)
 
 
-methods:
+methods of polygon object:
     
     - print(instance)        gives number of vertices
     - abs(instance)          gives area or volume of solid of revolution if axis is defined
     
     - plotting (matplotlib kwargs can be used)
-        - instance.plot(numbers=False, **plt_kwargs)        plots polygon, optionally numbers of vertices
+        - plot(numbers=False, **plt_kwargs)        plots polygon, optionally numbers of vertices
         - for triangles:
-            - instance.plotOutCircle(**plt_kwargs)          plots circumsribed (outer) circle
-            - instance.plotIncircle(**plt_kwargs)           plots incircle (inner circle)
+            - plotOutCircle(**plt_kwargs)          plots circumsribed (outer) circle
+            - plotIncircle(**plt_kwargs)           plots incircle (inner circle)
     
     - point testing
-        - instance(point), instance.isPointInside(point)    true, if point [x,y] is inside of polygon (not on the edge)
-        - instance.isPointOnEdge(point)                     true, if point [x,y] is on any edge of polygon
+        - instance(point), isPointInside(point)    true, if point [x,y] is inside of polygon (not on the edge)
+        - isPointOnEdge(point)                     true, if point [x,y] is on any edge of polygon
     
     - manipulation (translation, rotation & scaling)
-        - instance + [dx,dy] , instance - [dx,dy] , instance.move([dx,dy])
+        - instance + [dx,dy] , instance - [dx,dy] , move([dx,dy])
                 translation by distances dx,dy in x,y-direction
         
-        - instance.centerOrigin()
+        - centerOrigin()
                 moves origin of coordinate system to center of mass
                                         
-        - instance.rotate(angle,[cx,cy]) , instance.rotateClockwise(angle,[cx,cy])
+        - rotate(angle,[cx,cy]) , rotateClockwise(angle,[cx,cy])
                 (counter)-clockwise rotation by angle / °
                 with respect to point [cx,cy] (optional, default center of mass)
                                         
-        - instance * [fx,fy] , instance / [fx,fy] , instance.scale([fx,fy],[cx,cy])
+        - instance * [fx,fy] , instance / [fx,fy] , scale([fx,fy],[cx,cy])
                 scaling by factors fx, fy in x,y-direction (negative: flip)
                 with respect to point [cx,cy] (optional, default center of mass)
 
