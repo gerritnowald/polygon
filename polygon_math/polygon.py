@@ -39,7 +39,7 @@ attributes:
     - instance.EdgesLength[e]
     - instance.EdgesMiddle[xe,ye]                   midpoints of edges
     - instance.CenterMass[x,y]                      centroid / center of mass
-    - instance.SecondMomentArea                     [Ixx, Iyy, Ixy], wrt center of mass
+    - instance.SecondMomentArea                     [Ixx, Iyy, Ixy], wrt origin
     - solid of revolution, if axis is specified:
         - instance.RotationVolume
         - instance.RotationSurfaces[e]
@@ -124,12 +124,12 @@ class _polygonBase():
         
         # second moment of area wrt center of mass
         # https://en.wikipedia.org/wiki/Second_moment_of_area
-        Bxy = xi*yip1 + 2*xi*yi + 2*xip1*yip1 + xip1*yi
+        Brr    = ri**2 + ri*rip1 + rip1**2
+        Bxy    = xi*yip1 + 2*xi*yi + 2*xip1*yip1 + xip1*yi
+        IyyIxx = FM @ Brr / 12
+        Ixy    = FM @ Bxy / 24
         if axis is None:
-            Brr    = ri**2 + ri*rip1 + rip1**2    
-            IyyIxx =   abs( (FM @ Brr)/12 - AreaSigned*self.CenterMass**2 )
-            Ixy    = - abs( (FM @ Bxy)/24 - AreaSigned*self.CenterMass[0]*self.CenterMass[1] )
-            self.SecondMomentArea = np.hstack((IyyIxx[::-1], Ixy))
+            self.SecondMomentArea = np.hstack(( abs(IyyIxx[::-1]), - abs(Ixy) ))
         
         # solid of revolution
         elif axis is not None:
@@ -139,7 +139,7 @@ class _polygonBase():
             self.RotationSurfaces = 2*np.pi*self.EdgesLength*self.EdgesMiddle[:,1-axis]
             
             # center of mass (in polar coordinates related to product of intertia)
-            zS = FM @ Bxy/24 * 2*np.pi/self.RotationVolume
+            zS = 2*np.pi * Ixy / self.RotationVolume
             self.CenterMass, self.CenterMassCrossSection = [0, zS] , self.CenterMass
             if axis == 0:
                 self.CenterMass = self.CenterMass[::-1]

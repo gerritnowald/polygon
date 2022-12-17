@@ -50,7 +50,7 @@ instance = polygon(Vertices, axis)
     - instance.EdgesLength[e]
     - instance.EdgesMiddle[xe,ye]                   midpoints of edges
     - instance.CenterMass[x,y]                      centroid / center of mass
-    - instance.SecondMomentArea                     [Ixx, Iyy, Ixy], wrt center of mass
+    - instance.SecondMomentArea                     [Ixx, Iyy, Ixy], wrt origin
     - solid of revolution, if axis is specified:
         - instance.RotationVolume
         - instance.RotationSurfaces[e]

@@ -24,6 +24,8 @@ Vertices = [
 ]
 socket = polygon(Vertices, axis=1)
 
+print(socket.CenterMass)
+
 
 plt.close('all')
 
@@ -54,6 +56,8 @@ Vertices = [
     [0, 1]
 ]
 beam = polygon(Vertices)
+
+beam -= beam.CenterMass
 
 
 plt.figure()
