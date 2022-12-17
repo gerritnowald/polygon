@@ -139,7 +139,7 @@ class _polygonBase():
             self.RotationSurfaces = 2*np.pi*self.EdgesLength*self.EdgesMiddle[:,1-axis]
             
             # center of mass (in polar coordinates related to product of intertia)
-            zS = FM @ Bxy/24 / ( AreaSigned*self.CenterMass[1-axis] )
+            zS = FM @ Bxy/24 * 2*np.pi/self.RotationVolume
             self.CenterMass, self.CenterMassCrossSection = [0, zS] , self.CenterMass
             if axis == 0:
                 self.CenterMass = self.CenterMass[::-1]
