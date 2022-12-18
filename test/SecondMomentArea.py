@@ -7,8 +7,8 @@ Created on Mon May  9 09:48:16 2022
 
 import matplotlib.pyplot as plt
 
-# import sys
-# sys.path.insert(0,'..')
+import sys
+sys.path.insert(0,'..')
 from polygon_math import polygon
 
 # -----------------------------------------------------------------------------
