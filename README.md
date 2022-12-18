@@ -69,6 +69,8 @@ instance = polygon(Vertices, axis)
     
     - plotting (matplotlib kwargs can be used)
         - plot(numbers=False, **plt_kwargs)        plots polygon, optionally numbers of vertices
+        - for solid of revolution:
+            - plot_rotation_axis(**plt_kwargs)     plots axis of rotation, default linestyle black dash-dotted
         - for triangles:
             - plotOutCircle(**plt_kwargs)          plots circumsribed (outer) circle
             - plotIncircle(**plt_kwargs)           plots incircle (inner circle)

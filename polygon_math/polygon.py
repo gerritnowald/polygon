@@ -58,6 +58,8 @@ methods of polygon object:
     
     - plotting (matplotlib kwargs can be used)
         - plot(numbers=False, **plt_kwargs)        plots polygon, optionally numbers of vertices
+        - for solid of revolution:
+            - plot_rotation_axis(**plt_kwargs)     plots axis of rotation, default linestyle black dash-dotted
         - for triangles:
             - plotOutCircle(**plt_kwargs)          plots circumsribed (outer) circle
             - plotIncircle(**plt_kwargs)           plots incircle (inner circle)
@@ -86,6 +88,7 @@ methods of polygon object:
 
 import numpy as np
 import matplotlib.pyplot as plt
+import warnings
 
 # -----------------------------------------------------------------------------
 # base class
@@ -129,7 +132,7 @@ class _polygonBase():
         # second moment of area wrt center of mass
         # https://en.wikipedia.org/wiki/Second_moment_of_area
         Bxy = xi*yip1 + 2*xi*yi + 2*xip1*yip1 + xip1*yi
-        Ixy = FM @ Bxy / 24
+        Ixy = FM @ Bxy / 24     # also needed for center of mass of solid of revolution
         if axis is None:
             Brr    = ri**2 + ri*rip1 + rip1**2
             IyyIxx = FM @ Brr / 12
@@ -137,6 +140,10 @@ class _polygonBase():
         
         # solid of revolution
         elif axis is not None:
+            
+            if min(vert[:,1-axis]) * max(vert[:,1-axis]) < 0:
+                warnings.warn('solid of revolution self-intersecting (axis of rotation intersects cross-section)')
+            
             # Pappus's centroid theorem
             # https://en.wikipedia.org/wiki/Pappus%27s_centroid_theorem
             self.RotationVolume   = 2*np.pi*self.Area*self.CenterMass[1-axis]
@@ -185,6 +192,14 @@ class _polygonBase():
         if numbers:
             for i in range(len(self.Vertices)-1):
                 ax.text(self.Vertices[i,0], self.Vertices[i,1], str(i) )
+    
+    def plot_rotation_axis(self, ax = None, **plt_kwargs):
+        if ax is None:
+            ax = plt.gca()
+        if self._axis == 0:
+            ax.axhline(y = 0, color='k', linestyle = '-.', **plt_kwargs)
+        elif self._axis == 1:
+            ax.axvline(x = 0, color='k', linestyle = '-.', **plt_kwargs)
     
     # -------------------------------------------------------
     # methods manipulation
