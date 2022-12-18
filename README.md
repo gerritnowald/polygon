@@ -4,10 +4,10 @@ Python module to calculate geometric properties of arbitrary 2D polygons:
 - area, lengths of edges, inner angles
 - order of vertices (clockwise or anti-clockwise)
 - centroid (center of mass)
-- for triangles: centers and radii of incircle and circumscribed (outer) circle
-- check if point is inside or on edge of polygon
-- volume and surface areas of solid of revolution
+- triangles: centers and radii of incircle and circumscribed (outer) circle
+- solid of revolution: volume, surface areas, center of mass
 - second moment of area (bending stiffness of beams)
+- check if point is inside or on edge of polygon
 - translation, rotation and scaling
 
 ![](https://github.com/gerritnowald/polygon/blob/main/examples/examples.png)
@@ -69,6 +69,7 @@ instance = polygon(Vertices, axis)
     
     - plotting (matplotlib kwargs can be used)
         - plot(numbers=False, **plt_kwargs)        plots polygon, optionally numbers of vertices
+        - plot_CenterMass(**plt_kwargs)            plots center of mass, default style red cross
         - for solid of revolution:
             - plot_rotation_axis(**plt_kwargs)     plots axis of rotation, default linestyle black dash-dotted
         - for triangles:
