@@ -76,7 +76,7 @@ plt.close('all')
 
 plt.figure()
 # P.plot()
-P2.plot(True, label='Polygon')
+P2.plot(numbers=True, label='Polygon')
 P2.plotCenterMass(label='center of mass')
 plt.legend()
 plt.axis('equal')

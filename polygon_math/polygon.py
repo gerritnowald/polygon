@@ -57,13 +57,15 @@ methods of polygon object:
     - abs(instance)          gives area or volume of solid of revolution if axis is defined
     
     - plotting (matplotlib kwargs can be used)
-        - plot(numbers=False, **plt_kwargs)        plots polygon, optionally numbers of vertices
-        - plot_CenterMass(**plt_kwargs)            plots center of mass, default style red cross
+        - plot(numbers=False, **kwargs)            plots polygon, optionally numbers of vertices
+        - plotCenterMass(**kwargs)                 plots center of mass, default style red cross
+        - plotCenterEdges(**kwargs)                plots center of edges, default style black dots
         - for solid of revolution:
-            - plot_rotation_axis(**plt_kwargs)     plots axis of rotation, default linestyle black dash-dotted
+            - plotRotationAxis(**kwargs)           plots axis of rotation, default linestyle black dash-dotted
+            - plotCenterMassCrossSection(**kwargs) plots centroid of crossSection, default style green cross
         - for triangles:
-            - plotOutCircle(**plt_kwargs)          plots circumsribed (outer) circle
-            - plotIncircle(**plt_kwargs)           plots incircle (inner circle)
+            - plotOutCircle(**kwargs)              plots circumsribed (outer) circle
+            - plotIncircle(**kwargs)               plots incircle (inner circle)
     
     - point testing
         - instance(point), isPointInside(point)    true, if point [x,y] is inside of polygon (not on the edge)
@@ -211,6 +213,11 @@ class _polygonBase():
             ax.axhline(y = 0, color = color, linestyle = linestyle, **plt_kwargs)
         elif self._axis == 1:
             ax.axvline(x = 0, color = color, linestyle = linestyle, **plt_kwargs)
+    
+    def plotCenterMassCrossSection(self, color = 'g', marker = '+', ax = None, **plt_kwargs):
+        if ax is None:
+            ax = plt.gca()
+        ax.plot( self.CenterMassCrossSection[0], self.CenterMassCrossSection[1], color = color, marker = marker, **plt_kwargs )
     
     # -------------------------------------------------------
     # methods manipulation
