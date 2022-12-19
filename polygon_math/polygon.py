@@ -194,18 +194,23 @@ class _polygonBase():
             for i in range(len(self.Vertices)-1):
                 ax.text(self.Vertices[i,0], self.Vertices[i,1], str(i) )
     
-    def plot_CenterMass(self, ax = None, **plt_kwargs):
+    def plotCenterMass(self, color = 'r', marker = '+', ax = None, **plt_kwargs):
         if ax is None:
             ax = plt.gca()
-        ax.plot( self.CenterMass[0], self.CenterMass[1], 'r+', **plt_kwargs )
+        ax.plot( self.CenterMass[0], self.CenterMass[1], color = color, marker = marker, **plt_kwargs )
     
-    def plot_rotation_axis(self, ax = None, **plt_kwargs):
+    def plotCenterEdges(self, color = 'k', marker = 'o', linestyle = '', ax = None, **plt_kwargs):
+        if ax is None:
+            ax = plt.gca()
+        ax.plot( self.EdgesMiddle[:,0], self.EdgesMiddle[:,1], color = color, marker = marker, linestyle = linestyle, **plt_kwargs )
+    
+    def plotRotationAxis(self, color = 'k', linestyle = '-.', ax = None, **plt_kwargs):
         if ax is None:
             ax = plt.gca()
         if self._axis == 0:
-            ax.axhline(y = 0, color='k', linestyle = '-.', **plt_kwargs)
+            ax.axhline(y = 0, color = color, linestyle = linestyle, **plt_kwargs)
         elif self._axis == 1:
-            ax.axvline(x = 0, color='k', linestyle = '-.', **plt_kwargs)
+            ax.axvline(x = 0, color = color, linestyle = linestyle, **plt_kwargs)
     
     # -------------------------------------------------------
     # methods manipulation
