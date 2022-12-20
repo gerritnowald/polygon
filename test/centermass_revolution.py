@@ -34,13 +34,15 @@ Vertices = [
 
 socket = polygon(Vertices, axis=1)
 
+socket *= [1,-1]
+
 print(socket.CenterMass)
 
 
 plt.close('all')
 
 plt.figure()
-socket.plot()
+socket.plot(numbers=True)
 socket.plotRotationAxis()
 socket.plotCenterMass(marker='o',color='b')
 socket.plotCenterMassCrossSection()
