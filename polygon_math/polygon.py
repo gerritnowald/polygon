@@ -139,7 +139,7 @@ class _polygonBase():
         if axis is None:
             Brr    = ri**2 + ri*rip1 + rip1**2
             IyyIxx = FM @ Brr / 12
-            self.SecondMomentArea = np.hstack(( abs(IyyIxx[::-1]), - abs(Ixy) ))
+            self.SecondMomentArea = np.hstack(( abs(IyyIxx[::-1]), -Ixy*(-1)**self.IsClockwise ))
         
         # solid of revolution
         elif axis is not None:
@@ -149,11 +149,11 @@ class _polygonBase():
             
             # Pappus's centroid theorem
             # https://en.wikipedia.org/wiki/Pappus%27s_centroid_theorem
-            self.RotationVolume   = 2*np.pi*self.Area*self.CenterMass[1-axis]
+            self.RotationVolume   = 2*np.pi*self.Area*abs(self.CenterMass[1-axis])
             self.RotationSurfaces = 2*np.pi*self.EdgesLength*self.EdgesMiddle[:,1-axis]
             
             # center of mass (in polar coordinates related to product of intertia)
-            zS = 2*np.pi * Ixy / self.RotationVolume
+            zS = 2*np.pi * abs(Ixy) / self.RotationVolume
             self.CenterMass, self.CenterMassCrossSection = [0, zS] , self.CenterMass
             if axis == 0:
                 self.CenterMass = self.CenterMass[::-1]
