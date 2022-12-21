@@ -13,7 +13,7 @@ sys.path.insert(0,'..')
 from polygon_math import polygon
 
 # -----------------------------------------------------------------------------
-# socket
+# definition
 
 Vertices = [
     [0, 0],
@@ -22,30 +22,34 @@ Vertices = [
     [0, 4]
 ]
 
-# Vertices = [
-#     [2.5, 0],
-#     [4, 0],
-#     [4, 6],
-#     [1, 6],
-#     # [2.5, 6],
-#     # [1, 4.5],
-#     [1, 1.5]
-# ]
+solid = polygon(Vertices, axis=1)
 
-socket = polygon(Vertices, axis=1)
+# -----------------------------------------------------------------------------
+# manipulation
 
-socket *= [1,-1]
+# solid *= [-1,1]
+# solid *= [1,-1]
 
-print(socket.CenterMass)
+# solid -= [0,5]
+# solid -= [5,0]
 
+# -----------------------------------------------------------------------------
+# output
+
+print(solid.RotationVolume)
+print(solid.RotationSurfaces)
+print(solid.CenterMass)
+
+# -----------------------------------------------------------------------------
+# plot
 
 plt.close('all')
 
 plt.figure()
-socket.plot(numbers=True)
-socket.plotRotationAxis()
-socket.plotCenterMass(marker='o',color='b')
-socket.plotCenterMassCrossSection()
+solid.plot(numbers=True)
+solid.plotRotationAxis()
+solid.plotCenterMass(marker='o',color='b')
+solid.plotCenterMassCrossSection()
 plt.grid()
 plt.axis('equal')
 plt.show()
