@@ -19,7 +19,7 @@ instance = polygon(Vertices)
     
     - polygon can be open or closed (i.e. first = last vertex)
     - holes can be defined by self-intersecting and opposite order of vertices inside than outside
-    
+
 
 creating a solid of revolution
     
@@ -138,26 +138,7 @@ class _polygonBase():
         Bxy    = xi*yip1 + 2*xi*yi + 2*xip1*yip1 + xip1*yi
         IyyIxx = FM @ Brr / 12
         Ixy    = FM @ Bxy / 24
-        if axis is None:
-            self.SecondMomentArea = np.hstack(( abs(IyyIxx[::-1]), -Ixy*(-1)**self.IsClockwise ))
-        
-        # solid of revolution
-        elif axis is not None:
-            
-            if min(vert[:,1-axis]) * max(vert[:,1-axis]) < 0:
-                warnings.warn('solid of revolution self-intersecting (axis of rotation intersects cross-section)')
-            
-            # Pappus's centroid theorem
-            # https://en.wikipedia.org/wiki/Pappus%27s_centroid_theorem
-            RotationVolumeSigned  = 2*np.pi*AreaSigned*self.CenterMass[1-axis]
-            self.RotationSurfaces = 2*np.pi*self.EdgesLength*abs(self.EdgesMiddle[:,1-axis])
-            self.RotationVolume   = abs(RotationVolumeSigned)
-            
-            # center of mass (in polar coordinates related to product of intertia)
-            zS = 2*np.pi * Ixy / RotationVolumeSigned
-            self.CenterMass, self.CenterMassCrossSection = [0, zS] , self.CenterMass
-            if axis == 0:
-                self.CenterMass = self.CenterMass[::-1]
+        self.SecondMomentArea = np.hstack(( abs(IyyIxx[::-1]), -Ixy*(-1)**self.IsClockwise ))
             
         self.Vertices = vert
         self._axis    = axis
@@ -170,11 +151,8 @@ class _polygonBase():
         return f'Polygon with {len(self.Vertices)-1} vertices'
     
     def __abs__(self):
-        # abs(polygon_object) gives area or volume of solid of revolution if axis is defined
-        if self._axis is not None:
-            return self.RotationVolume
-        else:
-            return self.Area
+        # abs(polygon_object) gives area
+        return self.Area
     
     # -------------------------------------------------------
     # methods plotting
@@ -206,19 +184,6 @@ class _polygonBase():
         if ax is None:
             ax = plt.gca()
         ax.plot( self.EdgesMiddle[:,0], self.EdgesMiddle[:,1], color = color, marker = marker, linestyle = linestyle, **plt_kwargs )
-    
-    def plotRotationAxis(self, color = 'k', linestyle = '-.', ax = None, **plt_kwargs):
-        if ax is None:
-            ax = plt.gca()
-        if self._axis == 0:
-            ax.axhline(y = 0, color = color, linestyle = linestyle, **plt_kwargs)
-        elif self._axis == 1:
-            ax.axvline(x = 0, color = color, linestyle = linestyle, **plt_kwargs)
-    
-    def plotCenterMassCrossSection(self, color = 'g', marker = '+', ax = None, **plt_kwargs):
-        if ax is None:
-            ax = plt.gca()
-        ax.plot( self.CenterMassCrossSection[0], self.CenterMassCrossSection[1], color = color, marker = marker, **plt_kwargs )
     
     # -------------------------------------------------------
     # methods manipulation
@@ -342,14 +307,71 @@ class _triangle(_polygonBase):
         self._plot_circ(radius = self.RadiusInnerCircle, center = self.CenterInnerCircle, plt_kwargs = plt_kwargs)
 
 # -----------------------------------------------------------------------------
-# main class
+# solid of revolution class
+# -----------------------------------------------------------------------------
+
+class _solid(_polygonBase):
+    
+    # -------------------------------------------------------
+    # constructor
+    
+    def __init__(self, vert, axis):
+        super().__init__(vert, axis)
+    
+        if min(vert[:,1-axis]) * max(vert[:,1-axis]) < 0:
+            warnings.warn('solid of revolution self-intersecting (axis of rotation intersects cross-section)')
+        
+        # Pappus's centroid theorem
+        # https://en.wikipedia.org/wiki/Pappus%27s_centroid_theorem
+        RotationVolumeSigned  = 2*np.pi*self.Area*(-1)**self.IsClockwise*self.CenterMass[1-axis]
+        self.RotationSurfaces = 2*np.pi*self.EdgesLength*abs(self.EdgesMiddle[:,1-axis])
+        self.RotationVolume   = abs(RotationVolumeSigned)
+        
+        # center of mass (in polar coordinates related to product of intertia)
+        zS = - 2*np.pi * self.SecondMomentArea[2]*(-1)**self.IsClockwise / RotationVolumeSigned
+        self.CenterMass, self.CenterMassCrossSection = [0, zS] , self.CenterMass
+        if axis == 0:
+            self.CenterMass = self.CenterMass[::-1]
+    
+    # -------------------------------------------------------
+    # methods
+    
+    def __abs__(self):
+        # abs(polygon_object) gives volume of solid of revolution
+        return self.RotationVolume
+    
+    def plotRotationAxis(self, color = 'k', linestyle = '-.', ax = None, **plt_kwargs):
+        if ax is None:
+            ax = plt.gca()
+        if self._axis == 0:
+            ax.axhline(y = 0, color = color, linestyle = linestyle, **plt_kwargs)
+        elif self._axis == 1:
+            ax.axvline(x = 0, color = color, linestyle = linestyle, **plt_kwargs)
+    
+    def plotCenterMassCrossSection(self, color = 'g', marker = '+', ax = None, **plt_kwargs):
+        if ax is None:
+            ax = plt.gca()
+        ax.plot( self.CenterMassCrossSection[0], self.CenterMassCrossSection[1], color = color, marker = marker, **plt_kwargs )
+
+# -----------------------------------------------------------------------------
+# solid of revolution & triangle class
+# -----------------------------------------------------------------------------
+
+class _solid_and_triangle(_triangle, _solid):
+    def __init__(self, vert, axis):
+        super().__init__(vert, axis)
+
+# -----------------------------------------------------------------------------
+# selector class
 # -----------------------------------------------------------------------------
 
 class polygon():
     
     def __new__(self, Vertices, axis=None):
         
+        # -------------------------------------------------------
         # input checks
+        
         vert = np.array(Vertices)
         # coordinates as 2 columns (min 3 rows)
         if vert.shape[0] < vert.shape[1]:
@@ -358,8 +380,20 @@ class polygon():
         if not np.isclose(vert[-1,], vert[0,]).all():
             vert = np.append(vert,[vert[0,]],axis=0)
         
+        # -------------------------------------------------------
         # choose subclass
-        if len(vert)-1 == 3:
+        
+        isTriangle = len(vert)-1 == 3
+        isSolidRev = axis is not None
+        
+        if isTriangle and not isSolidRev:
             return _triangle(vert, axis)
+        
+        elif isSolidRev and not isTriangle:
+            return _solid(vert, axis)
+        
+        elif isSolidRev and isTriangle:
+            return _solid_and_triangle(vert, axis)
+        
         else:
             return _polygonBase(vert, axis)
