@@ -64,7 +64,7 @@ methods of polygon object:
             - plotRotationAxis(**kwargs)           plots axis of rotation, default linestyle black dash-dotted
             - plotCenterMassCrossSection(**kwargs) plots centroid of crossSection, default style green cross
         - for triangles:
-            - plotOutCircle(**kwargs)              plots circumsribed (outer) circle
+            - plotOutCircle(**kwargs)              plots circumscribed (outer) circle
             - plotIncircle(**kwargs)               plots incircle (inner circle)
     
     - point testing
@@ -132,7 +132,7 @@ class _polygonBase():
         # center of mass (1st moment of area / area)
         self.CenterMass = (FM @ self.EdgesMiddle)/3/AreaSigned
         
-        # second moment of area wrt center of mass
+        # second moment of area
         # https://en.wikipedia.org/wiki/Second_moment_of_area
         Brr    = ri**2 + ri*rip1 + rip1**2
         Bxy    = xi*yip1 + 2*xi*yi + 2*xip1*yip1 + xip1*yi
@@ -151,7 +151,7 @@ class _polygonBase():
         return f'Polygon with {len(self.Vertices)-1} vertices'
     
     def __abs__(self):
-        # abs(polygon_object) gives area
+        # abs(instance) gives area
         return self.Area
     
     # -------------------------------------------------------
@@ -168,6 +168,7 @@ class _polygonBase():
         return np.vstack((x,y)).T   # vertices
     
     def plot(self, numbers = False, ax = None, **plt_kwargs):
+        # plots contour of polygon, optionally with numbers of vertices
         if ax is None:
             ax = plt.gca()
         ax.plot(self.Vertices[:,0], self.Vertices[:,1], **plt_kwargs)
@@ -327,7 +328,7 @@ class _solid(_polygonBase):
         self.RotationSurfaces = 2*np.pi*self.EdgesLength*abs(self.EdgesMiddle[:,1-axis])
         self.RotationVolume   = abs(RotationVolumeSigned)
         
-        # center of mass (in polar coordinates related to product of intertia)
+        # center of mass (in polar coordinates related to product of inertia)
         zS = - 2*np.pi * self.SecondMomentArea[2]*(-1)**self.IsClockwise / RotationVolumeSigned
         self.CenterMass, self.CenterMassCrossSection = [0, zS] , self.CenterMass
         if axis == 0:
@@ -337,7 +338,7 @@ class _solid(_polygonBase):
     # methods
     
     def __abs__(self):
-        # abs(polygon_object) gives volume of solid of revolution
+        # abs(instance) gives volume of solid of revolution
         return self.RotationVolume
     
     def plotRotationAxis(self, color = 'k', linestyle = '-.', ax = None, **plt_kwargs):
@@ -373,9 +374,11 @@ class polygon():
         # input checks
         
         vert = np.array(Vertices)
+        
         # coordinates as 2 columns (min 3 rows)
         if vert.shape[0] < vert.shape[1]:
             vert = vert.T
+        
         # first = last vertex
         if not np.isclose(vert[-1,], vert[0,]).all():
             vert = np.append(vert,[vert[0,]],axis=0)
