@@ -21,8 +21,8 @@ triangle = polygon(Vertices)
 
 plt.subplot(221)
 triangle.plot(marker='o')
-plt.plot(triangle.CenterMass[0],    triangle.CenterMass[1], '+')
-plt.plot(triangle.EdgesMiddle[:,0], triangle.EdgesMiddle[:,1], 'o')
+triangle.plotCenterMass()
+triangle.plotCenterEdges()
 triangle.plotOutCircle(linestyle='--', linewidth=0.7)
 triangle.plotIncircle(linestyle='--', linewidth=0.7)
 plt.axis('off')
@@ -52,7 +52,7 @@ for point in points:
         style = "yo"
     else:
         style = "bo"
-    plt.plot(point[0], point[1], style)
+    plt.plot(*point, style)
 plt.axis('off')
 
 
@@ -75,7 +75,7 @@ beam = polygon(Vertices)
 
 plt.subplot(223)
 beam.plot()
-plt.plot(beam.CenterMass[0], beam.CenterMass[1], "+")
+beam.plotCenterMass()
 plt.axis('equal')
 plt.axis('off')
 
@@ -116,5 +116,5 @@ plt.axis('off')
 
 
 plt.tight_layout()
-plt.savefig('examples.png', transparent=True)
-# plt.show()
+# plt.savefig('examples.png', transparent=True)
+plt.show()

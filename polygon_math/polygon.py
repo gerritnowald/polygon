@@ -179,7 +179,7 @@ class _polygonBase():
     def plotCenterMass(self, color = 'r', marker = '+', ax = None, **plt_kwargs):
         if ax is None:
             ax = plt.gca()
-        ax.plot( self.CenterMass[0], self.CenterMass[1], color = color, marker = marker, **plt_kwargs )
+        ax.plot( *self.CenterMass, color = color, marker = marker, **plt_kwargs )
     
     def plotCenterEdges(self, color = 'k', marker = 'o', linestyle = '', ax = None, **plt_kwargs):
         if ax is None:
@@ -352,7 +352,7 @@ class _solid(_polygonBase):
     def plotCenterMassCrossSection(self, color = 'g', marker = '+', ax = None, **plt_kwargs):
         if ax is None:
             ax = plt.gca()
-        ax.plot( self.CenterMassCrossSection[0], self.CenterMassCrossSection[1], color = color, marker = marker, **plt_kwargs )
+        ax.plot( *self.CenterMassCrossSection, color = color, marker = marker, **plt_kwargs )
 
 # -----------------------------------------------------------------------------
 # solid of revolution & triangle class
