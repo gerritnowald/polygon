@@ -12,17 +12,17 @@ import matplotlib.pyplot as plt
 Vertices = np.random.rand(3,2)*10
 
 
-def plot(Vertices, numbers = False, ax = None, **plt_kwargs):
+def plot(Vertices, *plt_args, numbers = False, ax = None, **plt_kwargs):
     # plots contour of polygon, optionally with numbers of vertices
     if ax is None:
         ax = plt.gca()
-    ax.plot(Vertices[:,0], Vertices[:,1], **plt_kwargs)
+    ax.plot(Vertices[:,0], Vertices[:,1], *plt_args, **plt_kwargs)
     if numbers:
         for i in range(len(Vertices)-1):
             ax.text(Vertices[i,0], Vertices[i,1], str(i) )
 
 plt.close('all')
 plt.figure()
-plot(Vertices, numbers=True, c='k', marker='o', label='Polygon')
+plot(Vertices, 'ko-', numbers=True, label='Polygon')
 plt.legend()
 plt.show()
