@@ -5,7 +5,6 @@ Created on Sun Dec 18 10:40:32 2022
 @author: Gerrit Nowald
 """
 
-import numpy as np
 import matplotlib.pyplot as plt
 
 import sys
