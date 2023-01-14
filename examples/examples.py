@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 from polygon_math import polygon
 
 
+plt.close('all')
 plt.figure()
 plt.style.use('dark_background')
 
@@ -20,11 +21,11 @@ Vertices = np.random.rand(3,2)*10
 triangle = polygon(Vertices)
 
 plt.subplot(221)
-triangle.plot(marker='o')
+triangle.plot('o-')
 triangle.plotCenterMass()
-triangle.plotCenterEdges()
-triangle.plotOutCircle(linestyle='--', linewidth=0.7)
-triangle.plotIncircle(linestyle='--', linewidth=0.7)
+triangle.plotCenterEdges('co')
+triangle.plotOutCircle('--', linewidth=0.7)
+triangle.plotIncircle('--', linewidth=0.7)
 plt.axis('off')
 
 
@@ -89,7 +90,7 @@ Protated    = P.rotateClockwise(45,[5,0])
 Pscaled     = P / 2
 
 plt.subplot(224)
-P.plot(linestyle='--')
+P.plot('--')
 Ptranslated.plot()
 Protated.plot()
 Pscaled.plot()
@@ -109,7 +110,7 @@ plt.axis('off')
 # socket = polygon(Vertices, axis=1)
 
 # socket.plot()
-# plt.plot([0,0], [0,6], 'w-.')
+# socket.plotRotationAxis()
 # plt.axis('equal')
 # plt.axis('off')
 

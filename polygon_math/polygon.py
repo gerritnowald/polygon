@@ -56,16 +56,16 @@ methods of polygon object:
     - print(instance)        gives number of vertices
     - abs(instance)          gives area or volume of solid of revolution if axis is defined
     
-    - plotting (matplotlib kwargs can be used)
-        - plot(numbers=False, **kwargs)            plots polygon, optionally numbers of vertices
-        - plotCenterMass(**kwargs)                 plots center of mass, default style red cross
-        - plotCenterEdges(**kwargs)                plots center of edges, default style black dots
+    - plotting (matplotlib args & kwargs can be used)
+        - plot(*args, numbers=False, **kwargs)     plots polygon, optionally numbers of vertices
+        - plotCenterMass(*args, **kwargs)          plots center of mass, default style red cross
+        - plotCenterEdges(*args, **kwargs)         plots center of edges, default style black dots
         - for solid of revolution:
             - plotRotationAxis(**kwargs)           plots axis of rotation, default linestyle black dash-dotted
-            - plotCenterMassCrossSection(**kwargs) plots centroid of crossSection, default style green cross
+            - plotCenterMassCrossSection(*args, **kwargs) plots centroid of crossSection, default style green cross
         - for triangles:
-            - plotOutCircle(**kwargs)              plots circumscribed (outer) circle
-            - plotIncircle(**kwargs)               plots incircle (inner circle)
+            - plotOutCircle(*args, **kwargs)       plots circumscribed (outer) circle
+            - plotIncircle(*args, **kwargs)        plots incircle (inner circle)
     
     - point testing
         - instance(point), isPointInside(point)    true, if point [x,y] is inside of polygon (not on the edge)
@@ -157,34 +157,46 @@ class _polygonBase():
     # -------------------------------------------------------
     # methods plotting
     
-    def _plot_circ(self, radius = 1, center = (0,0), Npoints = 50, ax = None, plt_kwargs = {} ):
+    def _plot_circ(self, *plt_args, radius = 1, center = (0,0), Npoints = 50, ax = None, **plt_kwargs ):
         if ax is None:
             ax = plt.gca()
         angle = np.linspace(0, 2*np.pi, Npoints+1)
         x = center[0] + radius*np.cos(angle)
         y = center[1] + radius*np.sin(angle)
-        ax.plot( x, y, **plt_kwargs )
+        ax.plot( x, y, *plt_args, **plt_kwargs )
         ax.axis('equal')
         return np.vstack((x,y)).T   # vertices
     
-    def plot(self, numbers = False, ax = None, **plt_kwargs):
+    def plot(self, *plt_args, numbers = False, ax = None, **plt_kwargs):
         # plots contour of polygon, optionally with numbers of vertices
         if ax is None:
             ax = plt.gca()
-        ax.plot(self.Vertices[:,0], self.Vertices[:,1], **plt_kwargs)
+        ax.plot(self.Vertices[:,0], self.Vertices[:,1], *plt_args, **plt_kwargs)
         if numbers:
             for i in range(len(self.Vertices)-1):
                 ax.text(self.Vertices[i,0], self.Vertices[i,1], str(i) )
     
-    def plotCenterMass(self, color = 'r', marker = '+', ax = None, **plt_kwargs):
+    def plotCenterMass(self, *plt_args, ax = None, **plt_kwargs):
         if ax is None:
             ax = plt.gca()
-        ax.plot( *self.CenterMass, color = color, marker = marker, **plt_kwargs )
+        if not plt_args:
+            if 'color' not in plt_kwargs:
+                plt_kwargs['color']  = 'r'
+            if 'marker' not in plt_kwargs:
+                plt_kwargs['marker'] = '+'
+        ax.plot( *self.CenterMass, *plt_args, **plt_kwargs )
     
-    def plotCenterEdges(self, color = 'k', marker = 'o', linestyle = '', ax = None, **plt_kwargs):
+    def plotCenterEdges(self, *plt_args, ax = None, **plt_kwargs):
         if ax is None:
             ax = plt.gca()
-        ax.plot( self.EdgesMiddle[:,0], self.EdgesMiddle[:,1], color = color, marker = marker, linestyle = linestyle, **plt_kwargs )
+        if not plt_args:
+            if 'color' not in plt_kwargs:
+                plt_kwargs['color']     = 'k'
+            if 'marker' not in plt_kwargs:
+                plt_kwargs['marker']    = 'o'
+            if 'linestyle' not in plt_kwargs:
+                plt_kwargs['linestyle'] = ''
+        ax.plot( self.EdgesMiddle[:,0], self.EdgesMiddle[:,1], *plt_args, **plt_kwargs )
     
     # -------------------------------------------------------
     # methods manipulation
@@ -301,11 +313,11 @@ class _triangle(_polygonBase):
     # -------------------------------------------------------
     # methods plotting
     
-    def plotOutCircle(self, **plt_kwargs):
-        self._plot_circ(radius = self.RadiusOuterCircle, center = self.CenterOuterCircle, plt_kwargs = plt_kwargs)
+    def plotOutCircle(self, *plt_args, **plt_kwargs):
+        self._plot_circ(*plt_args, radius = self.RadiusOuterCircle, center = self.CenterOuterCircle, **plt_kwargs)
     
-    def plotIncircle(self, **plt_kwargs):
-        self._plot_circ(radius = self.RadiusInnerCircle, center = self.CenterInnerCircle, plt_kwargs = plt_kwargs)
+    def plotIncircle(self, *plt_args, **plt_kwargs):
+        self._plot_circ(*plt_args, radius = self.RadiusInnerCircle, center = self.CenterInnerCircle, **plt_kwargs)
 
 # -----------------------------------------------------------------------------
 # solid of revolution class
@@ -342,6 +354,7 @@ class _solid(_polygonBase):
         return self.RotationVolume
     
     def plotRotationAxis(self, color = 'k', linestyle = '-.', ax = None, **plt_kwargs):
+        # axhline & axvline don't have *args
         if ax is None:
             ax = plt.gca()
         if self._axis == 0:
@@ -349,10 +362,15 @@ class _solid(_polygonBase):
         elif self._axis == 1:
             ax.axvline(x = 0, color = color, linestyle = linestyle, **plt_kwargs)
     
-    def plotCenterMassCrossSection(self, color = 'g', marker = '+', ax = None, **plt_kwargs):
+    def plotCenterMassCrossSection(self, *plt_args, ax = None, **plt_kwargs):
         if ax is None:
             ax = plt.gca()
-        ax.plot( *self.CenterMassCrossSection, color = color, marker = marker, **plt_kwargs )
+        if not plt_args:
+            if 'color' not in plt_kwargs:
+                plt_kwargs['color']  = 'g'
+            if 'marker' not in plt_kwargs:
+                plt_kwargs['marker'] = '+'
+        ax.plot( *self.CenterMassCrossSection, *plt_args, **plt_kwargs )
 
 # -----------------------------------------------------------------------------
 # solid of revolution & triangle class
