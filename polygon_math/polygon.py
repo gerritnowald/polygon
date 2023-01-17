@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 geometry calculation of arbitrary 2D polygons:  
-    - plotting with matplotlib kwargs (color, linestyle, label)
+    - plotting with matplotlib args & kwargs (e.g. color, linestyle, label)
     - area, lengths of edges, inner angles
     - order of vertices (clockwise or anti-clockwise)
     - centroid (center of mass)
