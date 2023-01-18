@@ -155,6 +155,9 @@ class _polygonBase():
     # -------------------------------------------------------
     # dunder methods
     
+    def __repr__(self):
+        return f'polygon({self.Vertices}, {self._axis})'
+    
     def __str__(self):
         # print(instance) gives number of vertices
         return f'Polygon with {len(self.Vertices)-1} vertices'
@@ -380,6 +383,10 @@ class _solid(_polygonBase):
     def __abs__(self):
         # abs(instance) gives volume of solid of revolution
         return self.RotationVolume
+    
+    def __str__(self):
+        # print(instance) gives number of vertices
+        return f'Solid of revolution, cross-section polygon with {len(self.Vertices)-1} vertices'
     
     # -------------------------------------------------------
     # methods plotting
