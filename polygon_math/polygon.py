@@ -157,7 +157,8 @@ class _polygonBase():
     # -------------------------------------------------------
     # methods plotting
     
-    def _plot_circ(self, *plt_args, radius = 1, center = (0,0), Npoints = 50, ax = None, **plt_kwargs ):
+    @staticmethod
+    def _plot_circ(*plt_args, radius = 1, center = (0,0), Npoints = 50, ax = None, **plt_kwargs ):
         if ax is None:
             ax = plt.gca()
         angle = np.linspace(0, 2*np.pi, Npoints+1)
@@ -236,11 +237,11 @@ class _polygonBase():
     # -------------------------------------------------------
     # methods point testing
     
-    def isPointOnEdge(self, point):
+    @staticmethod
+    def _isPointOnEdge(vert, point):
         # computes the distance of a point from each edge. The point is on an edge,
         # if the point is between the vertices and the distance is smaller than the rounding error.
         # https://de.mathworks.com/matlabcentral/answers/351581-points-lying-within-line
-        vert = self.Vertices
         for i in range(vert.shape[0]-1):    # for each edge
             PQ    =      point - vert[i,]   # Line from P1 to Q
             P12   = vert[i+1,] - vert[i,]   # Line from P1 to P2
@@ -256,11 +257,15 @@ class _polygonBase():
                 return on
         return on
     
-    def isPointInside(self, point = [0,0]):
+    def isPointOnEdge(self, point):
+        return self._isPointOnEdge(self.Vertices, point)
+    
+    
+    @staticmethod
+    def _isPointInside(vert, point = [0,0]):
         # A point is in a polygon, if a line from the point to infinity crosses the polygon an odd number of times.
         # Here, the line goes parallel to the x-axis in positive x-direction.
         # adapted from https://www.algorithms-and-technologies.com/point_in_polygon/python
-        vert = self.Vertices
         odd  = False    
         for j in range(vert.shape[0]-1):    # for each edge check if the line crosses
             i = j + 1                       # next vertex
@@ -271,7 +276,10 @@ class _polygonBase():
                     Qx = (vert[j,0]-vert[i,0])*(point[1]-vert[i,1])/(vert[j,1]-vert[i,1]) + vert[i,0]
                     if point[0] < Qx:       # point left of edge
                         odd = not odd       # line crosses edge
-        return odd  # point is in polygon (not on the edge) if odd=true   
+        return odd  # point is in polygon (not on the edge) if odd=true
+    
+    def isPointInside(self, point = [0,0]):
+        return self._isPointInside(self.Vertices, point = point)
     def __call__(self, point=[0,0]):
         return self.isPointInside(point)
 
@@ -298,7 +306,8 @@ class _triangle(_polygonBase):
     # -------------------------------------------------------
     # geometrical properties of the triangle
     
-    def _circumcenter(self, vert):
+    @staticmethod
+    def _circumcenter(vert):
         # center of circumscribed circle
         # https://en.wikipedia.org/wiki/Circumscribed_circle
         vertP = vert[:-1,:] - vert[0,:]      # coordinate transformation
