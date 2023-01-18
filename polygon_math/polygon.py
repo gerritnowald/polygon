@@ -94,6 +94,45 @@ import matplotlib.pyplot as plt
 import warnings
 
 # #############################################################################
+# selector class
+# #############################################################################
+
+class polygon():
+    
+    def __new__(self, Vertices, axis=None):
+        
+        # -------------------------------------------------------
+        # input checks
+        
+        vert = np.array(Vertices)
+        
+        # coordinates as 2 columns (min 3 rows)
+        if vert.shape[0] < vert.shape[1]:
+            vert = vert.T
+        
+        # first = last vertex
+        if not np.isclose(vert[-1,], vert[0,]).all():
+            vert = np.append(vert,[vert[0,]],axis=0)
+        
+        # -------------------------------------------------------
+        # choose subclass
+        
+        isTriangle = len(vert)-1 == 3
+        isSolidRev = axis is not None
+        
+        if isTriangle and not isSolidRev:
+            return _triangle(vert, axis)
+        
+        elif isSolidRev and not isTriangle:
+            return _solid(vert, axis)
+        
+        elif isSolidRev and isTriangle:
+            return _solid_and_triangle(vert, axis)
+        
+        else:
+            return _polygonBase(vert, axis)
+
+# #############################################################################
 # base class
 # #############################################################################
 
@@ -107,22 +146,16 @@ class _polygonBase():
         self.Vertices = vert
         self._axis    = axis
         
-        self.EdgesLength, self.EdgesMiddle, self.Angles, self.Area, self._AreaSigned, self.IsClockwise, self.CenterMass, self.SecondMomentArea, self._Ixy = self._geom2D(vert)
+        self.EdgesMiddle, self._AreaSigned, self.IsClockwise, self.CenterMass, self.SecondMomentArea, self._Ixy = self._geom2D(vert)
+        self.Area = abs(self._AreaSigned)
+        
+        self.EdgesLength, self.Angles = self._edges(vert)
         
     # -------------------------------------------------------
     # geometrical properties of polygon
     
     @staticmethod
     def _geom2D(vert):
-        # lengths of edges
-        vertext = np.append([vert[-2,]], vert, axis=0) # second last in front of first vertex
-        vec = np.diff(vertext, axis=0)                 # direction vectors of edges
-        L   = np.linalg.norm(vec, ord=2, axis=1)       # length of edges (Pythagorean theorem)
-        EdgesLength = L[1:]
-        
-        # inner angles (law of cosines)
-        Angles = 180*(1 - 1/np.pi*np.arccos( np.sum( vec[:-1,]*vec[1:,], axis=1 ) / (L[:-1]*L[1:]) ))
-        
         # centers of edges
         ri   = vert[:-1]
         rip1 = vert[1:]
@@ -137,7 +170,6 @@ class _polygonBase():
         FM   = xi*yip1 - xip1*yi
         AreaSigned = sum(FM)/2
         IsClockwise = AreaSigned < 0   # area negative for clockwise order of vertices
-        Area = abs(AreaSigned)
         
         # center of mass (1st moment of area / area)
         CenterMass = (FM @ EdgesMiddle)/3/AreaSigned
@@ -150,13 +182,27 @@ class _polygonBase():
         Ixy    = FM @ Bxy / 24
         SecondMomentArea = np.hstack(( abs(IyyIxx[::-1]), -Ixy*(-1)**IsClockwise ))
         
-        return EdgesLength, EdgesMiddle, Angles, Area, AreaSigned, IsClockwise, CenterMass, SecondMomentArea, Ixy
+        return EdgesMiddle, AreaSigned, IsClockwise, CenterMass, SecondMomentArea, Ixy
+    
+    
+    @staticmethod
+    def _edges(vert):
+        # lengths of edges
+        vertext = np.append([vert[-2,]], vert, axis=0) # second last in front of first vertex
+        vec = np.diff(vertext, axis=0)                 # direction vectors of edges
+        L   = np.linalg.norm(vec, ord=2, axis=1)       # length of edges (Pythagorean theorem)
+        EdgesLength = L[1:]
+        
+        # inner angles (law of cosines)
+        Angles = 180*(1 - 1/np.pi*np.arccos( np.sum( vec[:-1,]*vec[1:,], axis=1 ) / (L[:-1]*L[1:]) ))
+        
+        return EdgesLength, Angles
     
     # -------------------------------------------------------
     # dunder methods
     
     def __repr__(self):
-        return f'polygon({self.Vertices}, {self._axis})'
+        return f'polygon({self.Vertices}, axis={self._axis})'
     
     def __str__(self):
         # print(instance) gives number of vertices
@@ -356,18 +402,17 @@ class _solid(_polygonBase):
         if min(vert[:,1-axis]) * max(vert[:,1-axis]) < 0:
             warnings.warn('solid of revolution self-intersecting (axis of rotation intersects cross-section)')
         
-        self.RotationVolume, self.RotationSurfaces, self.CenterMass, self.CenterMassCrossSection = self._geom3D(axis, self.EdgesLength, self.EdgesMiddle, self._AreaSigned, self.CenterMass, self._Ixy)
+        self.RotationVolume, self.CenterMass, self.CenterMassCrossSection = self._geom3D(axis, self._AreaSigned, self.CenterMass, self._Ixy)
+        self.RotationSurfaces = self._surfaces(axis, self.EdgesLength, self.EdgesMiddle)
     
     # -------------------------------------------------------
     # geometrical properties of the solid
     
     @staticmethod
-    def _geom3D(axis, EdgesLength, EdgesMiddle, _AreaSigned, CenterMass, _Ixy):
+    def _geom3D(axis, _AreaSigned, CenterMass, _Ixy):
         # Pappus's centroid theorem
         # https://en.wikipedia.org/wiki/Pappus%27s_centroid_theorem
         RotationVolumeSigned = 2*np.pi*_AreaSigned*CenterMass[1-axis]
-        RotationSurfaces     = 2*np.pi*EdgesLength*abs(EdgesMiddle[:,1-axis])
-        RotationVolume       = abs(RotationVolumeSigned)
         
         # center of mass (in polar coordinates related to product of inertia)
         zS = 2*np.pi * _Ixy / RotationVolumeSigned
@@ -375,7 +420,12 @@ class _solid(_polygonBase):
         if axis == 0:
             CenterMass = CenterMass[::-1]
         
-        return RotationVolume, RotationSurfaces, CenterMass, CenterMassCrossSection
+        return abs(RotationVolumeSigned), CenterMass, CenterMassCrossSection
+    
+    
+    @staticmethod
+    def _surfaces(axis, EdgesLength, EdgesMiddle):
+        return 2*np.pi*EdgesLength*abs(EdgesMiddle[:,1-axis])
     
     # -------------------------------------------------------
     # dunder methods
@@ -417,42 +467,3 @@ class _solid(_polygonBase):
 class _solid_and_triangle(_triangle, _solid):
     def __init__(self, vert, axis):
         super().__init__(vert, axis)
-
-# #############################################################################
-# selector class
-# #############################################################################
-
-class polygon():
-    
-    def __new__(self, Vertices, axis=None):
-        
-        # -------------------------------------------------------
-        # input checks
-        
-        vert = np.array(Vertices)
-        
-        # coordinates as 2 columns (min 3 rows)
-        if vert.shape[0] < vert.shape[1]:
-            vert = vert.T
-        
-        # first = last vertex
-        if not np.isclose(vert[-1,], vert[0,]).all():
-            vert = np.append(vert,[vert[0,]],axis=0)
-        
-        # -------------------------------------------------------
-        # choose subclass
-        
-        isTriangle = len(vert)-1 == 3
-        isSolidRev = axis is not None
-        
-        if isTriangle and not isSolidRev:
-            return _triangle(vert, axis)
-        
-        elif isSolidRev and not isTriangle:
-            return _solid(vert, axis)
-        
-        elif isSolidRev and isTriangle:
-            return _solid_and_triangle(vert, axis)
-        
-        else:
-            return _polygonBase(vert, axis)
