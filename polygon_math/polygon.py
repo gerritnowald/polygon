@@ -104,19 +104,29 @@ class _polygonBase():
     
     def __init__(self, vert, axis):
         
+        self.Vertices = vert
+        self._axis    = axis
+        
+        self.EdgesLength, self.EdgesMiddle, self.Angles, self.Area, self._AreaSigned, self.IsClockwise, self.CenterMass, self.SecondMomentArea, self._Ixy = self._geom2D(vert)
+        
+    # -------------------------------------------------------
+    # geometrical properties of polygon
+    
+    @staticmethod
+    def _geom2D(vert):
         # lengths of edges
         vertext = np.append([vert[-2,]], vert, axis=0) # second last in front of first vertex
         vec = np.diff(vertext, axis=0)                 # direction vectors of edges
         L   = np.linalg.norm(vec, ord=2, axis=1)       # length of edges (Pythagorean theorem)
-        self.EdgesLength = L[1:]
+        EdgesLength = L[1:]
         
         # inner angles (law of cosines)
-        self.Angles = 180*(1 - 1/np.pi*np.arccos( np.sum( vec[:-1,]*vec[1:,], axis=1 ) / (L[:-1]*L[1:]) ))
+        Angles = 180*(1 - 1/np.pi*np.arccos( np.sum( vec[:-1,]*vec[1:,], axis=1 ) / (L[:-1]*L[1:]) ))
         
         # centers of edges
         ri   = vert[:-1]
         rip1 = vert[1:]
-        self.EdgesMiddle = (ri + rip1)/2
+        EdgesMiddle = (ri + rip1)/2
         
         # area (Gauss's area formula, 0th moment of area)
         # https://en.wikipedia.org/wiki/Shoelace_formula
@@ -126,12 +136,11 @@ class _polygonBase():
         yip1 = rip1[:,1]
         FM   = xi*yip1 - xip1*yi
         AreaSigned = sum(FM)/2
-        self.IsClockwise = AreaSigned < 0   # area negative for clockwise order of vertices
-        self.Area = abs(AreaSigned)
-        self._AreaSigned = AreaSigned
+        IsClockwise = AreaSigned < 0   # area negative for clockwise order of vertices
+        Area = abs(AreaSigned)
         
         # center of mass (1st moment of area / area)
-        self.CenterMass = (FM @ self.EdgesMiddle)/3/AreaSigned
+        CenterMass = (FM @ EdgesMiddle)/3/AreaSigned
         
         # second moment of area
         # https://en.wikipedia.org/wiki/Second_moment_of_area
@@ -139,14 +148,9 @@ class _polygonBase():
         Bxy    = xi*yip1 + 2*xi*yi + 2*xip1*yip1 + xip1*yi
         IyyIxx = FM @ Brr / 12
         Ixy    = FM @ Bxy / 24
-        self.SecondMomentArea = np.hstack(( abs(IyyIxx[::-1]), -Ixy*(-1)**self.IsClockwise ))
-        self._Ixy = Ixy 
+        SecondMomentArea = np.hstack(( abs(IyyIxx[::-1]), -Ixy*(-1)**IsClockwise ))
         
-        self.Vertices = vert
-        self._axis    = axis
-    
-    # -------------------------------------------------------
-    # methods geometrical properties
+        return EdgesLength, EdgesMiddle, Angles, Area, AreaSigned, IsClockwise, CenterMass, SecondMomentArea, Ixy
     
     # -------------------------------------------------------
     # dunder methods
@@ -161,17 +165,6 @@ class _polygonBase():
     
     # -------------------------------------------------------
     # methods plotting
-    
-    @staticmethod
-    def _plot_circ(*plt_args, radius = 1, center = (0,0), Npoints = 50, ax = None, **plt_kwargs ):
-        if ax is None:
-            ax = plt.gca()
-        angle = np.linspace(0, 2*np.pi, Npoints+1)
-        x = center[0] + radius*np.cos(angle)
-        y = center[1] + radius*np.sin(angle)
-        ax.plot( x, y, *plt_args, **plt_kwargs )
-        ax.axis('equal')
-        return np.vstack((x,y)).T   # vertices
     
     def plot(self, *plt_args, numbers = False, ax = None, **plt_kwargs):
         # plots contour of polygon, optionally with numbers of vertices
@@ -203,6 +196,17 @@ class _polygonBase():
             if 'linestyle' not in plt_kwargs:
                 plt_kwargs['linestyle'] = ''
         ax.plot( self.EdgesMiddle[:,0], self.EdgesMiddle[:,1], *plt_args, **plt_kwargs )
+    
+    @staticmethod
+    def _plot_circ(*plt_args, radius = 1, center = (0,0), Npoints = 50, ax = None, **plt_kwargs ):
+        if ax is None:
+            ax = plt.gca()
+        angle = np.linspace(0, 2*np.pi, Npoints+1)
+        x = center[0] + radius*np.cos(angle)
+        y = center[1] + radius*np.sin(angle)
+        ax.plot( x, y, *plt_args, **plt_kwargs )
+        ax.axis('equal')
+        return np.vstack((x,y)).T   # vertices
     
     # -------------------------------------------------------
     # methods manipulation
@@ -300,10 +304,7 @@ class _triangle(_polygonBase):
     def __init__(self, vert, axis):
         super().__init__(vert, axis)
     
-        # circumscribed (outer) circle
         self.CenterOuterCircle, self.RadiusOuterCircle = self._OuterCircle(vert)
-        
-        # incircle (inner circle)
         self.CenterInnerCircle, self.RadiusInnerCircle = self._incircle(vert, self.Area, self.EdgesLength)
     
     # -------------------------------------------------------
@@ -311,7 +312,6 @@ class _triangle(_polygonBase):
     
     @staticmethod
     def _incircle(vert, Area, EdgesLength):
-        # incircle (inner circle)
         # https://en.wikipedia.org/wiki/Incenter
         CenterInnerCircle = np.roll(EdgesLength, -1) @ vert[:-1,] / sum(EdgesLength)
         RadiusInnerCircle = 2*Area/sum(EdgesLength)
@@ -319,7 +319,6 @@ class _triangle(_polygonBase):
     
     @staticmethod
     def _OuterCircle(vert):
-        # center of circumscribed circle
         # https://en.wikipedia.org/wiki/Circumscribed_circle
         vertP = vert[:-1,:] - vert[0,:]      # coordinate transformation
         DP  = np.cross(vertP[:,0],vertP[:,1])[0]
@@ -354,20 +353,26 @@ class _solid(_polygonBase):
         if min(vert[:,1-axis]) * max(vert[:,1-axis]) < 0:
             warnings.warn('solid of revolution self-intersecting (axis of rotation intersects cross-section)')
         
-        # Pappus's centroid theorem
-        # https://en.wikipedia.org/wiki/Pappus%27s_centroid_theorem
-        RotationVolumeSigned  = 2*np.pi*self._AreaSigned*self.CenterMass[1-axis]
-        self.RotationSurfaces = 2*np.pi*self.EdgesLength*abs(self.EdgesMiddle[:,1-axis])
-        self.RotationVolume   = abs(RotationVolumeSigned)
-        
-        # center of mass (in polar coordinates related to product of inertia)
-        zS = 2*np.pi * self._Ixy / RotationVolumeSigned
-        self.CenterMass, self.CenterMassCrossSection = [0, zS] , self.CenterMass
-        if axis == 0:
-            self.CenterMass = self.CenterMass[::-1]
+        self.RotationVolume, self.RotationSurfaces, self.CenterMass, self.CenterMassCrossSection = self._geom3D(axis, self.EdgesLength, self.EdgesMiddle, self._AreaSigned, self.CenterMass, self._Ixy)
     
     # -------------------------------------------------------
-    # methods geometrical properties
+    # geometrical properties of the solid
+    
+    @staticmethod
+    def _geom3D(axis, EdgesLength, EdgesMiddle, _AreaSigned, CenterMass, _Ixy):
+        # Pappus's centroid theorem
+        # https://en.wikipedia.org/wiki/Pappus%27s_centroid_theorem
+        RotationVolumeSigned = 2*np.pi*_AreaSigned*CenterMass[1-axis]
+        RotationSurfaces     = 2*np.pi*EdgesLength*abs(EdgesMiddle[:,1-axis])
+        RotationVolume       = abs(RotationVolumeSigned)
+        
+        # center of mass (in polar coordinates related to product of inertia)
+        zS = 2*np.pi * _Ixy / RotationVolumeSigned
+        CenterMass, CenterMassCrossSection = [0, zS] , CenterMass
+        if axis == 0:
+            CenterMass = CenterMass[::-1]
+        
+        return RotationVolume, RotationSurfaces, CenterMass, CenterMassCrossSection
     
     # -------------------------------------------------------
     # dunder methods
