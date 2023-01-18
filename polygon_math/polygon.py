@@ -168,11 +168,11 @@ class _polygonBase():
         xip1 = rip1[:,0]
         yip1 = rip1[:,1]
         FM   = xi*yip1 - xip1*yi
-        AreaSigned = sum(FM)/2
+        AreaSigned  = sum(FM)/2
         IsClockwise = AreaSigned < 0   # area negative for clockwise order of vertices
         
         # center of mass (1st moment of area / area)
-        CenterMass = (FM @ EdgesMiddle)/3/AreaSigned
+        CenterMass = FM @ EdgesMiddle /3/AreaSigned
         
         # second moment of area
         # https://en.wikipedia.org/wiki/Second_moment_of_area
@@ -194,9 +194,9 @@ class _polygonBase():
         EdgesLength = L[1:]
         
         # inner angles (law of cosines)
-        Angles = 180*(1 - 1/np.pi*np.arccos( np.sum( vec[:-1,]*vec[1:,], axis=1 ) / (L[:-1]*L[1:]) ))
+        Angles = np.pi - np.arccos( np.sum( vec[:-1,]*vec[1:,], axis=1 ) / (L[:-1]*L[1:]) )
         
-        return EdgesLength, Angles
+        return EdgesLength, np.degrees(Angles)
     
     # -------------------------------------------------------
     # dunder methods
@@ -205,11 +205,9 @@ class _polygonBase():
         return f'polygon({self.Vertices}, axis={self._axis})'
     
     def __str__(self):
-        # print(instance) gives number of vertices
         return f'Polygon with {len(self.Vertices)-1} vertices'
     
     def __abs__(self):
-        # abs(instance) gives area
         return self.Area
     
     # -------------------------------------------------------
@@ -274,8 +272,8 @@ class _polygonBase():
     def rotate(self, angle, point = None):
         if point is None:
             point = self.CenterMass
-        alpha = angle*np.pi/180
-        R = [[np.cos(alpha),np.sin(alpha)],[-np.sin(alpha),np.cos(alpha)]]
+        alpha = np.radians(angle)
+        R = [[np.cos(alpha), np.sin(alpha)], [-np.sin(alpha), np.cos(alpha)]]
         Vertices_new = (self.Vertices - point) @ R + point
         return polygon(Vertices_new, self._axis)
     def rotateClockwise(self, angle, point=None):
@@ -363,16 +361,16 @@ class _triangle(_polygonBase):
     def _incircle(vert, Area, EdgesLength):
         # https://en.wikipedia.org/wiki/Incenter
         CenterInnerCircle = np.roll(EdgesLength, -1) @ vert[:-1,] / sum(EdgesLength)
-        RadiusInnerCircle = 2*Area/sum(EdgesLength)
+        RadiusInnerCircle = 2*Area / sum(EdgesLength)
         return CenterInnerCircle, RadiusInnerCircle
     
     @staticmethod
     def _OuterCircle(vert):
         # https://en.wikipedia.org/wiki/Circumscribed_circle
         vertP = vert[:-1,:] - vert[0,:]      # coordinate transformation
-        DP  = np.cross(vertP[:,0],vertP[:,1])[0]
+        DP  = np.cross(vertP[:,0], vertP[:,1])[0]
         LSQ = np.linalg.norm(vertP, axis=1)**2
-        UP  = np.cross(vertP,LSQ,axis=0)[0,:]/DP/2
+        UP  = np.cross(vertP, LSQ, axis=0)[0,:] /DP/2
         UP  = UP[::-1]*np.array([-1, 1])     # orthogonal vector
         Center = UP + vert[0,:]              # coordinate transformation
         Radius = np.linalg.norm(UP, ord=2)
@@ -412,7 +410,7 @@ class _solid(_polygonBase):
     def _geom3D(axis, _AreaSigned, CenterMass, _Ixy):
         # Pappus's centroid theorem
         # https://en.wikipedia.org/wiki/Pappus%27s_centroid_theorem
-        RotationVolumeSigned = 2*np.pi*_AreaSigned*CenterMass[1-axis]
+        RotationVolumeSigned = 2*np.pi * _AreaSigned * CenterMass[1-axis]
         
         # center of mass (in polar coordinates related to product of inertia)
         zS = 2*np.pi * _Ixy / RotationVolumeSigned
@@ -425,17 +423,15 @@ class _solid(_polygonBase):
     
     @staticmethod
     def _surfaces(axis, EdgesLength, EdgesMiddle):
-        return 2*np.pi*EdgesLength*abs(EdgesMiddle[:,1-axis])
+        return 2*np.pi * EdgesLength * abs(EdgesMiddle[:,1-axis])
     
     # -------------------------------------------------------
     # dunder methods
     
     def __abs__(self):
-        # abs(instance) gives volume of solid of revolution
         return self.RotationVolume
     
     def __str__(self):
-        # print(instance) gives number of vertices
         return f'Solid of revolution, cross-section polygon with {len(self.Vertices)-1} vertices'
     
     # -------------------------------------------------------
