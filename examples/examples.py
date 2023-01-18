@@ -8,6 +8,8 @@ Created on Thu May 12 21:38:32 2022
 import numpy as np
 import matplotlib.pyplot as plt
 
+import sys
+sys.path.insert(0,'..')
 from polygon_math import polygon
 
 
