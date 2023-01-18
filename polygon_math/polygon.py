@@ -93,9 +93,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import warnings
 
-# -----------------------------------------------------------------------------
+# #############################################################################
 # base class
-# -----------------------------------------------------------------------------
+# #############################################################################
 
 class _polygonBase():
     
@@ -128,6 +128,7 @@ class _polygonBase():
         AreaSigned = sum(FM)/2
         self.IsClockwise = AreaSigned < 0   # area negative for clockwise order of vertices
         self.Area = abs(AreaSigned)
+        self._AreaSigned = AreaSigned
         
         # center of mass (1st moment of area / area)
         self.CenterMass = (FM @ self.EdgesMiddle)/3/AreaSigned
@@ -139,12 +140,16 @@ class _polygonBase():
         IyyIxx = FM @ Brr / 12
         Ixy    = FM @ Bxy / 24
         self.SecondMomentArea = np.hstack(( abs(IyyIxx[::-1]), -Ixy*(-1)**self.IsClockwise ))
-            
+        self._Ixy = Ixy 
+        
         self.Vertices = vert
         self._axis    = axis
     
     # -------------------------------------------------------
     # methods geometrical properties
+    
+    # -------------------------------------------------------
+    # dunder methods
     
     def __str__(self):
         # print(instance) gives number of vertices
@@ -283,9 +288,9 @@ class _polygonBase():
     def __call__(self, point=[0,0]):
         return self.isPointInside(point)
 
-# -----------------------------------------------------------------------------
+# #############################################################################
 # triangle class
-# -----------------------------------------------------------------------------
+# #############################################################################
 
 class _triangle(_polygonBase):
     
@@ -296,18 +301,24 @@ class _triangle(_polygonBase):
         super().__init__(vert, axis)
     
         # circumscribed (outer) circle
-        self.CenterOuterCircle, self.RadiusOuterCircle = self._circumcenter(vert)
+        self.CenterOuterCircle, self.RadiusOuterCircle = self._OuterCircle(vert)
         
         # incircle (inner circle)
-        # https://en.wikipedia.org/wiki/Incenter
-        self.CenterInnerCircle = np.roll(self.EdgesLength, -1) @ vert[:-1,] / sum(self.EdgesLength)
-        self.RadiusInnerCircle = 2*self.Area/sum(self.EdgesLength)
+        self.CenterInnerCircle, self.RadiusInnerCircle = self._incircle(vert, self.Area, self.EdgesLength)
     
     # -------------------------------------------------------
     # geometrical properties of the triangle
     
     @staticmethod
-    def _circumcenter(vert):
+    def _incircle(vert, Area, EdgesLength):
+        # incircle (inner circle)
+        # https://en.wikipedia.org/wiki/Incenter
+        CenterInnerCircle = np.roll(EdgesLength, -1) @ vert[:-1,] / sum(EdgesLength)
+        RadiusInnerCircle = 2*Area/sum(EdgesLength)
+        return CenterInnerCircle, RadiusInnerCircle
+    
+    @staticmethod
+    def _OuterCircle(vert):
         # center of circumscribed circle
         # https://en.wikipedia.org/wiki/Circumscribed_circle
         vertP = vert[:-1,:] - vert[0,:]      # coordinate transformation
@@ -328,14 +339,14 @@ class _triangle(_polygonBase):
     def plotIncircle(self, *plt_args, **plt_kwargs):
         self._plot_circ(*plt_args, radius = self.RadiusInnerCircle, center = self.CenterInnerCircle, **plt_kwargs)
 
-# -----------------------------------------------------------------------------
+# #############################################################################
 # solid of revolution class
-# -----------------------------------------------------------------------------
+# #############################################################################
 
 class _solid(_polygonBase):
     
     # -------------------------------------------------------
-    # constructor
+    # constructor (geometrical properties)
     
     def __init__(self, vert, axis):
         super().__init__(vert, axis)
@@ -345,22 +356,28 @@ class _solid(_polygonBase):
         
         # Pappus's centroid theorem
         # https://en.wikipedia.org/wiki/Pappus%27s_centroid_theorem
-        RotationVolumeSigned  = 2*np.pi*self.Area*(-1)**self.IsClockwise*self.CenterMass[1-axis]
+        RotationVolumeSigned  = 2*np.pi*self._AreaSigned*self.CenterMass[1-axis]
         self.RotationSurfaces = 2*np.pi*self.EdgesLength*abs(self.EdgesMiddle[:,1-axis])
         self.RotationVolume   = abs(RotationVolumeSigned)
         
         # center of mass (in polar coordinates related to product of inertia)
-        zS = - 2*np.pi * self.SecondMomentArea[2]*(-1)**self.IsClockwise / RotationVolumeSigned
+        zS = 2*np.pi * self._Ixy / RotationVolumeSigned
         self.CenterMass, self.CenterMassCrossSection = [0, zS] , self.CenterMass
         if axis == 0:
             self.CenterMass = self.CenterMass[::-1]
     
     # -------------------------------------------------------
-    # methods
+    # methods geometrical properties
+    
+    # -------------------------------------------------------
+    # dunder methods
     
     def __abs__(self):
         # abs(instance) gives volume of solid of revolution
         return self.RotationVolume
+    
+    # -------------------------------------------------------
+    # methods plotting
     
     def plotRotationAxis(self, color = 'k', linestyle = '-.', ax = None, **plt_kwargs):
         # axhline & axvline don't have *args
@@ -381,17 +398,17 @@ class _solid(_polygonBase):
                 plt_kwargs['marker'] = '+'
         ax.plot( *self.CenterMassCrossSection, *plt_args, **plt_kwargs )
 
-# -----------------------------------------------------------------------------
+# #############################################################################
 # solid of revolution & triangle class
-# -----------------------------------------------------------------------------
+# #############################################################################
 
 class _solid_and_triangle(_triangle, _solid):
     def __init__(self, vert, axis):
         super().__init__(vert, axis)
 
-# -----------------------------------------------------------------------------
+# #############################################################################
 # selector class
-# -----------------------------------------------------------------------------
+# #############################################################################
 
 class polygon():
     
