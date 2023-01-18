@@ -53,7 +53,6 @@ attributes of polygon object:
 
 methods of polygon object:
     
-    - print(instance)        gives number of vertices
     - abs(instance)          gives area or volume of solid of revolution if axis is defined
     
     - plotting (matplotlib args & kwargs can be used)
@@ -112,7 +111,7 @@ class polygon():
         
         # first = last vertex
         if not np.isclose(vert[-1,], vert[0,]).all():
-            vert = np.append(vert,[vert[0,]],axis=0)
+            vert = np.append(vert, [vert[0,]], axis=0)
         
         # -------------------------------------------------------
         # choose subclass
@@ -194,9 +193,9 @@ class _polygonBase():
         EdgesLength = L[1:]
         
         # inner angles (law of cosines)
-        Angles = np.pi - np.arccos( np.sum( vec[:-1,]*vec[1:,], axis=1 ) / (L[:-1]*L[1:]) )
+        angles = np.pi - np.arccos( np.sum( vec[:-1,]*vec[1:,], axis=1 ) / (L[:-1]*L[1:]) )
         
-        return EdgesLength, np.degrees(Angles)
+        return EdgesLength, np.degrees(angles)
     
     # -------------------------------------------------------
     # dunder methods
@@ -259,8 +258,13 @@ class _polygonBase():
     # methods manipulation
     
     # translation
+    @staticmethod
+    def _move(vert, distances):
+        return vert + distances
+    
     def move(self, distances):
-        return polygon(self.Vertices + distances, self._axis)
+        Vertices_new = self._move(self.Vertices, distances)
+        return polygon(Vertices_new, self._axis)
     def centerOrigin(self):
         return self.move(- self.CenterMass )
     def __add__(self, distances):
@@ -268,27 +272,37 @@ class _polygonBase():
     def __sub__(self, distances):
         return self.move(- np.array(distances) )
     
+    
     # rotation (wrt to point, default center of mass)
+    @staticmethod
+    def _rotate(vert, angle, point):
+        alpha = np.radians(angle)
+        R = [[np.cos(alpha), np.sin(alpha)], [-np.sin(alpha), np.cos(alpha)]]
+        return (vert - point) @ R + point
+    
     def rotate(self, angle, point = None):
         if point is None:
             point = self.CenterMass
-        alpha = np.radians(angle)
-        R = [[np.cos(alpha), np.sin(alpha)], [-np.sin(alpha), np.cos(alpha)]]
-        Vertices_new = (self.Vertices - point) @ R + point
+        Vertices_new = self._rotate(self.Vertices, angle, point)
         return polygon(Vertices_new, self._axis)
     def rotateClockwise(self, angle, point=None):
         return self.rotate(-angle, point)
     
+    
     # scaling (wrt to point, default center of mass)
+    @staticmethod
+    def _scale(vert, factors, point):
+        return (vert - point)*factors + point
+    
     def scale(self, factors, point = None):
         if point is None:
             point = self.CenterMass
-        Vertices_new = (self.Vertices - point)*factors + point
+        Vertices_new = self._scale(self.Vertices, factors, point)
         return polygon(Vertices_new, self._axis)
     def __mul__(self, factors):
         return self.scale(factors)
     def __truediv__(self, factors):
-        return self.scale(1/np.array(factors))
+        return self.scale( 1/np.array(factors) )
     
     # -------------------------------------------------------
     # methods point testing
@@ -298,14 +312,14 @@ class _polygonBase():
         # computes the distance of a point from each edge. The point is on an edge,
         # if the point is between the vertices and the distance is smaller than the rounding error.
         # https://de.mathworks.com/matlabcentral/answers/351581-points-lying-within-line
-        for i in range(vert.shape[0]-1):    # for each edge
+        for i in range(vert.shape[0] - 1):  # for each edge
             PQ    =      point - vert[i,]   # Line from P1 to Q
             P12   = vert[i+1,] - vert[i,]   # Line from P1 to P2
             L12   = np.sqrt(np.dot(P12,P12))# length of P12
             N     = P12/L12                 # Normal along P12
             Dist  = abs(np.cross(N,PQ))     # Norm of distance vector
             # Consider rounding errors
-            Limit = np.spacing(np.max(np.abs([vert[i,], vert[i+1,], point])))*10
+            Limit = np.spacing( np.max(np.abs([vert[i,], vert[i+1,], point])) )*10
             on    = Dist < Limit
             if on:
                 L = np.dot(PQ,N)            # Projection of the vector from P1 to Q on the line:
