@@ -91,6 +91,7 @@ methods of polygon object:
 import numpy as np
 import matplotlib.pyplot as plt
 import warnings
+import copy
 
 # #############################################################################
 # selector class
@@ -232,8 +233,10 @@ class _polygonBase():
                 plt_kwargs['color']  = 'r'
             if 'marker' not in plt_kwargs:
                 plt_kwargs['marker'] = '+'
-        CenterMass = self.CenterMass
+        CenterMass = copy.copy(self.CenterMass)
         if ax.name == "3d":
+            if self._axis == 0:
+                CenterMass = CenterMass[::-1]
             CenterMass.insert(0, 0)
         ax.plot( *CenterMass, *plt_args, **plt_kwargs )
     
