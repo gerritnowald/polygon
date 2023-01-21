@@ -261,18 +261,13 @@ class _polygonBase():
         angle = np.linspace(0, 2*np.pi, Npoints+1)
         x = center[0] + radius*np.cos(angle)
         y = center[1] + radius*np.sin(angle)
-        try:
-            z = center[2] * np.ones( Npoints+1 )
-            coord = np.vstack((x, y, z)).T
-        except:
-            coord = np.vstack((x, y)).T
         # plot circle
         try:
+            z = center[2] * np.ones( Npoints+1 )
             ax.plot( x, y, z, *plt_args, **plt_kwargs )
         except:
             ax.plot( x, y, *plt_args, **plt_kwargs )
             ax.axis('equal')
-        return coord
     
     # -------------------------------------------------------
     # methods manipulation
@@ -483,7 +478,7 @@ class _solid(_polygonBase):
             ax.plot(vert[:,0]*np.cos(angle), vert[:,0]*np.sin(angle), vert[:,1], *plt_args, **plt_kwargs)
         # plot circumferential edges
         for i in range(len(vert)-1):
-            coord = np.linspace( vert[i,:], vert[i+1,:], Nedge+2 )
+            coord = np.linspace( vert[i,:], vert[i+1,:], Nedge+1, endpoint=False )
             for point in coord:
                 self._plot_circ(*plt_args, radius = point[0], center = (0, 0, point[1] ) )
         # plot axis of rotation
