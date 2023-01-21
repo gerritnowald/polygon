@@ -232,7 +232,10 @@ class _polygonBase():
                 plt_kwargs['color']  = 'r'
             if 'marker' not in plt_kwargs:
                 plt_kwargs['marker'] = '+'
-        ax.plot( *self.CenterMass, *plt_args, **plt_kwargs )
+        CenterMass = self.CenterMass
+        if ax.name == "3d":
+            CenterMass.insert(0, 0)
+        ax.plot( *CenterMass, *plt_args, **plt_kwargs )
     
     def plotCenterEdges(self, *plt_args, ax = None, **plt_kwargs):
         if ax is None:

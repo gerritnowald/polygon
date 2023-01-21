@@ -32,15 +32,14 @@ plt.close('all')
 plt.figure()
 
 socket.plot3d('b-', Ncross = 6, rotAx = True)
-plt.gca().view_init(azim=30, elev=15)
-
-# socket.plotCenterMass('bo', label='solid center of mass')
+socket.plotCenterMass('ro', label='center of mass')
 
 # plt.legend()
 # plt.xlabel('mm')
 # plt.ylabel('mm')
 # plt.gca().set_zlabel('axial / mm')
 
+plt.gca().view_init(azim=30, elev=15)
 plt.axis('off')
 plt.tight_layout()
 plt.show()
