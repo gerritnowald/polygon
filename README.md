@@ -68,7 +68,7 @@ instance = polygon(Vertices, axis)
     - abs(instance)          gives area or volume of solid of revolution if axis is defined
     
     - plotting (matplotlib args & kwargs can be used)
-        - plot(*args, numbers=False, **kwargs)     plots polygon, optionally numbers of vertices
+        - plot(*args, numbers=False, **kwargs)     plots polygon, optionally numbers of vertices & edges
         - plotCenterMass(*args, **kwargs)          plots center of mass, default style red cross
         - plotCenterEdges(*args, **kwargs)         plots center of edges, default style black dots
         - for solid of revolution:

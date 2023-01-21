@@ -56,7 +56,7 @@ methods of polygon object:
     - abs(instance)          gives area or volume of solid of revolution if axis is defined
     
     - plotting (matplotlib args & kwargs can be used)
-        - plot(*args, numbers=False, **kwargs)     plots polygon, optionally numbers of vertices
+        - plot(*args, numbers=False, **kwargs)     plots polygon, optionally numbers of vertices & edges
         - plotCenterMass(*args, **kwargs)          plots center of mass, default style red cross
         - plotCenterEdges(*args, **kwargs)         plots center of edges, default style black dots
         - for solid of revolution:
@@ -213,13 +213,16 @@ class _polygonBase():
     # methods plotting
     
     def plot(self, *plt_args, numbers = False, ax = None, **plt_kwargs):
-        # plots contour of polygon, optionally with numbers of vertices
+        # plots contour of polygon, optionally with numbers of vertices & edges
         if ax is None:
             ax = plt.gca()
+        # plot contour of polygon
         ax.plot(self.Vertices[:,0], self.Vertices[:,1], *plt_args, **plt_kwargs)
+        # plot numbers of vertices & edges
         if numbers:
             for i in range(len(self.Vertices)-1):
-                ax.text(self.Vertices[i,0], self.Vertices[i,1], str(i) )
+                ax.text(self.Vertices[i,0],    self.Vertices[i,1],    str(i), c='r' )
+                ax.text(self.EdgesMiddle[i,0], self.EdgesMiddle[i,1], str(i) )
     
     def plotCenterMass(self, *plt_args, ax = None, **plt_kwargs):
         if ax is None:
