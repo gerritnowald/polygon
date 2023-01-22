@@ -232,7 +232,7 @@ class _polygonBase():
                 plt_kwargs['color']  = 'r'
             if 'marker' not in plt_kwargs:
                 plt_kwargs['marker'] = '+'
-        CenterMass = self.CenterMass[:]     # swallow copy
+        CenterMass = self.CenterMass[:]     # shallow copy
         # 3D CenterMass
         if ax.name == "3d":
             if self._axis == 0:
@@ -468,7 +468,7 @@ class _solid(_polygonBase):
     
     def plot3d(self, *plt_args, Ncross = 8, Nedge = 0, rotAx = False, ax = None, **plt_kwargs):
         # plots solid of revolution
-        vert = self.Vertices[:]    # swallow copy
+        vert = self.Vertices[:]    # shallow copy
         if self._axis == 0:
             vert = vert[:, ::-1]
         if ax is None:
