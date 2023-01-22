@@ -91,7 +91,6 @@ methods of polygon object:
 import numpy as np
 import matplotlib.pyplot as plt
 import warnings
-import copy
 
 # #############################################################################
 # selector class
@@ -233,7 +232,8 @@ class _polygonBase():
                 plt_kwargs['color']  = 'r'
             if 'marker' not in plt_kwargs:
                 plt_kwargs['marker'] = '+'
-        CenterMass = copy.copy(self.CenterMass)
+        CenterMass = self.CenterMass[:]     # swallow copy
+        # 3D CenterMass
         if ax.name == "3d":
             if self._axis == 0:
                 CenterMass = CenterMass[::-1]
@@ -468,7 +468,7 @@ class _solid(_polygonBase):
     
     def plot3d(self, *plt_args, Ncross = 8, Nedge = 0, rotAx = False, ax = None, **plt_kwargs):
         # plots solid of revolution
-        vert = self.Vertices
+        vert = self.Vertices[:]    # swallow copy
         if self._axis == 0:
             vert = vert[:, ::-1]
         if ax is None:
