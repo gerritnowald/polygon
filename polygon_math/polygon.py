@@ -91,6 +91,7 @@ methods of polygon object:
 import numpy as np
 import matplotlib.pyplot as plt
 import warnings
+import copy
 
 # #############################################################################
 # selector class
@@ -103,7 +104,7 @@ class polygon():
         # -------------------------------------------------------
         # input checks
         
-        vert = np.array(Vertices)
+        vert = np.array(Vertices)   # shallow copy
         
         # coordinates as 2 columns (min 3 rows)
         if vert.shape[0] < vert.shape[1]:
@@ -201,7 +202,7 @@ class _polygonBase():
     # dunder methods
     
     def __repr__(self):
-        return f'polygon({self.Vertices}, axis={self._axis})'
+        return f'polygon({self.Vertices})'
     
     def __str__(self):
         return f'Polygon with {len(self.Vertices)-1} vertices'
@@ -232,7 +233,7 @@ class _polygonBase():
                 plt_kwargs['color']  = 'r'
             if 'marker' not in plt_kwargs:
                 plt_kwargs['marker'] = '+'
-        CenterMass = self.CenterMass[:]     # shallow copy
+        CenterMass = copy.copy(self.CenterMass)
         # 3D CenterMass
         if ax.name == "3d":
             if self._axis == 0:
@@ -457,18 +458,21 @@ class _solid(_polygonBase):
     # -------------------------------------------------------
     # dunder methods
     
-    def __abs__(self):
-        return self.RotationVolume
+    def __repr__(self):
+        return f'polygon({self.Vertices}, axis={self._axis})'
     
     def __str__(self):
         return f'Solid of revolution, cross-section polygon with {len(self.Vertices)-1} vertices'
+    
+    def __abs__(self):
+        return self.RotationVolume
     
     # -------------------------------------------------------
     # methods plotting
     
     def plot3d(self, *plt_args, Ncross = 8, Nedge = 0, rotAx = False, ax = None, **plt_kwargs):
         # plots solid of revolution
-        vert = self.Vertices[:]    # shallow copy
+        vert = copy.copy(self.Vertices)
         if self._axis == 0:
             vert = vert[:, ::-1]
         if ax is None:
