@@ -17,7 +17,10 @@ def plot_circ(*args, R = 1, C = (0,0), N = 50, **kwargs):
     plt.gca().axis('equal')
 
 
+plt.close('all')
+plt.figure()
 plot_circ('k--')
 plot_circ('g-', N = 7)
 plot_circ('bo', N = 7, markersize = 10)
 plt.axis('off')
+plt.show()

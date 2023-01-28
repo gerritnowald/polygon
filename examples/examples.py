@@ -14,21 +14,20 @@ from polygon_math import polygon
 
 
 plt.close('all')
-plt.figure()
 plt.style.use('dark_background')
+fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2)
 
 
 
 Vertices = np.random.rand(3,2)*10
 triangle = polygon(Vertices)
 
-plt.subplot(221)
-triangle.plot('o-')
-triangle.plotCenterMass()
-triangle.plotCenterEdges('co')
-triangle.plotOutCircle('--', linewidth=0.7)
-triangle.plotIncircle('--', linewidth=0.7)
-plt.axis('off')
+triangle.plot('o-', ax=ax1)
+triangle.plotCenterMass(ax=ax1)
+triangle.plotCenterEdges('co', ax=ax1)
+triangle.plotOutCircle('--', ax=ax1, linewidth=0.7)
+triangle.plotIncircle('--', ax=ax1, linewidth=0.7)
+ax1.axis('off')
 
 
 
@@ -49,38 +48,32 @@ heart = polygon(Vertices)
 N = 500
 points = np.hstack(( np.random.rand(N,1)*6 - 3, np.random.rand(N,1)*10 - 2 ))
 
-plt.subplot(222)
 for point in points:
     if heart(point):
         style = "yo"
     else:
         style = "bo"
-    plt.plot(*point, style)
-plt.axis('off')
+    ax2.plot(*point, style)
+ax2.axis('off')
 
 
 
 Vertices = [
-    [0, 0],
-    [10, 0],
-    [10, 1],
-    [6, 2],
-    [6, 18],
-    [10, 19],
-    [10, 20],
-    [0, 20],
-    [0, 19],
-    [4, 18],
-    [4, 2],
-    [0, 1]
+    [2.5, 0],
+    [4, 0],
+    [4, 6],
+    [2.5, 6],
+    [1, 4.5],
+    [1, 1.5]
 ]
-beam = polygon(Vertices)
+socket = polygon(Vertices, axis=1)
 
-plt.subplot(223)
-beam.plot()
-beam.plotCenterMass()
-plt.axis('equal')
-plt.axis('off')
+ax3.axis('off')
+ax3 = fig.add_subplot(2, 2, 3, projection='3d')
+socket.plot3d(Ncross = 6, ax=ax3, color='gold')
+socket.plotCenterMass('ro', ax=ax3)
+ax3.view_init(azim=30, elev=15)
+ax3.axis('off')
 
 
 
@@ -91,33 +84,15 @@ Ptranslated = P + [3,4]
 Protated    = P.rotateClockwise(45,[5,0])
 Pscaled     = P / 2
 
-plt.subplot(224)
-P.plot('--')
-Ptranslated.plot()
-Protated.plot()
-Pscaled.plot()
-plt.axis('equal')
-plt.axis('off')
+P.plot('--', ax=ax4)
+Ptranslated.plot(ax=ax4)
+Protated.plot(ax=ax4)
+Pscaled.plot(ax=ax4)
+ax4.axis('equal')
+ax4.axis('off')
 
 
 
-# Vertices = [
-#     [2.5, 0],
-#     [4, 0],
-#     [4, 6],
-#     [2.5, 6],
-#     [1, 4.5],
-#     [1, 1.5]
-# ]
-# socket = polygon(Vertices, axis=1)
-
-# socket.plot()
-# socket.plotRotationAxis()
-# plt.axis('equal')
-# plt.axis('off')
-
-
-
-plt.tight_layout()
-# plt.savefig('examples.png', transparent=True)
-plt.show()
+fig.tight_layout()
+# fig.savefig('examples.png', transparent=True)
+fig.show()
