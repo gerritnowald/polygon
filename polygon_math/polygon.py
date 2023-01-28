@@ -477,9 +477,15 @@ class _solid(_polygonBase):
             vert = vert[:, ::-1]
         if ax is None:
             ax = plt.axes(projection='3d')
+        if 'label' in plt_kwargs:
+            label = plt_kwargs.pop('label')
+        else:
+            label = False
         # plot cross-sections
         for angle in np.linspace(0, 2*np.pi, Ncross+1):
             ax.plot(vert[:,0]*np.cos(angle), vert[:,0]*np.sin(angle), vert[:,1], *plt_args, **plt_kwargs)
+        if label:
+            ax.plot([],[], label=label)
         # plot circumferential edges
         for i in range(len(vert)-1):
             coord = np.linspace( vert[i,:], vert[i+1,:], Nedge+1, endpoint=False )
