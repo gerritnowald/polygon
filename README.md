@@ -64,22 +64,19 @@ instance = polygon(Vertices, axis)
 
 ### methods of polygon object:
     
-    - print(instance)        gives number of vertices
-    - abs(instance)          gives area or volume of solid of revolution if axis is defined
+    - abs(instance)          gives area or volume of solid of revolution
     
     - plotting (matplotlib args & kwargs can be used)
-        - plot(*args, numbers=False, **kwargs)     plots contour of polygon, optionally numbers of vertices & edges
-        - plotCenterMass(*args, **kwargs)          plots center of mass, default style red cross
-        - plotCenterEdges(*args, **kwargs)         plots center of edges, default style black dots
+        - plot                              contour of polygon
+        - plotCenterMass
+        - plotCenterEdges
         - for solid of revolution:
-            - plot3d(*args, Ncross=8, Nedge=0, rotAx=False, **kwargs)
-                                                   3D wireframe plot of solid, number of cross-sections and circles per edge can be specified
-            - plotRotationAxis(**kwargs)           plots axis of rotation in 2D plot, default linestyle black dash-dotted
-            - plotCenterMassCrossSection(*args, **kwargs)
-                                                   plots centroid of crossSection, default style green cross
+            - plot3d                        3D wireframe plot of solid
+            - plotRotationAxis              for 2D plot, only kwargs
+            - plotCenterMassCrossSection    for 2D plot
         - for triangles:
-            - plotOutCircle(*args, **kwargs)       plots circumscribed (outer) circle
-            - plotIncircle(*args, **kwargs)        plots incircle (inner circle)
+            - plotOutCircle                 circumscribed (outer) circle
+            - plotIncircle                  incircle (inner circle)
     
     - point testing
         - instance(point), isPointInside(point)    true, if point [x,y] is inside of polygon (not on the edge)

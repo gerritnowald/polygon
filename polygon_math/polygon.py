@@ -53,21 +53,19 @@ attributes of polygon object:
 
 methods of polygon object:
     
-    - abs(instance)          gives area or volume of solid of revolution if axis is defined
+    - abs(instance)          gives area or volume of solid of revolution
     
     - plotting (matplotlib args & kwargs can be used)
-        - plot(*args, numbers=False, **kwargs)     plots contour of polygon, optionally numbers of vertices & edges
-        - plotCenterMass(*args, **kwargs)          plots center of mass, default style red cross
-        - plotCenterEdges(*args, **kwargs)         plots center of edges, default style black dots
+        - plot                              contour of polygon
+        - plotCenterMass
+        - plotCenterEdges
         - for solid of revolution:
-            - plot3d(*args, Ncross=8, Nedge=0, rotAx=False, **kwargs)
-                                                   3D wireframe plot of solid, number of cross-sections and circles per edge can be specified
-            - plotRotationAxis(**kwargs)           plots axis of rotation in 2D plot, default linestyle black dash-dotted
-            - plotCenterMassCrossSection(*args, **kwargs)
-                                                   plots centroid of crossSection, default style green cross
+            - plot3d                        3D wireframe plot of solid
+            - plotRotationAxis              for 2D plot, only kwargs
+            - plotCenterMassCrossSection    for 2D plot
         - for triangles:
-            - plotOutCircle(*args, **kwargs)       plots circumscribed (outer) circle
-            - plotIncircle(*args, **kwargs)        plots incircle (inner circle)
+            - plotOutCircle                 circumscribed (outer) circle
+            - plotIncircle                  incircle (inner circle)
     
     - point testing
         - instance(point), isPointInside(point)    true, if point [x,y] is inside of polygon (not on the edge)
@@ -103,6 +101,7 @@ import copy
 class polygon():
     
     def __new__(self, Vertices, axis=None):
+        """input checks for vertices and selection of specialized class"""
         
         # -------------------------------------------------------
         # input checks
@@ -145,6 +144,7 @@ class _polygonBase():
     # constructor (geometrical properties)
     
     def __init__(self, vert, axis):
+        """calculates geometrical properties of polygon"""
         
         self.Vertices = vert
         self._axis    = axis
@@ -159,6 +159,8 @@ class _polygonBase():
     
     @staticmethod
     def _geom2D(vert):
+        """calculates area, centroid and second moment of area of polygon"""
+        
         # centers of edges
         ri   = vert[:-1]
         rip1 = vert[1:]
@@ -187,9 +189,10 @@ class _polygonBase():
         
         return EdgesMiddle, AreaSigned, IsClockwise, CenterMass, SecondMomentArea, Ixy
     
-    
     @staticmethod
     def _edges(vert):
+        """calculates lengths of edges and inner angles of polygon"""
+        
         # lengths of edges
         vertext = np.append([vert[-2,]], vert, axis=0) # second last in front of first vertex
         vec = np.diff(vertext, axis=0)                 # direction vectors of edges
@@ -217,7 +220,10 @@ class _polygonBase():
     # methods plotting
     
     def plot(self, *plt_args, numbers = False, ax = None, **plt_kwargs):
-        # plots contour of polygon, optionally with numbers of vertices & edges
+        """
+        contour of polygon
+        numbers: optional, numbers of vertices & edges
+        """
         if ax is None:
             ax = plt.gca()
         # plot contour of polygon
@@ -229,6 +235,7 @@ class _polygonBase():
                 ax.text(self.EdgesMiddle[i,0], self.EdgesMiddle[i,1], str(i) )
     
     def plotCenterMass(self, *plt_args, ax = None, **plt_kwargs):
+        """default style red cross"""
         if ax is None:
             ax = plt.gca()
         if not plt_args:
@@ -245,6 +252,7 @@ class _polygonBase():
         ax.plot( *CenterMass, *plt_args, **plt_kwargs )
     
     def plotCenterEdges(self, *plt_args, ax = None, **plt_kwargs):
+        """default style black dots"""
         if ax is None:
             ax = plt.gca()
         if not plt_args:
@@ -258,7 +266,7 @@ class _polygonBase():
     
     @staticmethod
     def _plot_circ(*plt_args, radius = 1, center = (0,0), Npoints = 50, ax = None, **plt_kwargs ):
-        # plots circle in x,y plane
+        """circle in (or parallel to) x,y plane"""
         if ax is None:
             ax = plt.gca()
         # calculate circle coordinates
@@ -266,10 +274,10 @@ class _polygonBase():
         x = center[0] + radius*np.cos(angle)
         y = center[1] + radius*np.sin(angle)
         # plot circle
-        try:
+        try:    # center has 3 components --> parallel to x,y plane
             z = center[2] * np.ones( Npoints+1 )
             ax.plot( x, y, z, *plt_args, **plt_kwargs )
-        except:
+        except: # center has 2 components --> in x,y plane
             ax.plot( x, y, *plt_args, **plt_kwargs )
             ax.axis('equal')
     
@@ -282,9 +290,11 @@ class _polygonBase():
         return vert + distances
     
     def move(self, distances):
+        """creates copy of polygon translated in x,y direction"""
         Vertices_new = self._move(self.Vertices, distances)
         return polygon(Vertices_new, self._axis)
     def centerOrigin(self):
+        """creates copy of polygon with center of mass at origin"""
         return self.move(- self.CenterMass )
     def __add__(self, distances):
         return self.move(distances)
@@ -300,6 +310,7 @@ class _polygonBase():
         return (vert - point) @ R + point
     
     def rotate(self, angle, point = None):
+        """creates copy of polygon rotated in counter-clockwise direction"""
         if point is None:
             point = self.CenterMass
         Vertices_new = self._rotate(self.Vertices, angle, point)
@@ -314,6 +325,7 @@ class _polygonBase():
         return (vert - point)*factors + point
     
     def scale(self, factors, point = None):
+        """creates scaled copy of polygon"""
         if point is None:
             point = self.CenterMass
         Vertices_new = self._scale(self.Vertices, factors, point)
@@ -328,9 +340,12 @@ class _polygonBase():
     
     @staticmethod
     def _isPointOnEdge(vert, point):
-        # computes the distance of a point from each edge. The point is on an edge,
-        # if the point is between the vertices and the distance is smaller than the rounding error.
-        # https://de.mathworks.com/matlabcentral/answers/351581-points-lying-within-line
+        """
+        computes the distance of a point from each edge. The point is on an 
+        edge, if the point is between the vertices and the distance is smaller
+        than the rounding error.
+        https://de.mathworks.com/matlabcentral/answers/351581-points-lying-within-line
+        """
         for i in range(vert.shape[0] - 1):  # for each edge
             PQ    =      point - vert[i,]   # Line from P1 to Q
             P12   = vert[i+1,] - vert[i,]   # Line from P1 to P2
@@ -352,9 +367,12 @@ class _polygonBase():
     
     @staticmethod
     def _isPointInside(vert, point = [0,0]):
-        # A point is in a polygon, if a line from the point to infinity crosses the polygon an odd number of times.
-        # Here, the line goes parallel to the x-axis in positive x-direction.
-        # adapted from https://www.algorithms-and-technologies.com/point_in_polygon/python
+        """
+        A point is in a polygon, if a line from the point to infinity crosses 
+        the polygon an odd number of times.
+        Here, the line goes parallel to the x-axis in positive x-direction.
+        adapted from https://www.algorithms-and-technologies.com/point_in_polygon/python
+        """
         odd  = False    
         for j in range(vert.shape[0]-1):    # for each edge check if the line crosses
             i = j + 1                       # next vertex
@@ -382,6 +400,7 @@ class _triangle(_polygonBase):
     # constructor (geometrical properties)
     
     def __init__(self, vert, axis):
+        """calculates geometrical properties of triangle"""
         super().__init__(vert, axis)
     
         self.CenterOuterCircle, self.RadiusOuterCircle = self._OuterCircle(vert)
@@ -392,14 +411,20 @@ class _triangle(_polygonBase):
     
     @staticmethod
     def _incircle(vert, Area, EdgesLength):
-        # https://en.wikipedia.org/wiki/Incenter
+        """
+        center & radius of incircle (inner circle)
+        https://en.wikipedia.org/wiki/Incenter
+        """
         CenterInnerCircle = np.roll(EdgesLength, -1) @ vert[:-1,] / sum(EdgesLength)
         RadiusInnerCircle = 2*Area / sum(EdgesLength)
         return CenterInnerCircle, RadiusInnerCircle
     
     @staticmethod
     def _OuterCircle(vert):
-        # https://en.wikipedia.org/wiki/Circumscribed_circle
+        """
+        center & radius of circumscribed (outer) circle
+        https://en.wikipedia.org/wiki/Circumscribed_circle
+        """
         vertP = vert[:-1,:] - vert[0,:]      # coordinate transformation
         DP  = np.cross(vertP[:,0], vertP[:,1])[0]
         LSQ = np.linalg.norm(vertP, axis=1)**2
@@ -413,9 +438,11 @@ class _triangle(_polygonBase):
     # methods plotting
     
     def plotOutCircle(self, *plt_args, **plt_kwargs):
+        """circumscribed (outer) circle"""
         self._plot_circ(*plt_args, radius = self.RadiusOuterCircle, center = self.CenterOuterCircle, **plt_kwargs)
     
     def plotIncircle(self, *plt_args, **plt_kwargs):
+        """incircle (inner circle)"""
         self._plot_circ(*plt_args, radius = self.RadiusInnerCircle, center = self.CenterInnerCircle, **plt_kwargs)
 
 # #############################################################################
@@ -428,6 +455,7 @@ class _solid(_polygonBase):
     # constructor (geometrical properties)
     
     def __init__(self, vert, axis):
+        """calculates geometrical properties of solid of revolution"""
         super().__init__(vert, axis)
     
         if min(vert[:,1-axis]) * max(vert[:,1-axis]) < 0:
@@ -441,6 +469,7 @@ class _solid(_polygonBase):
     
     @staticmethod
     def _geom3D(axis, _AreaSigned, CenterMass, _Ixy):
+        """calculates volume and center of mass"""
         # Pappus's centroid theorem
         # https://en.wikipedia.org/wiki/Pappus%27s_centroid_theorem
         RotationVolumeSigned = 2*np.pi * _AreaSigned * CenterMass[1-axis]
@@ -456,6 +485,7 @@ class _solid(_polygonBase):
     
     @staticmethod
     def _surfaces(axis, EdgesLength, EdgesMiddle):
+        """calculates surface areas"""
         return 2*np.pi * EdgesLength * abs(EdgesMiddle[:,1-axis])
     
     # -------------------------------------------------------
@@ -474,21 +504,25 @@ class _solid(_polygonBase):
     # methods plotting
     
     def plot3d(self, *plt_args, Ncross = 8, Nedge = 0, rotAx = False, ax = None, **plt_kwargs):
-        # plots solid of revolution
+        """
+        3D wireframe plot of solid
+        
+        Ncross: optional, number of cross-sections
+        Nedge:  optional, number of circles per edge
+        rotAx:  optional, axis of rotation
+        """
         vert = copy.copy(self.Vertices)
         if self._axis == 0:
-            vert = vert[:, ::-1]
+            vert = vert[:, ::-1]    # x & y switched --> tilted 90°
         if ax is None:
             ax = plt.axes(projection='3d')
+        # single label for 3D wireframe
         if 'label' in plt_kwargs:
             label = plt_kwargs.pop('label')
-        else:
-            label = False
+            ax.plot([],[], label=label)
         # plot cross-sections
         for angle in np.linspace(0, 2*np.pi, Ncross+1):
             ax.plot(vert[:,0]*np.cos(angle), vert[:,0]*np.sin(angle), vert[:,1], *plt_args, **plt_kwargs)
-        if label:
-            ax.plot([],[], label=label)
         # plot circumferential edges
         for i in range(len(vert)-1):
             coord = np.linspace( vert[i,:], vert[i+1,:], Nedge+1, endpoint=False )
@@ -500,7 +534,7 @@ class _solid(_polygonBase):
     
     
     def plotRotationAxis(self, color = 'k', linestyle = '-.', ax = None, **plt_kwargs):
-        # axhline & axvline don't have *args
+        """for 2D plot, default linestyle black dash-dotted"""
         if ax is None:
             ax = plt.gca()
         if self._axis == 0:
@@ -509,6 +543,7 @@ class _solid(_polygonBase):
             ax.axvline(x = 0, color = color, linestyle = linestyle, **plt_kwargs)
     
     def plotCenterMassCrossSection(self, *plt_args, ax = None, **plt_kwargs):
+        """for 2D plot, default style green cross"""
         if ax is None:
             ax = plt.gca()
         if not plt_args:
@@ -524,4 +559,5 @@ class _solid(_polygonBase):
 
 class _solid_and_triangle(_triangle, _solid):
     def __init__(self, vert, axis):
+        """calculates geometrical properties of solid of revolution"""
         super().__init__(vert, axis)
