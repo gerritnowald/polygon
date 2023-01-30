@@ -1,93 +1,4 @@
 # -*- coding: utf-8 -*-
-"""
-geometry calculation of arbitrary 2D polygons:  
-    - plotting with matplotlib args & kwargs (e.g. color, linestyle, label)
-    - area, lengths of edges, inner angles
-    - order of vertices (clockwise or anti-clockwise)
-    - centroid (center of mass)
-    - triangles: centers and radii of incircle and circumscribed (outer) circle
-    - solid of revolution: volume, surface areas, center of mass
-    - second moment of area (bending stiffness of beams)
-    - check if point is inside or on edge of polygon
-    - translation, rotation and scaling
-
-
-creating a polygon object:
-
-Vertices = [[x0,y0],[x1,y1],[x2,y2],...]   # 2D-coordinates of vertices
-instance = polygon(Vertices)
-    
-    - polygon can be open or closed (i.e. first = last vertex)
-    - holes can be defined by self-intersecting and opposite order of vertices inside than outside
-
-
-creating a solid of revolution
-    
-instance = polygon(Vertices, axis)
-
-    - axis: 0: revolution with respect to x-axis
-            1: revolution with respect to y-axis
-
-
-attributes of polygon object:
-    
-    v: Vertex
-    e: Edge (next of v)
-    - IsClockwise                          Boolean, order of vertices
-    - Area
-    - Angles[v]                            inner angles
-    - EdgesLength[e]
-    - EdgesMiddle[xe,ye]                   midpoints of edges
-    - CenterMass[x,y]                      centroid / center of mass
-    - SecondMomentArea                     [Ixx, Iyy, Ixy], wrt origin
-    - solid of revolution, if axis is specified:
-        - RotationVolume
-        - RotationSurfaces[e]
-        - CenterMassCrossSection[r,z]      CenterMass[r,z] now relates to solid
-    - for triangles:
-        - CenterOuterCircle[x,y]           circumcenter / center of circumsribed (outer) circle
-        - RadiusOuterCircle                radius of circumsribed (outer) circle
-        - CenterInnerCircle[x,y]           center of incircle (inner circle)
-        - RadiusInnerCircle                radius of incircle (inner circle)
-
-
-methods of polygon object:
-    
-    - abs(instance)          gives area or volume of solid of revolution
-    
-    - plotting (matplotlib args & kwargs can be used)
-        - plot                              contour of polygon
-        - plotCenterMass
-        - plotCenterEdges
-        - for solid of revolution:
-            - plot3d                        3D wireframe plot of solid
-            - plotRotationAxis              for 2D plot, only kwargs
-            - plotCenterMassCrossSection    for 2D plot
-        - for triangles:
-            - plotOutCircle                 circumscribed (outer) circle
-            - plotIncircle                  incircle (inner circle)
-    
-    - point testing
-        - instance(point), isPointInside(point)    true, if point [x,y] is inside of polygon (not on the edge)
-        - isPointOnEdge(point)                     true, if point [x,y] is on any edge of polygon
-    
-    - manipulation (translation, rotation & scaling)
-        - instance + [dx,dy] , instance - [dx,dy] , move([dx,dy])
-                translation by distances dx,dy in x,y-direction
-        
-        - centerOrigin()
-                moves origin of coordinate system to center of mass
-                                        
-        - rotate(angle,[cx,cy]) , rotateClockwise(angle,[cx,cy])
-                (counter)-clockwise rotation by angle / °
-                with respect to point [cx,cy] (optional, default center of mass)
-                                        
-        - instance * [fx,fy] , instance / [fx,fy] , scale([fx,fy],[cx,cy])
-                scaling by factors fx, fy in x,y-direction (negative: flip)
-                with respect to point [cx,cy] (optional, default center of mass)
-
-@author: Gerrit Nowald
-"""
 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -99,6 +10,93 @@ import copy
 # #############################################################################
 
 class polygon():
+    """
+    geometry calculation of arbitrary 2D polygons:  
+        - area, centroid (center of mass)
+        - second moment of area (bending stiffness of beams)
+        - triangles: incircle and circumscribed (outer) circle
+        - solid of revolution: volume, surface areas, center of mass
+        - check if point is inside or on edge of polygon
+        - move, rotate and scale polygon
+        - plotting with matplotlib arguments (e.g. color, linestyle, label)
+
+
+    creating a polygon object:
+
+    Vertices = [[x0,y0],[x1,y1],[x2,y2],...]   # 2D-coordinates of vertices
+    instance = polygon(Vertices)
+        
+        - polygon can be open or closed (i.e. first = last vertex)
+        - holes can be defined by self-intersecting and opposite order of vertices inside than outside
+
+
+    creating a solid of revolution
+        
+    instance = polygon(Vertices, axis)
+
+        axis: 0: revolution around x-axis
+              1: revolution around y-axis
+
+
+    attributes of polygon object (geometrical properties):
+        
+        v: Vertex
+        e: Edge (next of v)
+        - IsClockwise                          Boolean, order of vertices
+        - Area
+        - Angles[v]                            inner angles
+        - EdgesLength[e]
+        - EdgesMiddle[xe,ye]                   midpoints of edges
+        - CenterMass[x,y]                      centroid / center of mass
+        - SecondMomentArea                     [Ixx, Iyy, Ixy], with respect to origin
+        - solid of revolution:
+            - RotationVolume
+            - RotationSurfaces[e]
+            - CenterMassCrossSection[r,z]      CenterMass[r,z] now relates to solid
+        - triangles:
+            - CenterOuterCircle[x,y]           circumcenter / center of circumsribed (outer) circle
+            - RadiusOuterCircle                radius of circumsribed (outer) circle
+            - CenterInnerCircle[x,y]           center of incircle (inner circle)
+            - RadiusInnerCircle                radius of incircle (inner circle)
+
+
+    methods of polygon object:
+        
+        - abs(instance)          returns area or volume of solid of revolution
+        
+        - plotting (matplotlib optional arguments can be used)
+            - plot                              contour of polygon
+            - plotCenterMass
+            - plotCenterEdges
+            - solid of revolution:
+                - plot3d                        3D wireframe plot of solid
+                - plotRotationAxis              for 2D plot, only keyword arguments
+                - plotCenterMassCrossSection    for 2D plot
+            - triangles:
+                - plotOutCircle                 circumscribed (outer) circle
+                - plotIncircle                  incircle (inner circle)
+        
+        - point testing
+            - instance(point), isPointInside(point)    true, if point [x,y] is inside of polygon (not on the edge)
+            - isPointOnEdge(point)                     true, if point [x,y] is on any edge of polygon
+        
+        - manipulation (translation, rotation & scaling)
+            - instance + [dx,dy] , instance - [dx,dy] , move([dx,dy])
+                    translation by distances dx,dy in x,y-direction
+            
+            - centerOrigin()
+                    moves origin of coordinate system to center of mass
+                                            
+            - rotate(angle,[cx,cy]) , rotateClockwise(angle,[cx,cy])
+                    (counter)-clockwise rotation by angle / °
+                    with respect to point [cx,cy] (optional, default center of mass)
+                                            
+            - instance * [fx,fy] , instance / [fx,fy] , scale([fx,fy],[cx,cy])
+                    scaling by factors fx, fy in x,y-direction (negative: flip)
+                    with respect to point [cx,cy] (optional, default center of mass)
+
+    @author: Gerrit Nowald
+    """
     
     def __new__(self, Vertices, axis=None):
         """input checks for vertices and selection of specialized class"""
@@ -214,6 +212,7 @@ class _polygonBase():
         return f'Polygon with {len(self.Vertices)-1} vertices'
     
     def __abs__(self):
+        """returns area"""
         return self.Area
     
     # -------------------------------------------------------
@@ -235,7 +234,6 @@ class _polygonBase():
                 ax.text(self.EdgesMiddle[i,0], self.EdgesMiddle[i,1], str(i) )
     
     def plotCenterMass(self, *plt_args, ax = None, **plt_kwargs):
-        """default style red cross"""
         if ax is None:
             ax = plt.gca()
         if not plt_args:
@@ -252,7 +250,6 @@ class _polygonBase():
         ax.plot( *CenterMass, *plt_args, **plt_kwargs )
     
     def plotCenterEdges(self, *plt_args, ax = None, **plt_kwargs):
-        """default style black dots"""
         if ax is None:
             ax = plt.gca()
         if not plt_args:
@@ -297,8 +294,10 @@ class _polygonBase():
         """creates copy of polygon with center of mass at origin"""
         return self.move(- self.CenterMass )
     def __add__(self, distances):
+        """creates copy of polygon translated in x,y direction"""
         return self.move(distances)
     def __sub__(self, distances):
+        """creates copy of polygon translated in x,y direction"""
         return self.move(- np.array(distances) )
     
     
@@ -316,6 +315,7 @@ class _polygonBase():
         Vertices_new = self._rotate(self.Vertices, angle, point)
         return polygon(Vertices_new, self._axis)
     def rotateClockwise(self, angle, point=None):
+        """creates copy of polygon rotated in clockwise direction"""
         return self.rotate(-angle, point)
     
     
@@ -331,8 +331,10 @@ class _polygonBase():
         Vertices_new = self._scale(self.Vertices, factors, point)
         return polygon(Vertices_new, self._axis)
     def __mul__(self, factors):
+        """creates scaled copy of polygon"""
         return self.scale(factors)
     def __truediv__(self, factors):
+        """creates scaled copy of polygon"""
         return self.scale( 1/np.array(factors) )
     
     # -------------------------------------------------------
@@ -362,6 +364,7 @@ class _polygonBase():
         return on
     
     def isPointOnEdge(self, point):
+        """returns Boolean"""
         return self._isPointOnEdge(self.Vertices, point)
     
     
@@ -386,8 +389,10 @@ class _polygonBase():
         return odd  # point is in polygon (not on the edge) if odd=true
     
     def isPointInside(self, point = [0,0]):
+        """returns Boolean"""
         return self._isPointInside(self.Vertices, point = point)
     def __call__(self, point=[0,0]):
+        """returns True, if point [x,y] is inside of polygon (not on the edge)"""
         return self.isPointInside(point)
 
 # #############################################################################
@@ -442,7 +447,7 @@ class _triangle(_polygonBase):
         self._plot_circ(*plt_args, radius = self.RadiusOuterCircle, center = self.CenterOuterCircle, **plt_kwargs)
     
     def plotIncircle(self, *plt_args, **plt_kwargs):
-        """incircle (inner circle)"""
+        """inner circle"""
         self._plot_circ(*plt_args, radius = self.RadiusInnerCircle, center = self.CenterInnerCircle, **plt_kwargs)
 
 # #############################################################################
@@ -469,7 +474,7 @@ class _solid(_polygonBase):
     
     @staticmethod
     def _geom3D(axis, _AreaSigned, CenterMass, _Ixy):
-        """calculates volume and center of mass"""
+        """calculates volume and 3D center of mass"""
         # Pappus's centroid theorem
         # https://en.wikipedia.org/wiki/Pappus%27s_centroid_theorem
         RotationVolumeSigned = 2*np.pi * _AreaSigned * CenterMass[1-axis]
@@ -498,6 +503,7 @@ class _solid(_polygonBase):
         return f'Solid of revolution, cross-section polygon with {len(self.Vertices)-1} vertices'
     
     def __abs__(self):
+        """returns volume"""
         return self.RotationVolume
     
     # -------------------------------------------------------
@@ -505,8 +511,7 @@ class _solid(_polygonBase):
     
     def plot3d(self, *plt_args, Ncross = 8, Nedge = 0, rotAx = False, ax = None, **plt_kwargs):
         """
-        3D wireframe plot of solid
-        
+        3D wireframe plot of solid 
         Ncross: optional, number of cross-sections
         Nedge:  optional, number of circles per edge
         rotAx:  optional, axis of rotation
@@ -534,7 +539,7 @@ class _solid(_polygonBase):
     
     
     def plotRotationAxis(self, color = 'k', linestyle = '-.', ax = None, **plt_kwargs):
-        """for 2D plot, default linestyle black dash-dotted"""
+        """for 2D plot, only keyword arguments"""
         if ax is None:
             ax = plt.gca()
         if self._axis == 0:
@@ -543,7 +548,7 @@ class _solid(_polygonBase):
             ax.axvline(x = 0, color = color, linestyle = linestyle, **plt_kwargs)
     
     def plotCenterMassCrossSection(self, *plt_args, ax = None, **plt_kwargs):
-        """for 2D plot, default style green cross"""
+        """for 2D plot"""
         if ax is None:
             ax = plt.gca()
         if not plt_args:
