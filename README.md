@@ -31,9 +31,8 @@ instance = polygon(Vertices)
 ```
 instance = polygon(Vertices, axis)
 ```
-axis:
-- 0: revolution around x-axis
-- 1: revolution around y-axis
+- axis = 0: revolution around x-axis
+- axis = 1: revolution around y-axis
 
 ### attributes of polygon object (geometrical properties):
     
@@ -55,7 +54,6 @@ axis:
         - RadiusOuterCircle                radius of circumsribed (outer) circle
         - CenterInnerCircle[x,y]           center of incircle (inner circle)
         - RadiusInnerCircle                radius of incircle (inner circle)
-
 
 ### methods of polygon object:
     
@@ -92,10 +90,9 @@ axis:
                 scaling by factors fx, fy in x,y-direction (negative: flip)
                 with respect to point [cx,cy] (optional, default center of mass)
 
-
 ### prerequisites
-NumPy
-Matplotlib
+- NumPy
+- Matplotlib
 
 ## license:
 MIT license. You are free to use the code any way you want, without liability or warranty.
