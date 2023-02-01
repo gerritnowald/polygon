@@ -524,7 +524,7 @@ class _solid(_polygonBase):
         # single label for 3D wireframe
         if 'label' in plt_kwargs:
             label = plt_kwargs.pop('label')
-            ax.plot([],[], label=label)
+            ax.plot([],[], *plt_args, label=label, **plt_kwargs)
         # plot cross-sections
         for angle in np.linspace(0, 2*np.pi, Ncross+1):
             ax.plot(vert[:,0]*np.cos(angle), vert[:,0]*np.sin(angle), vert[:,1], *plt_args, **plt_kwargs)
