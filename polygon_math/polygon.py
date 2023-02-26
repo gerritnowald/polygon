@@ -70,7 +70,7 @@ class polygon():
             - plotCenterEdges
             - solid of revolution:
                 - plot3d                        3D wireframe plot of solid
-                - plotRotationAxis              for 2D plot, only keyword arguments
+                - plotRotationAxis              only keyword arguments
                 - plotCenterMassCrossSection    for 2D plot
             - triangles:
                 - plotOutCircle                 circumscribed (outer) circle
@@ -232,6 +232,7 @@ class _polygonBase():
             for i in range(len(self.Vertices)-1):
                 ax.text(self.Vertices[i,0],    self.Vertices[i,1],    str(i), c='r' )
                 ax.text(self.EdgesMiddle[i,0], self.EdgesMiddle[i,1], str(i) )
+        return ax
     
     def plotCenterMass(self, *plt_args, ax = None, **plt_kwargs):
         if ax is None:
@@ -248,6 +249,7 @@ class _polygonBase():
                 CenterMass = CenterMass[::-1]
             CenterMass.insert(0, 0)
         ax.plot( *CenterMass, *plt_args, **plt_kwargs )
+        return ax
     
     def plotCenterEdges(self, *plt_args, ax = None, **plt_kwargs):
         if ax is None:
@@ -260,6 +262,7 @@ class _polygonBase():
             if 'linestyle' not in plt_kwargs:
                 plt_kwargs['linestyle'] = ''
         ax.plot( self.EdgesMiddle[:,0], self.EdgesMiddle[:,1], *plt_args, **plt_kwargs )
+        return ax
     
     @staticmethod
     def _plot_circ(*plt_args, radius = 1, center = (0,0), Npoints = 50, ax = None, **plt_kwargs ):
@@ -277,6 +280,7 @@ class _polygonBase():
         except: # center has 2 components --> in x,y plane
             ax.plot( x, y, *plt_args, **plt_kwargs )
             ax.axis('equal')
+        return ax
     
     # -------------------------------------------------------
     # methods manipulation
@@ -444,11 +448,13 @@ class _triangle(_polygonBase):
     
     def plotOutCircle(self, *plt_args, **plt_kwargs):
         """circumscribed (outer) circle"""
-        self._plot_circ(*plt_args, radius = self.RadiusOuterCircle, center = self.CenterOuterCircle, **plt_kwargs)
+        ax = self._plot_circ(*plt_args, radius = self.RadiusOuterCircle, center = self.CenterOuterCircle, **plt_kwargs)
+        return ax
     
     def plotIncircle(self, *plt_args, **plt_kwargs):
         """inner circle"""
-        self._plot_circ(*plt_args, radius = self.RadiusInnerCircle, center = self.CenterInnerCircle, **plt_kwargs)
+        ax = self._plot_circ(*plt_args, radius = self.RadiusInnerCircle, center = self.CenterInnerCircle, **plt_kwargs)
+        return ax
 
 # #############################################################################
 # solid of revolution class
@@ -509,12 +515,11 @@ class _solid(_polygonBase):
     # -------------------------------------------------------
     # methods plotting
     
-    def plot3d(self, *plt_args, Ncross = 8, Nedge = 0, rotAx = False, ax = None, **plt_kwargs):
+    def plot3d(self, *plt_args, Ncross = 8, Nedge = 0, ax = None, **plt_kwargs):
         """
         3D wireframe plot of solid 
         Ncross: optional, number of cross-sections
         Nedge:  optional, number of circles per edge
-        rotAx:  optional, axis of rotation
         """
         vert = copy.copy(self.Vertices)
         if self._axis == 0:
@@ -533,19 +538,22 @@ class _solid(_polygonBase):
             coord = np.linspace( vert[i,:], vert[i+1,:], Nedge+1, endpoint=False )
             for point in coord:
                 self._plot_circ(*plt_args, radius = point[0], center = (0, 0, point[1] ), **plt_kwargs )
-        # plot axis of rotation
-        if rotAx:
-            plt.plot([0,0], [0,0], [min(vert[:,1]), max(vert[:,1])], 'k-.')
+        return ax
     
     
     def plotRotationAxis(self, color = 'k', linestyle = '-.', ax = None, **plt_kwargs):
-        """for 2D plot, only keyword arguments"""
+        """only keyword arguments"""
         if ax is None:
             ax = plt.gca()
-        if self._axis == 0:
-            ax.axhline(y = 0, color = color, linestyle = linestyle, **plt_kwargs)
-        elif self._axis == 1:
-            ax.axvline(x = 0, color = color, linestyle = linestyle, **plt_kwargs)
+        if ax.name == "3d":
+            ax.plot([0,0], [0,0], [ax.get_zlim()[0], ax.get_zlim()[1]], 
+                    color = color, linestyle = linestyle, **plt_kwargs )
+        else:
+            if self._axis == 0:
+                ax.axhline(y = 0, color = color, linestyle = linestyle, **plt_kwargs)
+            elif self._axis == 1:
+                ax.axvline(x = 0, color = color, linestyle = linestyle, **plt_kwargs)
+        return ax
     
     def plotCenterMassCrossSection(self, *plt_args, ax = None, **plt_kwargs):
         """for 2D plot"""
@@ -557,6 +565,7 @@ class _solid(_polygonBase):
             if 'marker' not in plt_kwargs:
                 plt_kwargs['marker'] = '+'
         ax.plot( *self.CenterMassCrossSection, *plt_args, **plt_kwargs )
+        return ax
 
 # #############################################################################
 # solid of revolution & triangle class

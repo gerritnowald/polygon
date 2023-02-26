@@ -31,7 +31,8 @@ socket = polygon(Vertices, axis=1)
 plt.close('all')
 plt.figure()
 
-socket.plot3d('b-', Ncross = 6, rotAx = True, label='socket')
+socket.plot3d('b-', Ncross = 6, label='socket')
+socket.plotRotationAxis(label='axis of rotation')
 socket.plotCenterMass('ro', label='center of mass')
 
 plt.legend()

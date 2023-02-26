@@ -65,7 +65,7 @@ instance = polygon(Vertices, axis)
         - plotCenterEdges
         - solid of revolution:
             - plot3d                        3D wireframe plot of solid
-            - plotRotationAxis              for 2D plot, only keyword arguments
+            - plotRotationAxis              only keyword arguments
             - plotCenterMassCrossSection    for 2D plot
         - triangles:
             - plotOutCircle                 circumscribed (outer) circle
