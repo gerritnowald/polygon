@@ -90,9 +90,9 @@ polygon_object = polygon(Vertices, axis)
                 scaling by factors fx, fy in x,y-direction (negative: flip)
                 with respect to point [cx,cy] (optional, default center of mass)
 
-### prerequisites
-- NumPy
-- Matplotlib
+### requirements
+- numpy >= 1.15.0
+- matplotlib >= 2.0.0
 
 ## license:
 MIT license. You are free to use the code any way you want, without liability or warranty.
