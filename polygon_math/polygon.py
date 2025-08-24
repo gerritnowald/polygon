@@ -380,16 +380,19 @@ class _polygonBase():
         Here, the line goes parallel to the x-axis in positive x-direction.
         adapted from https://www.algorithms-and-technologies.com/point_in_polygon/python
         """
-        odd  = False    
+        odd = False    
         for j in range(vert.shape[0]-1):    # for each edge check if the line crosses
             i = j + 1                       # next vertex
-            if vert[j,1] != vert[i,1]:      # edge not parallel to x-axis (singularity)
-                # point between y-coordinates of edge
-                if (vert[i,1] > point[1]) != (vert[j,1] > point[1]):
-                    # x-coordinate of intersection
-                    Qx = (vert[j,0]-vert[i,0])*(point[1]-vert[i,1])/(vert[j,1]-vert[i,1]) + vert[i,0]
-                    if point[0] < Qx:       # point left of edge
-                        odd = not odd       # line crosses edge
+            # edge parallel to x-axis (singularity)
+            if vert[j,1] == vert[i,1]:
+                continue
+            # point not between y-coordinates of edge
+            if (vert[i,1] > point[1]) == (vert[j,1] > point[1]):
+                continue
+            # x-coordinate of intersection
+            Qx = (vert[j,0]-vert[i,0])*(point[1]-vert[i,1])/(vert[j,1]-vert[i,1]) + vert[i,0]
+            if point[0] < Qx:       # point left of edge
+                odd = not odd       # line crosses edge
         return odd  # point is in polygon (not on the edge) if odd=true
     
     def isPointInside(self, point = [0,0]):
