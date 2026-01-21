@@ -13,8 +13,7 @@ Python module to calculate geometric properties of arbitrary 2D polygons:
 ## examples:
 https://github.com/gerritnowald/polygon/blob/main/examples/examples.ipynb
 
-[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)]
-(https://colab.research.google.com/github/gerritnowald/polygon/blob/main/examples/examples.ipynb)
+[![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/gerritnowald/polygon/blob/main/examples/examples.ipynb)
 
 ## installation:
 ```
